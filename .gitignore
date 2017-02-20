@@ -52,3 +52,9 @@ android/app/libs
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots
+
+# xcode project stuff
+ios/RaceWithFriends.xcodeproj/project.pbxproj
+ios/RaceWithFriends.xcodeproj/xcshareddata/xcschemes/RaceWithFriends.xcscheme
+ios/RaceWithFriends/Info.plist
+ios/RaceWithFriendsTests/Info.plist
