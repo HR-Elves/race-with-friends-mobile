@@ -18,6 +18,7 @@ import _ from 'lodash';
 
 import BackgroundGeolocation from "react-native-background-geolocation";
 import Auth0Lock from 'react-native-lock';
+import facebookKey from './config/facebook-app-key';
 
 export default class RaceWithFriends extends Component {
 
@@ -26,7 +27,8 @@ export default class RaceWithFriends extends Component {
     this.state = {
       recording: false,
       history: [],
-      profile: ''
+      profile: '',
+      token: ''
     };
 
     this.onLocationUpdate = _.debounce(this.onLocationUpdate.bind(this), 1000);
@@ -35,18 +37,26 @@ export default class RaceWithFriends extends Component {
   }
 
   componentWillMount() {
-    var lock = new Auth0Lock({clientId: 'XxyJ8YK2qysEUSXbrrBSQPOOJhaL37oM', domain: 'nickcobbett.auth0.com'});
-    lock.show({}, (err, profile, token) => {
-      if (err) {
-        console.log(err);
-        return;
-      } else {
-      // Authentication worked!
-      this.setState({profile: profile})
-        console.log('Logged in with Auth0!', profile);
-      }
-      this.beginGPSTracking()
-    });
+    // if (!this.state.token) {
+      var lock = new Auth0Lock(facebookKey);
+      lock.show({}, (err, profile, token) => {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
+        // Authentication worked!
+        this.setState({
+          profile: profile,
+          token: token
+        })
+          console.log('Logged in with Auth0!', profile);
+          console.log('%%%%%', token)
+        }
+        this.beginGPSTracking()
+      });
+    // } else {
+    //   this.beginGPSTracking()
+    // }
   }
 
   beginGPSTracking() {
