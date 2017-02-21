@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "clear-packager": "./node_modules/react-native/packager/packager.sh start --reset-cache"
   },
   "dependencies": {
     "react": "15.4.2",

@@ -9,7 +9,7 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View, 
+  View,
   Button
 } from 'react-native';
 import {Vibration} from 'react-native';
@@ -71,7 +71,7 @@ export default class RaceWithFriends extends Component {
     BackgroundGeolocation.changePace(true);
     this.state.history.push(this.processLocation(location));
     this.setState({
-      history: this.state.history 
+      history: this.state.history
     });
     // this.sendLocations();
   }
@@ -80,7 +80,7 @@ export default class RaceWithFriends extends Component {
   // This function takes into account the curvature of the earth for accuracy.
   // Typical error is up to 0.3%.
   findDistance(lat1, lon1, lat2, lon2) {
-      const toRad = (num) => { return num * Math.PI / 180};  
+      const toRad = (num) => { return num * Math.PI / 180};
 
       var R = 6371e3; // metres
       var φ1 = toRad(lat1);
@@ -140,10 +140,20 @@ export default class RaceWithFriends extends Component {
     this.setState({
       recording: false
     });
+
     // Remove BackgroundGeolocation listeners
-    BackgroundGeolocation.un('location', this.onLocation);
-    BackgroundGeolocation.un('motionchange', this.onMotionChange);
-    BackgroundGeolocation.un('heartbeat', this.onHeartBeat);
+    BackgroundGeolocation.un('location', this.onLocationUpdate);
+    BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
+    BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
+
+    fetch('https://requestb.in/141t1531', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(this.state.history)
+    });
   }
 
   render() {
