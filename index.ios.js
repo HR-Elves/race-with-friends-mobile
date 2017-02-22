@@ -173,30 +173,54 @@ export default class RaceWithFriends extends Component {
       location = location.location;
     }
     var previousCoordinate = history[history.length - 1];
-    var distance;
+    var distanceDelta;
+    var distanceTotal;
+    var timeDelta;
+    var timeTotal;
     console.log('~~~', location);
     // if (location.coords) {
     //   return undefined;
     // }
     if (previousCoordinate) {
-      // calculate the distance traveled from the previous coordinate
+      // calculate the distanceDelta traveled from the previous coordinate
       var lat1 = previousCoordinate.lat;
       var lon1 = previousCoordinate.long;
       var lat2 = location.coords.latitude;
       var lon2 = location.coords.longitude;
-      distance = this.findDistance(lat1, lon1, lat2, lon2);
+      distanceDelta = this.findDistance(lat1, lon1, lat2, lon2);
+      distanceTotal = previousCoordinate.distanceTotal + distanceDelta;
+      timeDelta = Date.parse(location.timestamp) - Date.parse(previousCoordinate.timestamp);
+      timeTotal = previousCoordinate.timeTotal + timeDelta;
     } else {
-      distance = 0;
+      distanceDelta = 0;
+      distanceTotal = 0;
+      timeDelta = 0;
+      timeTotal = 0;
     }
 
+
+    // let newLocation = {
+    //   lat: null,
+    //   long: null,
+    //   alt: null,
+    //   accuracy: null,
+    //   distanceDelta: velocity * updateFrequency,
+    //   distanceTotal: totalDistance,
+    //   timestamp: null,
+    //   timeDelta: updateFrequency * 1000, // milliseconds
+    //   timeTotal: totalTime
+    // };
 
     var newLocation = {
       lat: location.coords.latitude,
       long: location.coords.longitude,
-      distance: distance,
-      timestamp: location.timestamp,
+      alt: location.coords.altitude,
       accuracy: location.coords.accuracy,
-      alt: location.coords.altitude
+      distanceDelta: distanceDelta,  // meters 
+      distanceTotal: distanceTotal,  // meters
+      timestamp: location.timestamp, // UTC string
+      timeDelta: timeDelta,          // milliseconds
+      timeTotal: timeTotal           // milliseconds
     };
 
     return newLocation;
@@ -225,13 +249,13 @@ export default class RaceWithFriends extends Component {
     BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
     BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
 
-    var distance = this.state.history.reduce((accum, current) => {
-      return accum + current.distance;
-    }, 0);
+    // var distance = this.state.history.reduce((accum, current) => {
+    //   return accum + current.distance;
+    // }, 0);
 
-    this.setState({
-      distanceTravelled: distance
-    });
+    // this.setState({
+    //   distanceTravelled: distance
+    // });
 
     fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
       method: 'POST',
@@ -288,7 +312,7 @@ export default class RaceWithFriends extends Component {
     var displayLastFive = this.state.history.slice(-5).map((location) => {
       return (
         <Text>
-          {`Distance: ${location.distance}, Timestamp: ${location.timestamp}`}
+          {`DistanceTotal: ${location.distanceTotal}, TimeTotal: ${location.timeTotal}`}
         </Text>
       );
     });
