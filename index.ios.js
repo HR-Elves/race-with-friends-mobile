@@ -28,7 +28,6 @@ export default class RaceWithFriends extends Component {
     this.state = {
       recording: false,
       history: [],
-      distanceTravelled: 0,
       profile: '',
       token: ''
     };
@@ -58,15 +57,6 @@ export default class RaceWithFriends extends Component {
     // });
     // } else {
     this.beginGPSTracking();
-
-    // var history = [];
-    // AsyncStorage.setItem('history', JSON.stringify(history), () => {});
-
-    // }
-    // BackgroundGeolocation.changePace(true);
-    // setInterval(() => {
-    //   BackgroundGeolocation.changePace(true);
-    // }, 1000);
   }
 
   beginGPSTracking() {
@@ -103,48 +93,18 @@ export default class RaceWithFriends extends Component {
         });
       }
     });
-    // BackgroundGeolocation.changePace(true);
   }
 
   onLocationUpdate(location) {
     let pattern = [0];
     Vibration.vibrate(pattern);
 
-    // var distanceChange = this.processLocation(location);
     this.state.history.push(this.processLocation(location, this.state.history));
     this.setState({
       history: this.state.history
     });
 
     console.log('~~~', JSON.stringify(location));
-    // console.log('~~~', JSON.stringify(location.location));
-    // AsyncStorage.getItem('history', (error, history) => {
-    //   history = JSON.parse(history);
-    //   history.push(this.processLocation(location, history));
-    //   console.log( '============>', history.length);
-    //   history = JSON.stringify(history);
-    //   AsyncStorage.setItem('history', history, () => {});
-    // });
-
-    // setInterval(() => {
-    //   BackgroundGeolocation.changePace(true);
-    // });
-    // BackgroundGeolocation.changePace(true);
-    // history.push(distanceChange);
-    // console.log('===============>', history);
-    // fetch('https://peaceful-dawn-56737.herokuapp.com/ping', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Accept': 'application/json',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(distanceChange)
-    // });
-
-    // this.setState({
-    //   history: history
-    // });
-    // this.sendLocations();
   }
 
   // Helper function for finding the distance between two points on a map (in meters).
@@ -178,9 +138,7 @@ export default class RaceWithFriends extends Component {
     var timeDelta;
     var timeTotal;
     console.log('~~~', location);
-    // if (location.coords) {
-    //   return undefined;
-    // }
+
     if (previousCoordinate) {
       // calculate the distanceDelta traveled from the previous coordinate
       var lat1 = previousCoordinate.lat;
@@ -198,19 +156,6 @@ export default class RaceWithFriends extends Component {
       timeTotal = 0;
     }
 
-
-    // let newLocation = {
-    //   lat: null,
-    //   long: null,
-    //   alt: null,
-    //   accuracy: null,
-    //   distanceDelta: velocity * updateFrequency,
-    //   distanceTotal: totalDistance,
-    //   timestamp: null,
-    //   timeDelta: updateFrequency * 1000, // milliseconds
-    //   timeTotal: totalTime
-    // };
-
     var newLocation = {
       lat: location.coords.latitude,
       long: location.coords.longitude,
@@ -227,35 +172,19 @@ export default class RaceWithFriends extends Component {
   }
 
   onRecord() {
-    // this.setState({
-    //   recording: true
-    // });
     // This handler fires whenever bgGeo receives a location update.
     BackgroundGeolocation.on('location', this.onLocationUpdate);
     // This handler fires when movement states changes (stationary->moving; moving->stationary)
     BackgroundGeolocation.on('motionchange', this.onLocationUpdate);
     BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
     BackgroundGeolocation.changePace(true);
-
   }
 
   onStopRecord() {
-    // this.setState({
-    //   recording: false
-    // });
-
     // Remove BackgroundGeolocation listeners
     BackgroundGeolocation.un('location', this.onLocationUpdate);
     BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
     BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
-
-    // var distance = this.state.history.reduce((accum, current) => {
-    //   return accum + current.distance;
-    // }, 0);
-
-    // this.setState({
-    //   distanceTravelled: distance
-    // });
 
     fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
       method: 'POST',
@@ -265,31 +194,15 @@ export default class RaceWithFriends extends Component {
       },
       body: JSON.stringify(this.state.history)
     });
-
-    // AsyncStorage.getItem('history', (error, history) => {
-    //   fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Accept': 'application/json',
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: history
-    //   });
-    // });
   }
 
   clearHistory() {
     this.setState({
       history: [],
-      distanceTravelled: 0,
     });
   }
 
   render() {
-
-    // const history = history.map((location) => {
-    //   return (<Text>{JSON.stringify(location)}</Text>)
-    // });
     const styles = StyleSheet.create({
       container: {
         flex: 1,
@@ -337,9 +250,6 @@ export default class RaceWithFriends extends Component {
           title="Clear"
           color='green'
         />
-        <Text>
-          {`Distance Traveled: ${this.state.distanceTravelled}`}
-        </Text>
         {displayLastFive}
       <Text>Welcome: {this.state.profile.name}</Text>
       </View>
