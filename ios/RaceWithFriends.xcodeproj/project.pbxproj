@@ -23,6 +23,9 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		20D2455C4BAE98009AECAEF4 /* libPods-RaceWithFriends.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 36B6F0AA3B9A5B04C6E15CEA /* libPods-RaceWithFriends.a */; };
+		33C265351E5D3E4C00B62DFA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33C265341E5D3E4C00B62DFA /* MapKit.framework */; };
+		33C265961E5D848700B62DFA /* RNBackgroundGeolocation in Frameworks */ = {isa = PBXBuildFile; fileRef = 33C265951E5D848700B62DFA /* RNBackgroundGeolocation */; };
+		33C265981E5D863200B62DFA /* RNBackgroundFetch+AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C265971E5D863200B62DFA /* RNBackgroundFetch+AppDelegate.m */; };
 		496E7BEFF8A848FA87F2DDB4 /* libA0RNLock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04F599DFBDC549A9BE00CCCD /* libA0RNLock.a */; };
 		4B8C91EDAFC0C993DCA9E28C /* libPods-RaceWithFriendsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA5328481E54C07973F752C2 /* libPods-RaceWithFriendsTests.a */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
@@ -334,6 +337,9 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RaceWithFriends/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RaceWithFriends/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		33C265341E5D3E4C00B62DFA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		33C265951E5D848700B62DFA /* RNBackgroundGeolocation */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNBackgroundGeolocation; path = "../node_modules/react-native-background-geolocation/ios/RNBackgroundGeolocation"; sourceTree = "<group>"; };
+		33C265971E5D863200B62DFA /* RNBackgroundFetch+AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RNBackgroundFetch+AppDelegate.m"; path = "../node_modules/react-native-background-fetch/ios/RNBackgroundFetch/RNBackgroundFetch+AppDelegate.m"; sourceTree = "<group>"; };
 		36B6F0AA3B9A5B04C6E15CEA /* libPods-RaceWithFriends.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RaceWithFriends.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
@@ -366,8 +372,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33C265961E5D848700B62DFA /* RNBackgroundGeolocation in Frameworks */,
 				FFA438131E56990800260E59 /* TSBackgroundFetch.framework in Frameworks */,
 				FFA438111E5698F100260E59 /* TSLocationManager.framework in Frameworks */,
+				33C265351E5D3E4C00B62DFA /* MapKit.framework in Frameworks */,
 				FFA4380F1E56987B00260E59 /* libsqlite3.tbd in Frameworks */,
 				FFA4380C1E56983900260E59 /* libCocoaLumberjack.a in Frameworks */,
 				FFA4380B1E56982F00260E59 /* libRNBackgroundFetch.a in Frameworks */,
@@ -481,6 +489,7 @@
 			children = (
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				33C265971E5D863200B62DFA /* RNBackgroundFetch+AppDelegate.m */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				FFA438141E569A4D00260E59 /* RNBackgroundFetch+AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -625,6 +634,8 @@
 		FFA4380D1E56987B00260E59 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				33C265951E5D848700B62DFA /* RNBackgroundGeolocation */,
+				33C265341E5D3E4C00B62DFA /* MapKit.framework */,
 				FFA438121E56990800260E59 /* TSBackgroundFetch.framework */,
 				FFA438101E5698F100260E59 /* TSLocationManager.framework */,
 				FFA4380E1E56987B00260E59 /* libsqlite3.tbd */,
@@ -699,6 +710,9 @@
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
+							};
+							com.apple.Maps.iOS = {
+								enabled = 0;
 							};
 						};
 					};
@@ -1196,6 +1210,7 @@
 				FFA438151E569A4D00260E59 /* RNBackgroundFetch+AppDelegate.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				33C265981E5D863200B62DFA /* RNBackgroundFetch+AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
