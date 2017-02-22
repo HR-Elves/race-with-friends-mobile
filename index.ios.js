@@ -58,8 +58,10 @@ export default class RaceWithFriends extends Component {
     // });
     // } else {
     this.beginGPSTracking();
-    var history = [];
-    AsyncStorage.setItem('history', JSON.stringify(history), () => {});
+
+    // var history = [];
+    // AsyncStorage.setItem('history', JSON.stringify(history), () => {});
+
     // }
     // BackgroundGeolocation.changePace(true);
     // setInterval(() => {
@@ -109,16 +111,20 @@ export default class RaceWithFriends extends Component {
     Vibration.vibrate(pattern);
 
     // var distanceChange = this.processLocation(location);
+    this.state.history.push(this.processLocation(location, this.state.history));
+    this.setState({
+      history: this.state.history
+    });
 
     console.log('~~~', JSON.stringify(location));
     // console.log('~~~', JSON.stringify(location.location));
-    AsyncStorage.getItem('history', (error, history) => {
-      history = JSON.parse(history);
-      history.push(this.processLocation(location, history));
-      console.log( '============>', history.length);
-      history = JSON.stringify(history);
-      AsyncStorage.setItem('history', history, () => {});
-    });
+    // AsyncStorage.getItem('history', (error, history) => {
+    //   history = JSON.parse(history);
+    //   history.push(this.processLocation(location, history));
+    //   console.log( '============>', history.length);
+    //   history = JSON.stringify(history);
+    //   AsyncStorage.setItem('history', history, () => {});
+    // });
 
     // setInterval(() => {
     //   BackgroundGeolocation.changePace(true);
@@ -219,30 +225,38 @@ export default class RaceWithFriends extends Component {
     BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
     BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
 
-    // var distance = history.reduce((accum, current) => {
-    //   return accum + current.distance;
-    // }, 0);
+    var distance = this.state.history.reduce((accum, current) => {
+      return accum + current.distance;
+    }, 0);
 
-    // this.setState({
-    //   distanceTravelled: distance
-    // });
-
-    AsyncStorage.getItem('history', (error, history) => {
-      fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: history
-      });
+    this.setState({
+      distanceTravelled: distance
     });
-    // fetch('https://requestb.in/141t1531', {
+
+    fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(this.state.history)
+    });
+
+    // AsyncStorage.getItem('history', (error, history) => {
+    //   fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Accept': 'application/json',
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: history
+    //   });
+    // });
   }
 
   clearHistory() {
-    history = [];
     this.setState({
+      history: [],
       distanceTravelled: 0,
     });
   }
@@ -271,6 +285,14 @@ export default class RaceWithFriends extends Component {
       },
     });
 
+    var displayLastFive = this.state.history.slice(-5).map((location) => {
+      return (
+        <Text>
+          {`Distance: ${location.distance}, Timestamp: ${location.timestamp}`}
+        </Text>
+      );
+    });
+
     return (
       <View style={styles.container}>
         <Text>
@@ -294,6 +316,7 @@ export default class RaceWithFriends extends Component {
         <Text>
           {`Distance Traveled: ${this.state.distanceTravelled}`}
         </Text>
+        {displayLastFive}
       <Text>Welcome: {this.state.profile.name}</Text>
       </View>
     );
