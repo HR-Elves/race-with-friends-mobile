@@ -20,7 +20,7 @@ import _ from 'lodash';
 
 import facebookKey from './config/facebook-app-key';
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils.js';
-import race from './assets/presetChallenges/slowWalk.json';
+import race from './assets/presetChallenges/briskWalk.json';
 
 export default class RaceWithFriends extends Component {
 
