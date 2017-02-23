@@ -60,4 +60,78 @@ export function processLocation(location, history) {
   };
 
   return newLocation;
+};
+
+export function getRaceStatus(currentLoc, raceObj, prevRaceStatus) {
+  if(!prevRaceStatus) {
+    return {
+      distanceToOpponent: 0,    // if positive, user is ahead of opponent; if negative, user is behind opponent
+      passedOpponent: false,
+      passedByOpponent: false,
+      distanceRemaining: raceObj[raceObj.length - 1].distanceTotal,
+      challengeDone: false,
+      neckAndNeck: true,
+      lastRaceIndexChecked: 0
+    };
+  } else {
+    let oldDistanceToOpponent = prevRaceStatus.distanceToOpponent;
+    let currentRaceIndex = findCurrentRaceIndex(currentLoc, raceObj, prevRaceStatus.lastRaceIndexChecked)
+    let newDistanceToOpponent = findDistanceToOpponent(currentLoc, raceObj, currentRaceIndex);
+
+    let passedOpponent = false;
+    let passedByOpponent = false;
+    if(oldDistanceToOpponent < 0 && newDistanceToOpponent > 0) {
+      passedOpponent = true;
+    } else if (oldDistanceToOpponent > 0 && newDistanceToOpponent < 0) {
+      passedByOpponent = true;
+    }
+
+    let distanceRemaining = raceObj[raceObj.length - 1].distanceTotal - currentLoc.distanceTotal;
+    let challengeDone = (distanceRemaining <= 0);
+
+    return {
+      distanceToOpponent: newDistanceToOpponent,
+      passedOpponent: passedOpponent,
+      passedByOpponent: passedByOpponent,
+      distanceRemaining: distanceRemaining,
+      challengeDone: challengeDone,
+      neckAndNeck: true,
+      lastRaceIndexChecked: currentRaceIndex
+    };
+  }
+};
+
+function findCurrentRaceIndex(currentLoc, raceObj, lastRaceIndexChecked) {
+  let index;
+  for(index = lastRaceIndexChecked; index < raceObj.length; index++) {
+    if(raceObj[index].timeTotal >= currentLoc.timeTotal) {
+      break;
+    }
+  }
+  return index;  
+}
+
+// Helper function to find the distance between the user and the opponent at a given point in the run
+// Arguments:
+// currentLoc: an object representing the current location of the user
+// raceObj: an array of locations representing the opponent's run
+// currentRaceIndex: the point in the recorded run where the time elapsed is closest to the current time elapsed
+function findDistanceToOpponent(currentLoc, raceObj, currentRaceIndex) {
+  let index = currentRaceIndex;
+
+  if(raceObj[index].timeTotal === currentLoc.timeTotal) {
+    // if the current time perfectly matches a point in the recorded challenge...
+    return currentLoc.distanceTotal - raceObj[index].distanceTotal;
+  } else {
+    // we don't have a perfect synchronization between the current run and the recorded run,
+    // therefore we need to interpolate data points in the recorded run to infer the opponent's exact location
+    // at this point in time 
+    let p1 = raceObj[index-1] ? raceObj[index-1] : raceObj[index];
+    let p2 = raceObj[index];
+    let timeBetweenPoints = p2.timeTotal - p1.timeTotal;
+    let distanceBetweenPoints = p2.distanceTotal - p1.distanceTotal;
+    let timeAfterP1 = currentLoc.timeTotal - p1.timeTotal;
+    let opponentDistanceTotal  = p1.distanceTotal + (timeAfterP1 / timeBetweenPoints) * (p2.distanceTotal - p1.distanceTotal);
+    return currentLoc.distanceTotal - opponentDistanceTotal;
+  }
 }
