@@ -14,14 +14,13 @@ import {
   AsyncStorage
 } from 'react-native';
 import {Vibration} from 'react-native';
-
-import _ from 'lodash';
-
-import {findDistance, processLocation} from './src/utils/raceUtils.js';
-
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import Auth0Lock from 'react-native-lock';
+import _ from 'lodash';
+
 import facebookKey from './config/facebook-app-key';
+import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils.js';
+import race from './assets/presetChallenges/slowWalk.json';
 
 export default class RaceWithFriends extends Component {
 
@@ -30,6 +29,7 @@ export default class RaceWithFriends extends Component {
     this.state = {
       recording: false,
       history: [],
+      raceStatus: null,
       profile: '',
       token: ''
     };
@@ -100,9 +100,14 @@ export default class RaceWithFriends extends Component {
     let pattern = [0];
     Vibration.vibrate(pattern);
 
-    this.state.history.push(processLocation(location, this.state.history));
+    let currentLoc = processLocation(location, this.state.history);
+
+    let newRaceStatus = getRaceStatus(currentLoc, race, this.state.raceStatus);
+
+    this.state.history.push(currentLoc);
     this.setState({
-      history: this.state.history
+      history: this.state.history,
+      raceStatus: newRaceStatus
     });
 
     console.log('~~~', JSON.stringify(location));
@@ -159,18 +164,21 @@ export default class RaceWithFriends extends Component {
       },
     });
 
-    var displayLastFive = this.state.history.slice(-5).map((location) => {
-      return (
-        <Text>
-          {`DistanceTotal: ${location.distanceTotal}, TimeTotal: ${location.timeTotal}`}
-        </Text>
-      );
-    });
+    // var displayLastFive = this.state.history.slice(-5).map((location) => {
+    //   return (
+    //     <Text>
+    //       {`DistanceTotal: ${location.distanceTotal}, TimeTotal: ${location.timeTotal}`}
+    //     </Text>
+    //   );
+    // });
+
+    let distanceToOpponent = this.state.raceStatus ? this.state.raceStatus.distanceToOpponent : 'initializing';
+    let distanceRemaining = this.state.raceStatus ? this.state.raceStatus.distanceRemaining : 'initializing';
 
     return (
       <View style={styles.container}>
         <Text>
-          Version 1.3
+          Version 1.4
         </Text>
         <Button
           onPress={this.onRecord.bind(this)}
@@ -187,7 +195,8 @@ export default class RaceWithFriends extends Component {
           title="Clear"
           color='green'
         />
-        {displayLastFive}
+      <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
+      <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
       <Text>Welcome: {this.state.profile.name}</Text>
       </View>
     );
