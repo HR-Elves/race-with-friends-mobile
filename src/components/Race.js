@@ -10,6 +10,7 @@ import {
   Text,
   View,
   Button,
+  ProgressViewIOS
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
@@ -182,7 +183,37 @@ export default class Race extends Component {
         />
         <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
         <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
+        <RaceProgress />
       </View>
     );
   }
+}
+
+class RaceProgress extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    const styles = StyleSheet.create({
+      progressView: {
+        marginTop: 20,
+      }
+    });
+
+    return(
+      <View>
+        <View style={styles.progressView}>
+          <Text>{'\<-------------- Player --------------\>'}</Text>
+          <ProgressViewIOS progressTintColor="green" progress={0.2}  />
+        </View>
+        <View style={styles.progressView}>
+          <Text>{'\<------------ Opponent ------------\>'}</Text>
+          <ProgressViewIOS progressTintColor="red" progress={0.2} />
+        </View>
+      </View>
+
+    );  
+  }
+
 }
