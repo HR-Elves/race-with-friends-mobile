@@ -16,8 +16,8 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
-import player from '../../assets/presetChallenges/briskWalk.json';
-import race from '../../assets/presetChallenges/standardWalk.json';
+import player from '../../assets/presetChallenges/UsainBolt100m.json';
+import race from '../../assets/presetChallenges/worldRecordRaceWalk100m.json';
 import RaceProgress from './RaceProgress';
 
 export default class Replay extends Component {
@@ -30,7 +30,9 @@ export default class Replay extends Component {
       progress: {
         playerDist: 0,
         opponentDist: 0,
-        totalDist: race[race.length - 1].distanceTotal
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
       }
     };
     this.playerIndex = 0;
@@ -97,7 +99,9 @@ export default class Replay extends Component {
       progress: {
         playerDist: location.distanceTotal,
         opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
-        totalDist: race[race.length - 1].distanceTotal
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
       }
     });
 
@@ -105,13 +109,36 @@ export default class Replay extends Component {
 
     this.playerIndex++;
     let newLocation = player[this.playerIndex];
-    if (!player[this.playerIndex]) {
-      newLocation = player[player.length - 1];
+    // if (!player[this.playerIndex]) {
+    //   newLocation = player[player.length - 1];
+    // }
+    if (newRaceStatus.challengeDone) {
+      if (newRaceStatus.distanceToOpponent <= 0) {
+        this.setState({
+          progress: {
+            playerDist: location.distanceTotal,
+            opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
+            totalDist: race[race.length - 1].distanceTotal,
+            playerWon: false,
+            opponentWon: true
+          }
+        });
+      } else if (newRaceStatus.distanceToOpponent > 0) {
+        this.setState({
+          progress: {
+            playerDist: location.distanceTotal,
+            opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
+            totalDist: race[race.length - 1].distanceTotal,
+            playerWon: true,
+            opponentWon: false
+          }
+        });
+      }
+    } else {
+      this.setTimeoutID = setTimeout((() => {
+        this.onLocationUpdate(newLocation);
+      }).bind(this), newLocation.timeDelta);
     }
-
-    this.setTimeoutID = setTimeout((() => {
-      this.onLocationUpdate(newLocation);
-    }).bind(this), newLocation.timeDelta);
   }
 
   onPlay() {
@@ -126,9 +153,17 @@ export default class Replay extends Component {
   }
 
   onReset() {
+    this.onPause();
     this.setState({
       history: [],
       raceStatus: null,
+      progress: {
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
     });
     this.playerIndex = 0;
   }

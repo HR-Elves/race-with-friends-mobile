@@ -26,10 +26,12 @@ export default class RaceProgress extends Component {
         <View style={styles.progressView}>
           <Text>{'\<-------------- Player --------------\>'}</Text>
           <ProgressViewIOS progressTintColor="green" progress={playerProgress} />
+          {progress.playerWon && <Text>Player Won!</Text>}
         </View>
         <View style={styles.progressView}>
           <Text>{'\<------------ Opponent ------------\>'}</Text>
           <ProgressViewIOS progressTintColor="red" progress={opponentProgress} />
+          {progress.opponentWon && <Text>Opponent Won!</Text>}
         </View>
       </View>
     );
