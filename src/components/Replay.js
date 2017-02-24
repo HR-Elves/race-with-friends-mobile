@@ -18,6 +18,7 @@ import _ from 'lodash';
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
 import player from '../../assets/presetChallenges/briskWalk.json';
 import race from '../../assets/presetChallenges/standardWalk.json';
+import RaceProgress from './RaceProgress';
 
 export default class Replay extends Component {
 
@@ -25,7 +26,12 @@ export default class Replay extends Component {
     super(props);
     this.state = {
       history: [],
-      raceStatus: null
+      raceStatus: null,
+      progress: {
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: race[race.length - 1].distanceTotal
+      }
     };
     this.playerIndex = 0;
     this.setTimeoutID = null;
@@ -87,19 +93,32 @@ export default class Replay extends Component {
     this.state.history.push(location);
     this.setState({
       history: this.state.history,
-      raceStatus: newRaceStatus
+      raceStatus: newRaceStatus,
+      progress: {
+        playerDist: location.distanceTotal,
+        opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
+        totalDist: race[race.length - 1].distanceTotal
+      }
     });
 
     console.log('~~~', JSON.stringify(location));
 
     this.playerIndex++;
     let newLocation = player[this.playerIndex];
-    this.setTimeoutID = setTimeout((() => {this.onLocationUpdate(newLocation)}).bind(this), newLocation.timeDelta);    
+    if (!player[this.playerIndex]) {
+      newLocation = player[player.length - 1];
+    }
+
+    this.setTimeoutID = setTimeout((() => {
+      this.onLocationUpdate(newLocation);
+    }).bind(this), newLocation.timeDelta);
   }
 
   onPlay() {
     let location = player[this.playerIndex];
-    this.setTimeoutID = setTimeout((() => {this.onLocationUpdate(location)}).bind(this), location.timeDelta);
+    this.setTimeoutID = setTimeout((() => {
+      this.onLocationUpdate(location);
+    }).bind(this), location.timeDelta);
   }
 
   onPause() {
@@ -159,6 +178,7 @@ export default class Replay extends Component {
         />
         <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
         <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
+        <RaceProgress progress={this.state.progress} />
       </View>
     );
   }

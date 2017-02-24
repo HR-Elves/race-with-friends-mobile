@@ -18,6 +18,7 @@ import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
 import race from '../../assets/presetChallenges/standardWalk.json';
+import RaceProgress from './RaceProgress';
 
 export default class Race extends Component {
 
@@ -189,31 +190,3 @@ export default class Race extends Component {
   }
 }
 
-class RaceProgress extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    const styles = StyleSheet.create({
-      progressView: {
-        marginTop: 20,
-      }
-    });
-
-    return(
-      <View>
-        <View style={styles.progressView}>
-          <Text>{'\<-------------- Player --------------\>'}</Text>
-          <ProgressViewIOS progressTintColor="green" progress={0.2}  />
-        </View>
-        <View style={styles.progressView}>
-          <Text>{'\<------------ Opponent ------------\>'}</Text>
-          <ProgressViewIOS progressTintColor="red" progress={0.2} />
-        </View>
-      </View>
-
-    );  
-  }
-
-}
