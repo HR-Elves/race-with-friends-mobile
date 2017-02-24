@@ -1,9 +1,9 @@
 import {AsyncStorage} from 'react-native';
 import Auth0Lock from 'react-native-lock';
 import facebookKey from '../../config/facebook-app-key';
-import validToken from '../../assets/validToken.json';
+// import validToken from '../../assets/validToken.json';
 
-//TODO: BE currently only taking name and id
+//TODO: Back end currently only taking name and id
 export function verifyProfile(profile) {
   var nameAndId = {
     'fb_id': profile.identities.userId,
@@ -18,12 +18,12 @@ export function verifyProfile(profile) {
     body: JSON.stringify(nameAndId)
   }
 
-  ).then(response => { // change url
+  ).then(response => {
     console.log('loginUtils -> verifyProfile', response);
   })
 }
 
-export function saveProfileAndToken(profile, token, callback) {
+export function saveProfileAndToken(profile, token) {
   AsyncStorage.setItem('profile', JSON.stringify(profile), (err, success) => {
     if (err) {
       console.log('loginUtils -> saveProfileAndToken -> profile', err);
@@ -33,8 +33,7 @@ export function saveProfileAndToken(profile, token, callback) {
         if (err) {
           console.log('loginUtils -> saveProfileAndToken -> token: ', err)
         } else {
-          // console.log('loginUtils -> saveProfileAndToken -> token: ', success)
-          // callback();
+          return;
         }
       })
     }
@@ -43,30 +42,24 @@ export function saveProfileAndToken(profile, token, callback) {
 
 export function loginUser() {
   var lock = new Auth0Lock(facebookKey);
-
   lock.show({}, (err, profile, token) => {
     if (err) {
       console.log('loginUtils -> loginUser', err);
     } else {
-      // console.log('loginUtils -> loginUser -> profile', profile);
-      console.log('loginUtils -> loginUser -> token', token);
       saveProfileAndToken(profile, token);
     }
   });
 }
-//TODO difference between invalid and expired tokens
+//TODO: difference between invalid and expired tokens
 export function verifyToken(token, callback) {
   fetch('http://localhost:5000/auth/' + token).then(response => { // change url
-    // console.log('loginUtils -> verifyToken', response);
-    res = JSON.parse(response._bodyInit)
-    if (!res.isValid) {
-      loginUser()
-    } else if (response.isExpired) { //Currently not handling difference between invalid and expired token
-      //need function to handle refresh token
-      loginUser()
-    } else if (res.isValid) {
-      //if token is good app opens
-      callback();
+    var isValid = JSON.parse(response._bodyInit)
+    if (!isValid) {
+      loginUser(); //if token is expired or inValid redirect to login
+    } else if (response.isExpired) { // Currently not handling difference between invalid and expired token
+      loginUser();
+    } else if (isValid) {
+      callback(); //if token is valid app opens
     }
   })
 }
@@ -77,10 +70,9 @@ export function checkStorage(callback) {
   AsyncStorage.getItem('token', (err, token) => {
     if (err) {
       console.log('loginUtils -> checkStorage -> error: ', err);
-      loginUser()
+      loginUser();
     } else {
       token = JSON.parse(token);
-      console.log('loginUtils -> checkStorage -> token: ', token.idToken);
       verifyToken(token, callback);
     }
   })
@@ -88,21 +80,13 @@ export function checkStorage(callback) {
 
 
 export function logOutUser() {
-  console.log('loginUtils -> logOutUser -> ');
-  var token = ['token']
-  var profile = ['profile']
-  AsyncStorage.removeItem(JSON.stringify(token), (success, err) => {
+  var items = ['token', 'profile'];
+  AsyncStorage.multiRemove(items, (err) => {
     if (err) {
       console.log('loginUtils -> logOutUser -> remove token', err);
-    }
-    console.log('loginUtils -> logOutUser -> remove token -> success');
-    AsyncStorage.removeItem(JSON.stringify(profile), (success, err) => {
-      if (err) {
-        console.log('loginUtils -> logOutUser -> remove profile', err);
-      }
-      console.log('loginUtils -> logOutUser -> remove profile -> success');
+    } else {
+      console.log('Profile Removed');
       loginUser();
-    });
-    // loginUser();
+    }
   });
 }

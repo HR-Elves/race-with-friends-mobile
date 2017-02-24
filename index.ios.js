@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
-import Auth0Lock from 'react-native-lock';
 import _ from 'lodash';
 
 import Race from './src/components/Race';
@@ -33,14 +32,14 @@ export default class RaceWithFriends extends Component {
   }
 
   componentWillMount() {
-    // logOutUser()
-    checkStorage((err, success) => {
-      if (err) {
-        console.log('componentWillMount -> checkStorage', err);
-      } else {
-        return;
-      }
-    });
+    // logOutUser();
+    // checkStorage((err, success) => {
+    //   if (err) {
+    //     console.log('componentWillMount -> checkStorage', err);
+    //   } else {
+    //     return;
+    //   }
+    // });
   }
 
   render() {
