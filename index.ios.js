@@ -20,7 +20,7 @@ import _ from 'lodash';
 
 import facebookKey from './config/facebook-app-key';
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils.js';
-import race from './assets/presetChallenges/briskWalk.json';
+import race from './assets/presetChallenges/standardWalk.json';
 
 export default class RaceWithFriends extends Component {
 
@@ -33,8 +33,8 @@ export default class RaceWithFriends extends Component {
       profile: '',
       token: ''
     };
-
-    this.onLocationUpdate = this.onLocationUpdate.bind(this);
+    this.setTimeoutID = null;
+    this.onLocationUpdate = _.debounce(this.onLocationUpdate.bind(this), 1000);
     this.beginGPSTracking = this.beginGPSTracking.bind(this);
   }
 
@@ -73,6 +73,7 @@ export default class RaceWithFriends extends Component {
       // Activity Recognition Options
       stopTimeout: 60, // Minutes
       disableMotionActivityUpdates: true,
+      stopDetectionDelay: 60, // Minutes
       // HTTP / SQLite Persistence Options
       url: 'https://salty-stream-73177.herokuapp.com/',
       method: 'POST',
@@ -97,12 +98,28 @@ export default class RaceWithFriends extends Component {
   }
 
   onLocationUpdate(location) {
-    let pattern = [0];
-    Vibration.vibrate(pattern);
+    clearInterval(this.setTimeoutID); //Clear previous setTimeout.
 
     let currentLoc = processLocation(location, this.state.history);
 
     let newRaceStatus = getRaceStatus(currentLoc, race, this.state.raceStatus);
+
+    if (newRaceStatus.passedOpponent) {
+      BackgroundGeolocation.playSound(1001);
+    }
+    if (newRaceStatus.distanceToOpponent > 0) {
+      let pattern = [0];
+      Vibration.vibrate(pattern);
+    }
+
+    this.setTimeoutID = setTimeout((() => {
+      BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
+        this.onLocationUpdate(location);
+      });
+    }).bind(this), 10000);
+    // this.setTimeoutID = setTimeout(BackgroundGeolocation.getCurrentPosition(function(location, taskId) {
+    //   console.log('gotCurrentLocation: ', JSON.stringify(location));
+    // }, 10000));
 
     this.state.history.push(currentLoc);
     this.setState({
@@ -141,6 +158,7 @@ export default class RaceWithFriends extends Component {
   clearHistory() {
     this.setState({
       history: [],
+      raceStatus: null,
     });
   }
 
