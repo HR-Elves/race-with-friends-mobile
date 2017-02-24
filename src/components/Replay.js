@@ -16,6 +16,7 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
+import player from '../../assets/presetChallenges/briskWalk.json';
 import race from '../../assets/presetChallenges/standardWalk.json';
 
 export default class Replay extends Component {
@@ -26,16 +27,16 @@ export default class Replay extends Component {
       history: [],
       raceStatus: null
     };
+    this.playerIndex = 0;
     this.setTimeoutID = null;
     this.onLocationUpdate = _.debounce(this.onLocationUpdate.bind(this), 1000);
-    this.beginGPSTracking = this.beginGPSTracking.bind(this);
   }
 
   componentWillMount() {
-    this.beginGPSTracking();
+    this.initializeBgGeo();
   }
 
-  beginGPSTracking() {
+  initializeBgGeo() {
     // Now configure the plugin.
     BackgroundGeolocation.configure({
       // Geolocation Options
@@ -73,10 +74,8 @@ export default class Replay extends Component {
   }
 
   onLocationUpdate(location) {
-    clearInterval(this.setTimeoutID); //Clear previous setTimeout.
 
-    let currentLoc = processLocation(location, this.state.history);
-    let newRaceStatus = getRaceStatus(currentLoc, race, this.state.raceStatus);
+    let newRaceStatus = getRaceStatus(location, race, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
       BackgroundGeolocation.playSound(1001);
     }
@@ -85,54 +84,34 @@ export default class Replay extends Component {
       Vibration.vibrate(pattern);
     }
 
-    this.setTimeoutID = setTimeout((() => {
-      BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
-        this.onLocationUpdate(location);
-      });
-    }).bind(this), 10000);
-    // this.setTimeoutID = setTimeout(BackgroundGeolocation.getCurrentPosition(function(location, taskId) {
-    //   console.log('gotCurrentLocation: ', JSON.stringify(location));
-    // }, 10000));
-
-    this.state.history.push(currentLoc);
+    this.state.history.push(location);
     this.setState({
       history: this.state.history,
       raceStatus: newRaceStatus
     });
 
     console.log('~~~', JSON.stringify(location));
+
+    this.playerIndex++;
+    let newLocation = player[this.playerIndex];
+    this.setTimeoutID = setTimeout((() => {this.onLocationUpdate(newLocation)}).bind(this), newLocation.timeDelta);    
   }
 
-  onRecord() {
-    // This handler fires whenever bgGeo receives a location update.
-    BackgroundGeolocation.on('location', this.onLocationUpdate);
-    // This handler fires when movement states changes (stationary->moving; moving->stationary)
-    BackgroundGeolocation.on('motionchange', this.onLocationUpdate);
-    BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
-    BackgroundGeolocation.changePace(true);
+  onPlay() {
+    let location = player[this.playerIndex];
+    this.setTimeoutID = setTimeout((() => {this.onLocationUpdate(location)}).bind(this), location.timeDelta);
   }
 
-  onStopRecord() {
-    // Remove BackgroundGeolocation listeners
-    BackgroundGeolocation.un('location', this.onLocationUpdate);
-    BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
-    BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
-
-    fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.state.history)
-    });
+  onPause() {
+    clearInterval(this.setTimeoutID);
   }
 
-  clearHistory() {
+  onReset() {
     this.setState({
       history: [],
       raceStatus: null,
     });
+    this.playerIndex = 0;
   }
 
   render() {
@@ -164,18 +143,18 @@ export default class Replay extends Component {
           Version 1.4 Replay.js
         </Text>
         <Button
-          onPress={this.onRecord.bind(this)}
-          title="Record"
+          onPress={this.onPlay.bind(this)}
+          title='Play'
           color='red'
         />
         <Button
-          onPress={this.onStopRecord.bind(this)}
-          title="Stop"
+          onPress={this.onPause.bind(this)}
+          title='Pause'
           color='blue'
         />
         <Button
-          onPress={this.clearHistory.bind(this)}
-          title="Clear"
+          onPress={this.onReset.bind(this)}
+          title='Reset'
           color='green'
         />
         <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>

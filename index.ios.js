@@ -82,11 +82,11 @@ export default class RaceWithFriends extends Component {
     return (
 
       <Navigator
-        initialRoute={routes[1]}
+        initialRoute={routes[0]}
         renderScene={(route, navigator) => {
           return (
             <View style={styles.container}>
-              {route.id === 'Dashboard' && <RaceDashboard />}
+              {route.id === 'Dashboard' && <RaceDashboard navigator={navigator} />}
               {route.id === 'Race' && <Race />}
               {route.id === 'Replay' && <Replay />}
             </View>
@@ -101,10 +101,29 @@ export default class RaceWithFriends extends Component {
 class RaceDashboard extends Component {
   constructor(props) {
     super(props);
+    this.onButtonPress = this.onButtonPress.bind(this);
+  }
+
+  onButtonPress(routeId) {
+    this.props.navigator.push({id: routeId});
   }
 
   render() {
-    return (<Text>Dashboard</Text>);
+    return (
+      <View>
+        <Text>Race With Friends Dashboard</Text>
+        <Button
+          onPress={ () => {this.onButtonPress('Race')} } 
+          title='New Race'
+          color='green'
+        />
+        <Button
+          onPress={ () => {this.onButtonPress('Replay')} } 
+          title='Replay Race'
+          color='blue'
+        />
+      </View>
+    );
   }
 }
 
