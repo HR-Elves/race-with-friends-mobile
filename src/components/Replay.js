@@ -17,12 +17,18 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
-import player from '../../assets/presetChallenges/UsainBolt100m.json';
-import race from '../../assets/presetChallenges/worldRecordRaceWalk100m.json';
+import usain from '../../assets/presetChallenges/UsainBolt100m';
+import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
 
 const Item = Picker.Item;
+const ghosts = {
+  UsainBolt100m: usain,
+  worldRecordRaceWalk100m: walk
+};
+let player = usain;
+let race = walk;
 
 export default class Replay extends Component {
 
@@ -38,7 +44,10 @@ export default class Replay extends Component {
         playerWon: false,
         opponentWon: false
       },
-      picker: 'UsainBolt100m'
+      picked: {
+        player: 'UsainBolt100m',
+        opponent: 'worldRecordRaceWalk100m'
+      }
     };
     this.playerIndex = 0;
     this.setTimeoutID = null;
@@ -174,10 +183,19 @@ export default class Replay extends Component {
     this.playerIndex = 0;
   }
 
-  onPickerChange(key, value) {
-    console.log('********', key, value);
+  onPickPlayer(key, value) {
     const newState = {};
-    newState[key] = value;
+    newState[key] = this.state[key];
+    newState[key].player = value;
+    player = ghosts[value];
+    this.setState(newState);
+  }
+
+  onPickOpponent(key, value) {
+    const newState = {};
+    newState[key] = this.state[key];
+    newState[key].opponent = value;
+    race = ghosts[value];
     this.setState(newState);
   }
 
@@ -199,39 +217,51 @@ export default class Replay extends Component {
         color: '#333333',
         marginBottom: 5,
       },
+      buttons: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        flexDirection: 'row'
+      }
     });
 
     return (
       <View style={styles.container}>
-        <Text>
-          Version 1.4 Replay.js
-        </Text>
-        <Button
-          onPress={this.onPlay.bind(this)}
-          title='Play'
-          color='red'
-        />
-        <Button
-          onPress={this.onPause.bind(this)}
-          title='Pause'
-          color='blue'
-        />
-        <Button
-          onPress={this.onReset.bind(this)}
-          title='Reset'
-          color='green'
-        />
-        <RaceStatus status={this.state.raceStatus} playerName={'Player'} opponentName={'Opponent'} />
+        <Text style={{marginBottom: 0, marginTop: 50}}>Select Racers:</Text>
         <Picker
-          style={{width: 250}}
-          selectedValue={this.state.picked}
-          onValueChange={this.onPickerChange.bind(this, 'picked')}
-          mode={Picker.MODE_DROPDOWN}
-        >
+          style={{width: 250, height: 150}}
+          selectedValue={this.state.picked.player}
+          onValueChange={this.onPickPlayer.bind(this, 'picked')}>
           <Item label="Usain" value="UsainBolt100m" />
           <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
         </Picker>
+        <Text style={{fontSize: 20, marginTop: 15, marginBottom: 0}}>VS</Text>
+        <Picker
+          style={{width: 250, height: 150}}
+          selectedValue={this.state.picked.opponent}
+          onValueChange={this.onPickOpponent.bind(this, 'picked')}>
+          <Item label="Usain" value="UsainBolt100m" />
+          <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
+        </Picker>
+        <RaceStatus status={this.state.raceStatus} playerName={'Player'} opponentName={'Opponent'} />
         <RaceProgress progress={this.state.progress} />
+        <View style={styles.buttons}>
+          <Button
+            onPress={this.onPlay.bind(this)}
+            title='Play'
+            color='red'
+          />
+          <Button
+            onPress={this.onPause.bind(this)}
+            title='Pause'
+            color='blue'
+          />
+          <Button
+            onPress={this.onReset.bind(this)}
+            title='Reset'
+            color='green'
+          />
+        </View>
       </View>
     );
   }
