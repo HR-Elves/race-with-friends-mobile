@@ -10,6 +10,7 @@ import {
   Text,
   View,
   Button,
+  Picker
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
@@ -20,6 +21,8 @@ import player from '../../assets/presetChallenges/UsainBolt100m.json';
 import race from '../../assets/presetChallenges/worldRecordRaceWalk100m.json';
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
+
+const Item = Picker.Item;
 
 export default class Replay extends Component {
 
@@ -34,7 +37,8 @@ export default class Replay extends Component {
         totalDist: race[race.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
-      }
+      },
+      picker: 'UsainBolt100m'
     };
     this.playerIndex = 0;
     this.setTimeoutID = null;
@@ -170,6 +174,13 @@ export default class Replay extends Component {
     this.playerIndex = 0;
   }
 
+  onPickerChange(key, value) {
+    console.log('********', key, value);
+    const newState = {};
+    newState[key] = value;
+    this.setState(newState);
+  }
+
   render() {
     const styles = StyleSheet.create({
       container: {
@@ -211,6 +222,15 @@ export default class Replay extends Component {
           color='green'
         />
         <RaceStatus status={this.state.raceStatus} playerName={'Player'} opponentName={'Opponent'} />
+        <Picker
+          style={{width: 250}}
+          selectedValue={this.state.picked}
+          onValueChange={this.onPickerChange.bind(this, 'picked')}
+          mode={Picker.MODE_DROPDOWN}
+        >
+          <Item label="Usain" value="UsainBolt100m" />
+          <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
+        </Picker>
         <RaceProgress progress={this.state.progress} />
       </View>
     );
