@@ -1,0 +1,123 @@
+[
+  {
+    "lat": 37.78311754114719,
+    "long": -122.4091357180126,
+    "alt": 16.8,
+    "accuracy": 25,
+    "distanceDelta": 0,
+    "distanceTotal": 0,
+    "timestamp": "2017-02-25T20:16:31.000Z",
+    "timeDelta": 0,
+    "timeTotal": 0
+  },
+  {
+    "lat": 37.78311754114719,
+    "long": -122.4091357180126,
+    "alt": 16.8,
+    "accuracy": 25,
+    "distanceDelta": 0,
+    "distanceTotal": 0,
+    "timestamp": "2017-02-25T20:16:31.000Z",
+    "timeDelta": 0,
+    "timeTotal": 0
+  },
+  {
+    "lat": 37.78302202936055,
+    "long": -122.40919690590576,
+    "alt": 16,
+    "accuracy": 25,
+    "distanceDelta": 11.90413969848634,
+    "distanceTotal": 11.90413969848634,
+    "timestamp": "2017-02-25T20:16:35.000Z",
+    "timeDelta": 4000,
+    "timeTotal": 4000
+  },
+  {
+    "lat": 37.782934187015314,
+    "long": -122.40926773298756,
+    "alt": 15.7,
+    "accuracy": 40.4,
+    "distanceDelta": 11.582291232933752,
+    "distanceTotal": 23.48643093142009,
+    "timestamp": "2017-02-25T20:16:38.000Z",
+    "timeDelta": 3000,
+    "timeTotal": 7000
+  },
+  {
+    "lat": 37.78284982315989,
+    "long": -122.40935951482729,
+    "alt": 16.1,
+    "accuracy": 25,
+    "distanceDelta": 12.371713327460453,
+    "distanceTotal": 35.85814425888054,
+    "timestamp": "2017-02-25T20:16:41.000Z",
+    "timeDelta": 3000,
+    "timeTotal": 10000
+  },
+  {
+    "lat": 37.782781301101465,
+    "long": -122.40946001384631,
+    "alt": 17.1,
+    "accuracy": 25,
+    "distanceDelta": 11.664407835935442,
+    "distanceTotal": 47.522552094815985,
+    "timestamp": "2017-02-25T20:16:44.000Z",
+    "timeDelta": 3000,
+    "timeTotal": 13000
+  },
+  {
+    "lat": 37.78270963582935,
+    "long": -122.40958448510841,
+    "alt": 17.8,
+    "accuracy": 25,
+    "distanceDelta": 13.53359915703457,
+    "distanceTotal": 61.05615125185056,
+    "timestamp": "2017-02-25T20:16:47.000Z",
+    "timeDelta": 3000,
+    "timeTotal": 16000
+  },
+  {
+    "lat": 37.78264618482234,
+    "long": -122.40968246955649,
+    "alt": 18.8,
+    "accuracy": 25,
+    "distanceDelta": 11.132354585988205,
+    "distanceTotal": 72.18850583783876,
+    "timestamp": "2017-02-25T20:16:50.000Z",
+    "timeDelta": 3000,
+    "timeTotal": 19000
+  },
+  {
+    "lat": 37.782610938919504,
+    "long": -122.4097940326877,
+    "alt": 19.2,
+    "accuracy": 25,
+    "distanceDelta": 10.558678784818369,
+    "distanceTotal": 82.74718462265713,
+    "timestamp": "2017-02-25T20:16:53.000Z",
+    "timeDelta": 3000,
+    "timeTotal": 22000
+  },
+  {
+    "lat": 37.78259115762802,
+    "long": -122.40991062496082,
+    "alt": 19.9,
+    "accuracy": 25,
+    "distanceDelta": 10.479785096235801,
+    "distanceTotal": 93.22696971889293,
+    "timestamp": "2017-02-25T20:16:56.000Z",
+    "timeDelta": 3000,
+    "timeTotal": 25000
+  },
+  {
+    "lat": 37.78252326421233,
+    "long": -122.41001120779887,
+    "alt": 19.8,
+    "accuracy": 25,
+    "distanceDelta": 11.624491621009497,
+    "distanceTotal": 104.85146133990243,
+    "timestamp": "2017-02-25T20:16:59.000Z",
+    "timeDelta": 3000,
+    "timeTotal": 28000
+  }
+]
