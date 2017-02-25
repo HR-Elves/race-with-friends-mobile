@@ -15,6 +15,16 @@ export default class RaceStatus extends Component {
     let relativeToOpponent = distanceToOpponent >= 0 ? 'ahead of' : 'behind';
     distanceToOpponent = Math.round(Math.abs(distanceToOpponent));
     let distanceRemaining = this.props.status ? Math.round(this.props.status.distanceRemaining) : null;
+    
+    // hack to address Issue #37
+    if (this.props.status && this.props.status.challengeDone) {
+      if (relativeToOpponent === 'behind') {
+        distanceToOpponent = distanceRemaining;
+      } else if (relativeToOpponent === 'ahead of') {
+        distanceRemaining = 0;
+      }
+    } 
+    
     let statusVerb = 'is';
     if(this.props.status && this.props.status.challengeDone) {
       statusVerb = 'finished';

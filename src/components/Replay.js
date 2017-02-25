@@ -19,13 +19,19 @@ import _ from 'lodash';
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
 import usain from '../../assets/presetChallenges/UsainBolt100m';
 import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
+import james from '../../assets/presetChallenges/MarketSt3';
+import nick from '../../assets/presetChallenges/MarketSt4';
+import hare from '../../assets/presetChallenges/hare100m';
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
 
 const Item = Picker.Item;
 const ghosts = {
   UsainBolt100m: usain,
-  worldRecordRaceWalk100m: walk
+  worldRecordRaceWalk100m: walk,
+  MarketSt3: james,
+  MarketSt4: nick,
+  hare100m: hare
 };
 let player = usain;
 let race = walk;
@@ -123,7 +129,7 @@ export default class Replay extends Component {
 
     this.playerIndex++;
     let newLocation = player[this.playerIndex];
-
+    
     if (newRaceStatus.challengeDone) {
       if (newRaceStatus.distanceToOpponent <= 0) {
         this.setState({
@@ -234,6 +240,9 @@ export default class Replay extends Component {
           onValueChange={this.onPickPlayer.bind(this, 'picked')}>
           <Item label="Usain" value="UsainBolt100m" />
           <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
+          <Item label="James Market St" value="MarketSt3" />
+          <Item label="Nick Market St" value="MarketSt4" />
+          <Item label="Arctic Hare" value="hare100m" />
         </Picker>
         <Text style={{fontSize: 20, marginTop: 15, marginBottom: 0}}>VS</Text>
         <Picker
@@ -242,6 +251,9 @@ export default class Replay extends Component {
           onValueChange={this.onPickOpponent.bind(this, 'picked')}>
           <Item label="Usain" value="UsainBolt100m" />
           <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
+          <Item label="James Market St" value="MarketSt3" />
+          <Item label="Nick Market St" value="MarketSt4" />
+          <Item label="Arctic Hare" value="hare100m" />
         </Picker>
         <RaceStatus status={this.state.raceStatus} playerName={'Player'} opponentName={'Opponent'} />
         <RaceProgress progress={this.state.progress} />
