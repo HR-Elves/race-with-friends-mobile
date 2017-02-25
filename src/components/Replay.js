@@ -16,8 +16,9 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
-import player from '../../assets/presetChallenges/briskWalk.json';
-import race from '../../assets/presetChallenges/standardWalk.json';
+import player from '../../assets/presetChallenges/UsainBolt100m.json';
+import race from '../../assets/presetChallenges/worldRecordRaceWalk100m.json';
+import RaceProgress from './RaceProgress';
 
 export default class Replay extends Component {
 
@@ -25,11 +26,18 @@ export default class Replay extends Component {
     super(props);
     this.state = {
       history: [],
-      raceStatus: null
+      raceStatus: null,
+      progress: {
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
     };
     this.playerIndex = 0;
     this.setTimeoutID = null;
-    this.onLocationUpdate = _.debounce(this.onLocationUpdate.bind(this), 1000);
+    this.onLocationUpdate = this.onLocationUpdate.bind(this);
   }
 
   componentWillMount() {
@@ -74,7 +82,7 @@ export default class Replay extends Component {
   }
 
   onLocationUpdate(location) {
-
+    console.log('~~~ calling onLocation ~~~ ', this.setTimeoutID);
     let newRaceStatus = getRaceStatus(location, race, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
       BackgroundGeolocation.playSound(1001);
@@ -87,29 +95,76 @@ export default class Replay extends Component {
     this.state.history.push(location);
     this.setState({
       history: this.state.history,
-      raceStatus: newRaceStatus
+      raceStatus: newRaceStatus,
+      progress: {
+        playerDist: location.distanceTotal,
+        opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
     });
 
     console.log('~~~', JSON.stringify(location));
 
     this.playerIndex++;
     let newLocation = player[this.playerIndex];
-    this.setTimeoutID = setTimeout((() => {this.onLocationUpdate(newLocation)}).bind(this), newLocation.timeDelta);    
+
+    if (newRaceStatus.challengeDone) {
+      if (newRaceStatus.distanceToOpponent <= 0) {
+        this.setState({
+          progress: {
+            playerDist: location.distanceTotal,
+            opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
+            totalDist: race[race.length - 1].distanceTotal,
+            playerWon: false,
+            opponentWon: true
+          }
+        });
+      } else if (newRaceStatus.distanceToOpponent > 0) {
+        this.setState({
+          progress: {
+            playerDist: location.distanceTotal,
+            opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
+            totalDist: race[race.length - 1].distanceTotal,
+            playerWon: true,
+            opponentWon: false
+          }
+        });
+      }
+    } else {
+      this.setTimeoutID = setTimeout((() => {
+        this.onLocationUpdate(newLocation);
+      }).bind(this), newLocation.timeDelta);
+      console.log('~~~ setting ~~~', this.setTimeoutID);
+    }
   }
 
   onPlay() {
     let location = player[this.playerIndex];
-    this.setTimeoutID = setTimeout((() => {this.onLocationUpdate(location)}).bind(this), location.timeDelta);
+    this.setTimeoutID = setTimeout((() => {
+      this.onLocationUpdate(location);
+    }).bind(this), location.timeDelta);
+    console.log('~~~ setting ~~~', this.setTimeoutID);
   }
 
   onPause() {
-    clearInterval(this.setTimeoutID);
+    console.log('~~~ clearing ~~~ ', this.setTimeoutID);
+    clearTimeout(this.setTimeoutID);
   }
 
   onReset() {
+    this.onPause();
     this.setState({
       history: [],
       raceStatus: null,
+      progress: {
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
     });
     this.playerIndex = 0;
   }
@@ -159,6 +214,7 @@ export default class Replay extends Component {
         />
         <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
         <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
+        <RaceProgress progress={this.state.progress} />
       </View>
     );
   }

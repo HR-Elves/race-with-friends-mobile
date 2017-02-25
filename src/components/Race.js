@@ -18,6 +18,7 @@ import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
 import race from '../../assets/presetChallenges/standardWalk.json';
+import RaceProgress from './RaceProgress';
 
 export default class Race extends Component {
 
@@ -28,7 +29,7 @@ export default class Race extends Component {
       raceStatus: null
     };
     this.setTimeoutID = null;
-    this.onLocationUpdate = _.debounce(this.onLocationUpdate.bind(this), 1000);
+    this.onLocationUpdate = this.onLocationUpdate.bind(this);
     this.beginGPSTracking = this.beginGPSTracking.bind(this);
   }
 
@@ -183,37 +184,8 @@ export default class Race extends Component {
         />
         <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
         <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
-        <RaceProgress />
       </View>
     );
   }
 }
 
-class RaceProgress extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    const styles = StyleSheet.create({
-      progressView: {
-        marginTop: 20,
-      }
-    });
-
-    return(
-      <View>
-        <View style={styles.progressView}>
-          <Text>{'\<-------------- Player --------------\>'}</Text>
-          <ProgressViewIOS progressTintColor="green" progress={0.2}  />
-        </View>
-        <View style={styles.progressView}>
-          <Text>{'\<------------ Opponent ------------\>'}</Text>
-          <ProgressViewIOS progressTintColor="red" progress={0.2} />
-        </View>
-      </View>
-
-    );  
-  }
-
-}

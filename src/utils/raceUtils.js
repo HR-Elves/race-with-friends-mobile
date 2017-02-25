@@ -4,7 +4,7 @@
 export function findDistance(lat1, lon1, lat2, lon2) {
   const toRad = (num) => { return num * Math.PI / 180; };
 
-  var R = 6371e3; // metres
+  var R = 6371e3; // Radius of Earth in meters
   var φ1 = toRad(lat1);
   var φ2 = toRad(lat2);
   var Δφ = toRad(lat2 - lat1);
@@ -52,7 +52,7 @@ export function processLocation(location, history) {
     long: location.coords.longitude,
     alt: location.coords.altitude,
     accuracy: location.coords.accuracy,
-    distanceDelta: distanceDelta,  // meters 
+    distanceDelta: distanceDelta,  // meters
     distanceTotal: distanceTotal,  // meters
     timestamp: location.timestamp, // UTC string
     timeDelta: timeDelta,          // milliseconds
@@ -114,7 +114,7 @@ export function findCurrentRaceIndex(currentLoc, raceObj, lastRaceIndexChecked) 
     index = raceObj.length - 1;
   }
 
-  return index;  
+  return index;
 }
 
 // Helper function to find the distance between the user and the opponent at a given point in the run
@@ -131,10 +131,10 @@ export function findDistanceToOpponent(currentLoc, raceObj, currentRaceIndex) {
   } else {
     // we don't have a perfect synchronization between the current run and the recorded run,
     // therefore we need to interpolate data points in the recorded run to infer the opponent's exact location
-    // at this point in time 
+    // at this point in time
     if(!raceObj[index-1]) { // this condition occurs at the beginning of the race when we only have one data point
                             // therefore we can't interpolate so we'll wait until we have another data point
-      return 0; 
+      return 0;
     } else {
       let p1 = raceObj[index-1];
       let p2 = raceObj[index];
