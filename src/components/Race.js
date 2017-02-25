@@ -29,7 +29,7 @@ export default class Race extends Component {
       raceStatus: null
     };
     this.setTimeoutID = null;
-    this.onLocationUpdate = _.debounce(this.onLocationUpdate.bind(this), 1000);
+    this.onLocationUpdate = this.onLocationUpdate.bind(this);
     this.beginGPSTracking = this.beginGPSTracking.bind(this);
   }
 
@@ -184,7 +184,6 @@ export default class Race extends Component {
         />
         <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
         <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
-        <RaceProgress />
       </View>
     );
   }

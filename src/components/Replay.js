@@ -37,7 +37,7 @@ export default class Replay extends Component {
     };
     this.playerIndex = 0;
     this.setTimeoutID = null;
-    this.onLocationUpdate = _.debounce(this.onLocationUpdate.bind(this), 1000);
+    this.onLocationUpdate = this.onLocationUpdate.bind(this);
   }
 
   componentWillMount() {
@@ -82,7 +82,7 @@ export default class Replay extends Component {
   }
 
   onLocationUpdate(location) {
-
+    console.log('~~~ calling onLocation ~~~ ', this.setTimeoutID);
     let newRaceStatus = getRaceStatus(location, race, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
       BackgroundGeolocation.playSound(1001);
@@ -109,9 +109,7 @@ export default class Replay extends Component {
 
     this.playerIndex++;
     let newLocation = player[this.playerIndex];
-    // if (!player[this.playerIndex]) {
-    //   newLocation = player[player.length - 1];
-    // }
+
     if (newRaceStatus.challengeDone) {
       if (newRaceStatus.distanceToOpponent <= 0) {
         this.setState({
@@ -138,6 +136,7 @@ export default class Replay extends Component {
       this.setTimeoutID = setTimeout((() => {
         this.onLocationUpdate(newLocation);
       }).bind(this), newLocation.timeDelta);
+      console.log('~~~ setting ~~~', this.setTimeoutID);
     }
   }
 
@@ -146,10 +145,12 @@ export default class Replay extends Component {
     this.setTimeoutID = setTimeout((() => {
       this.onLocationUpdate(location);
     }).bind(this), location.timeDelta);
+    console.log('~~~ setting ~~~', this.setTimeoutID);
   }
 
   onPause() {
-    clearInterval(this.setTimeoutID);
+    console.log('~~~ clearing ~~~ ', this.setTimeoutID);
+    clearTimeout(this.setTimeoutID);
   }
 
   onReset() {
