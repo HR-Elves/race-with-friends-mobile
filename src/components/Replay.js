@@ -19,6 +19,7 @@ import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.j
 import player from '../../assets/presetChallenges/UsainBolt100m.json';
 import race from '../../assets/presetChallenges/worldRecordRaceWalk100m.json';
 import RaceProgress from './RaceProgress';
+import RaceStatus from './RaceStatus';
 
 export default class Replay extends Component {
 
@@ -189,9 +190,6 @@ export default class Replay extends Component {
       },
     });
 
-    let distanceToOpponent = this.state.raceStatus ? this.state.raceStatus.distanceToOpponent : 'initializing';
-    let distanceRemaining = this.state.raceStatus ? this.state.raceStatus.distanceRemaining : 'initializing';
-
     return (
       <View style={styles.container}>
         <Text>
@@ -212,8 +210,7 @@ export default class Replay extends Component {
           title='Reset'
           color='green'
         />
-        <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
-        <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
+        <RaceStatus status={this.state.raceStatus} playerName={'Player'} opponentName={'Opponent'} />
         <RaceProgress progress={this.state.progress} />
       </View>
     );
