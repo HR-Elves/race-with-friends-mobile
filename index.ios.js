@@ -32,14 +32,14 @@ export default class RaceWithFriends extends Component {
   }
 
   componentWillMount() {
-    // logOutUser();
-    // checkStorage((err, success) => {
-    //   if (err) {
-    //     console.log('componentWillMount -> checkStorage', err);
-    //   } else {
-    //     return;
-    //   }
-    // });
+    logOutUser();
+    checkStorage((err, success) => {
+      if (err) {
+        console.log('componentWillMount -> checkStorage', err);
+      } else {
+        return;
+      }
+    });
   }
 
   render() {

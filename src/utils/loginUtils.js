@@ -31,7 +31,7 @@ export function saveProfileAndToken(profile, token) {
         if (err) {
           console.log('loginUtils -> saveProfileAndToken -> token: ', err)
         } else {
-          console.log('loginUtils -> saveProfileAndToken -> token: ', success)
+          console.log('loginUtils -> saveProfileAndToken -> token: ', token)
           return;
         }
       })
