@@ -6,19 +6,17 @@ import facebookKey from '../../config/facebook-app-key';
 //TODO: Back end currently only taking name and id
 export function verifyProfile(profile) {
   var nameAndId = {
-    'fb_id': profile.identities.userId,
-    'fullname': profile.identities.name
+    'fb_id': profile.identities[0].userId,
+    'fullname': profile.name
   };
-  fetch('http://localhost:5000/users/', {
+  fetch('http://localhost:5000/users', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(nameAndId)
-  }
-
-  ).then(response => {
+  }).then(response => {
     console.log('loginUtils -> verifyProfile', response);
   })
 }
@@ -33,6 +31,7 @@ export function saveProfileAndToken(profile, token) {
         if (err) {
           console.log('loginUtils -> saveProfileAndToken -> token: ', err)
         } else {
+          console.log('loginUtils -> saveProfileAndToken -> token: ', success)
           return;
         }
       })
