@@ -15,6 +15,7 @@ export default class RaceProgress extends Component {
     const styles = StyleSheet.create({
       progressView: {
         marginTop: 20,
+        width: 250
       }
     });
     const progress = this.props.progress;
@@ -24,13 +25,13 @@ export default class RaceProgress extends Component {
     return (
       <View>
         <View style={styles.progressView}>
-          <Text>{'\<-------------- Player --------------\>'}</Text>
-          <ProgressViewIOS progressTintColor="green" progress={playerProgress} />
+          <Text>{'Player'}</Text>
+          <ProgressViewIOS progressViewStyle='bar' progressTintColor="green" progress={playerProgress} />
           {progress.playerWon && <Text>Player Won!</Text>}
         </View>
         <View style={styles.progressView}>
-          <Text>{'\<------------ Opponent ------------\>'}</Text>
-          <ProgressViewIOS progressTintColor="red" progress={opponentProgress} />
+          <Text>{'Opponent'}</Text>
+          <ProgressViewIOS progressViewStyle='bar' progressTintColor="red" progress={opponentProgress} />
           {progress.opponentWon && <Text>Opponent Won!</Text>}
         </View>
       </View>

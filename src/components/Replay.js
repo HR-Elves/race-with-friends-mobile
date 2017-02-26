@@ -129,7 +129,7 @@ export default class Replay extends Component {
 
     this.playerIndex++;
     let newLocation = player[this.playerIndex];
-    
+
     if (newRaceStatus.challengeDone) {
       if (newRaceStatus.distanceToOpponent <= 0) {
         this.setState({
