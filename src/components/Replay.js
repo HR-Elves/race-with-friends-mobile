@@ -33,8 +33,8 @@ const ghosts = {
   'Nick Market St': nick,
   hare100m: hare
 };
-let player = usain;
-let race = walk;
+let player = james;
+let race = nick;
 
 export default class Replay extends Component {
 
