@@ -10,7 +10,6 @@ import {
   Text,
   View,
   Button,
-  Picker
 } from 'react-native';
 import {Vibration} from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
@@ -262,13 +261,3 @@ export default class Replay extends Component {
     );
   }
 }
-        // <Picker
-        //   style={{width: 250, height: 150}}
-        //   selectedValue={this.state.picked.player}
-        //   onValueChange={this.onPickPlayer.bind(this, 'picked')}>
-        //   <Item label="Usain" value="UsainBolt100m" />
-        //   <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
-        //   <Item label="James Market St" value="MarketSt3" />
-        //   <Item label="Nick Market St" value="MarketSt4" />
-        //   <Item label="Arctic Hare" value="hare100m" />
-        // </Picker>
