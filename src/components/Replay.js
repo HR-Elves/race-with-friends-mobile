@@ -25,7 +25,6 @@ import hare from '../../assets/presetChallenges/hare100m';
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
 
-const Item = Picker.Item;
 const ghosts = {
   'Usain Bolt': usain,
   worldRecordRaceWalk100m: walk,
