@@ -13,6 +13,7 @@ import {
   Picker
 } from 'react-native';
 import {Vibration} from 'react-native';
+import ModalDropdown from 'react-native-modal-dropdown';
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import _ from 'lodash';
 
@@ -27,10 +28,10 @@ import RaceStatus from './RaceStatus';
 
 const Item = Picker.Item;
 const ghosts = {
-  UsainBolt100m: usain,
+  'Usain Bolt': usain,
   worldRecordRaceWalk100m: walk,
-  MarketSt3: james,
-  MarketSt4: nick,
+  'James Market St': james,
+  'Nick Market St': nick,
   hare100m: hare
 };
 let player = usain;
@@ -51,8 +52,8 @@ export default class Replay extends Component {
         opponentWon: false
       },
       picked: {
-        player: 'UsainBolt100m',
-        opponent: 'worldRecordRaceWalk100m'
+        player: 'James Market St',
+        opponent: 'Nick Market St'
       }
     };
     this.playerIndex = 0;
@@ -189,18 +190,19 @@ export default class Replay extends Component {
     this.playerIndex = 0;
   }
 
-  onPickPlayer(key, value) {
+  onPickPlayer(index, value) {
+    console.log('*****', index, value);
     const newState = {};
-    newState[key] = this.state[key];
-    newState[key].player = value;
+    newState.picked = this.state.picked;
+    newState.picked.player = value;
     player = ghosts[value];
     this.setState(newState);
   }
 
   onPickOpponent(key, value) {
     const newState = {};
-    newState[key] = this.state[key];
-    newState[key].opponent = value;
+    newState.picked = this.state.picked;
+    newState.picked.opponent = value;
     race = ghosts[value];
     this.setState(newState);
   }
@@ -234,27 +236,9 @@ export default class Replay extends Component {
     return (
       <View style={styles.container}>
         <Text style={{marginBottom: 0, marginTop: 50}}>Select Racers:</Text>
-        <Picker
-          style={{width: 250, height: 150}}
-          selectedValue={this.state.picked.player}
-          onValueChange={this.onPickPlayer.bind(this, 'picked')}>
-          <Item label="Usain" value="UsainBolt100m" />
-          <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
-          <Item label="James Market St" value="MarketSt3" />
-          <Item label="Nick Market St" value="MarketSt4" />
-          <Item label="Arctic Hare" value="hare100m" />
-        </Picker>
-        <Text style={{fontSize: 20, marginTop: 15, marginBottom: 0}}>VS</Text>
-        <Picker
-          style={{width: 250, height: 150}}
-          selectedValue={this.state.picked.opponent}
-          onValueChange={this.onPickOpponent.bind(this, 'picked')}>
-          <Item label="Usain" value="UsainBolt100m" />
-          <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
-          <Item label="James Market St" value="MarketSt3" />
-          <Item label="Nick Market St" value="MarketSt4" />
-          <Item label="Arctic Hare" value="hare100m" />
-        </Picker>
+        <ModalDropdown options={['Usain Bolt', 'James Market St', 'Nick Market St']} onSelect={this.onPickPlayer.bind(this)} textStyle={{fontSize: 24}} defaultValue='James Market St' style={{marginTop: 25}}/>
+        <Text style={{fontSize: 20, marginTop: 10, marginBottom: 10}}>VS</Text>
+        <ModalDropdown options={['Usain Bolt', 'James Market St', 'Nick Market St']} onSelect={this.onPickOpponent.bind(this)} textStyle={{fontSize: 24}} defaultValue='Nick Market St' style={{marginBottom: 25}}/>
         <RaceStatus status={this.state.raceStatus} playerName={'Player'} opponentName={'Opponent'} />
         <RaceProgress progress={this.state.progress} />
         <View style={styles.buttons}>
@@ -278,3 +262,13 @@ export default class Replay extends Component {
     );
   }
 }
+        // <Picker
+        //   style={{width: 250, height: 150}}
+        //   selectedValue={this.state.picked.player}
+        //   onValueChange={this.onPickPlayer.bind(this, 'picked')}>
+        //   <Item label="Usain" value="UsainBolt100m" />
+        //   <Item label="worldRecordWalk" value="worldRecordRaceWalk100m" />
+        //   <Item label="James Market St" value="MarketSt3" />
+        //   <Item label="Nick Market St" value="MarketSt4" />
+        //   <Item label="Arctic Hare" value="hare100m" />
+        // </Picker>
