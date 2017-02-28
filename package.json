@@ -8,9 +8,11 @@
     "clear-packager": "./node_modules/react-native/packager/packager.sh start --reset-cache"
   },
   "dependencies": {
+    "fbemitter": "^2.1.1",
     "react": "15.4.2",
     "react-native": "0.41.2",
     "react-native-background-geolocation": "^2.4.3",
+    "react-native-button": "^1.8.2",
     "react-native-drawer": "^2.3.0",
     "react-native-lock": "^0.4.0",
     "react-native-material-bottom-navigation": "^0.3.0",
