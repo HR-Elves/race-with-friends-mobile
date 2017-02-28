@@ -23,23 +23,32 @@ import Replay from './src/components/Replay';
 
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils';
 import race from './assets/presetChallenges/standardWalk.json';
-import {checkStorage, logOutUser} from './src/utils/loginUtils.js';
+import {checkStorage, logOutUser, loginUser, authorizeUser} from './src/utils/loginUtils.js';
 
 export default class RaceWithFriends extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      profile: '',
+      userId: ''
+    }
+
   }
 
   componentWillMount() {
-    // logOutUser();
-    // checkStorage((err, success) => {
-    //   if (err) {
-    //     console.log('componentWillMount -> checkStorage', err);
-    //   } else {
-    //     return;
-    //   }
-    // });
+    loginUser((err, profile) => {
+      if (err) {
+        console.log('componentWillMount -> authorizeUser Error', err);
+      } else {
+        this.setState({
+          profile: profile,
+          userId: profile.identities[0].userId
+        });
+        console.log('this.state.profile', this.state.profile);
+        console.log('this.state.userId', this.state.userId);
+      }
+    })
   }
 
   render() {
