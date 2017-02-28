@@ -23,23 +23,68 @@ import Replay from './src/components/Replay';
 
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils';
 import race from './assets/presetChallenges/standardWalk.json';
-import {checkStorage, logOutUser} from './src/utils/loginUtils.js';
+import {checkStorage, logOutUser, loginUser, authorizeUser} from './src/utils/loginUtils.js';
 
 export default class RaceWithFriends extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      profile: '',
+      userId: ''
+    }
+
   }
 
   componentWillMount() {
-    logOutUser();
-    checkStorage((err, success) => {
+    loginUser((err, profile) => {
       if (err) {
-        console.log('componentWillMount -> checkStorage', err);
+        console.log('componentWillMount -> authorizeUser Error', err)
       } else {
-        return;
+        this.setState({
+          profile: profile,
+          userId: profile.identities[0].userId
+        });
+        console.log('this.state.profile', this.state.profile);
+        console.log('this.state.userId', this.state.userId)
+
       }
-    });
+    })
+
+    // authorizeUser((err, profile) => {
+    //   if (err) {
+    //     console.log('componentWillMount -> authorizeUser Error', err)
+    //   } else {
+    //     this.setState({profile: profile});
+    //     console.log('this.state.profile', this.state.profile);
+    //   }
+    // })
+
+    // logOutUser((err, success) => {
+    //   if (err) {
+    //     console.log('componentWillMount -> logOutUser Error', err)
+    //   } else {
+    //     loginUser((err, success) => {
+    //       if (err) {
+    //         console.log('componentWillMount -> loginUser Error', err)
+    //       } else {
+    //         checkStorage((err, profile) => {
+    //           if (err) {
+    //             console.log('componentWillMount -> checkStorage', err);
+    //             this.setState({profile: profile});
+    //             console.log('###########err', this.state.profile);
+    //           } else {
+    //             this.setState({profile: profile});
+    //             console.log('###########profile', this.state.profile);
+    //           }
+    //         });
+    //       }
+    //     })
+    //   }
+    // })
+
+
+
   }
 
   render() {
