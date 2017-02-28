@@ -39,52 +39,16 @@ export default class RaceWithFriends extends Component {
   componentWillMount() {
     loginUser((err, profile) => {
       if (err) {
-        console.log('componentWillMount -> authorizeUser Error', err)
+        console.log('componentWillMount -> authorizeUser Error', err);
       } else {
         this.setState({
           profile: profile,
           userId: profile.identities[0].userId
         });
         console.log('this.state.profile', this.state.profile);
-        console.log('this.state.userId', this.state.userId)
-
+        console.log('this.state.userId', this.state.userId);
       }
     })
-
-    // authorizeUser((err, profile) => {
-    //   if (err) {
-    //     console.log('componentWillMount -> authorizeUser Error', err)
-    //   } else {
-    //     this.setState({profile: profile});
-    //     console.log('this.state.profile', this.state.profile);
-    //   }
-    // })
-
-    // logOutUser((err, success) => {
-    //   if (err) {
-    //     console.log('componentWillMount -> logOutUser Error', err)
-    //   } else {
-    //     loginUser((err, success) => {
-    //       if (err) {
-    //         console.log('componentWillMount -> loginUser Error', err)
-    //       } else {
-    //         checkStorage((err, profile) => {
-    //           if (err) {
-    //             console.log('componentWillMount -> checkStorage', err);
-    //             this.setState({profile: profile});
-    //             console.log('###########err', this.state.profile);
-    //           } else {
-    //             this.setState({profile: profile});
-    //             console.log('###########profile', this.state.profile);
-    //           }
-    //         });
-    //       }
-    //     })
-    //   }
-    // })
-
-
-
   }
 
   render() {
