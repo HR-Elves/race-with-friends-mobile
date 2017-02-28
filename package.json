@@ -12,7 +12,9 @@
     "react-native": "0.41.2",
     "react-native-background-geolocation": "^2.4.3",
     "react-native-lock": "^0.4.0",
-    "react-native-modal-dropdown": "^0.4.1"
+    "react-native-material-bottom-navigation": "^0.3.0",
+    "react-native-modal-dropdown": "^0.4.1",
+    "react-native-vector-icons": "^4.0.0"
   },
   "devDependencies": {
     "babel-jest": "18.0.0",
