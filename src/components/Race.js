@@ -92,9 +92,6 @@ export default class Race extends Component {
         this.onLocationUpdate(location);
       });
     }).bind(this), 10000);
-    // this.setTimeoutID = setTimeout(BackgroundGeolocation.getCurrentPosition(function(location, taskId) {
-    //   console.log('gotCurrentLocation: ', JSON.stringify(location));
-    // }, 10000));
 
     this.state.history.push(currentLoc);
     this.setState({
