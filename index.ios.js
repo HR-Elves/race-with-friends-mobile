@@ -181,11 +181,6 @@ class RaceDashboard extends Component {
         rowHasChanged: (row1, row2) => row1 !== row2
       })
     };
-    // this.onButtonPress = this.onButtonPress.bind(this);
-  }
-
-  onButtonPress(routeId) {
-    this.props.navigator.push({id: routeId});
   }
 
   _renderMenuItem(item) {
