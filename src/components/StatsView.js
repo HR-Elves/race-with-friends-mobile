@@ -8,6 +8,8 @@ import {
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import MyRuns from './MyRuns';
+
 export default class StatsView extends Component {
   constructor(props) {
     super(props);
@@ -39,7 +41,7 @@ export default class StatsView extends Component {
       <View style={styles.container}>
         <View style={styles.center}>
           {this.state.currentTab === 0 && <Text>My Stats</Text> }
-          {this.state.currentTab === 1 && <Text>My Runs</Text> }
+          {this.state.currentTab === 1 && <MyRuns /> }
         </View>
         <BottomNavigation
           labelColor="white"
