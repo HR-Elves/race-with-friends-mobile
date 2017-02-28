@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
+import Drawer from 'react-native-drawer';
 import _ from 'lodash';
 
 import Race from './src/components/Race';
@@ -29,6 +30,10 @@ export default class RaceWithFriends extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      drawerOpen: false,
+      drawerDisabled: false,
+    };
   }
 
   componentWillMount() {
@@ -40,6 +45,14 @@ export default class RaceWithFriends extends Component {
     //     return;
     //   }
     // });
+  }
+
+  closeDrawer() {
+    this._drawer.close();
+  }
+
+  openDrawer() {
+    this._drawer.open();
   }
 
   render() {
@@ -69,21 +82,33 @@ export default class RaceWithFriends extends Component {
     ];
 
     return (
-
-      <Navigator
-        initialRoute={routes[0]}
-        renderScene={(route, navigator) => {
-          return (
-            <View style={styles.container}>
-              {route.id === 'Dashboard' && <RaceDashboard navigator={navigator} />}
-              {route.id === 'Race' && <Race />}
-              {route.id === 'Replay' && <Replay />}
-            </View>
-          );
-        }}
-      />
-
+      <Drawer type="static" content={<RaceDashboard />} open={true} tapToClose={true} ref={(ref) => this._drawer = ref} onOpen={() => {
+        console.log('onopen');
+        this.setState({drawerOpen: true});
+      }}
+        onClose={() => {
+          console.log('onclose');
+          this.setState({drawerOpen: false});
+        }} >
+        <Race />
+      </Drawer>
     );
+    // return (
+
+    //   <Navigator
+    //     initialRoute={routes[0]}
+    //     renderScene={(route, navigator) => {
+    //       return (
+    //         <View style={styles.container}>
+    //           {route.id === 'Dashboard' && <RaceDashboard navigator={navigator} />}
+    //           {route.id === 'Race' && <Race />}
+    //           {route.id === 'Replay' && <Replay />}
+    //         </View>
+    //       );
+    //     }}
+    //   />
+
+    // );
   }
 }
 
