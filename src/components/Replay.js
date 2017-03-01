@@ -234,10 +234,30 @@ export default class Replay extends Component {
     return (
       <View style={styles.container}>
         <Text style={{marginBottom: 0, marginTop: 50}}>Select Racers:</Text>
-        <ModalDropdown options={['Usain Bolt', 'James Market St', 'Nick Market St']} onSelect={this.onPickPlayer.bind(this)} textStyle={{fontSize: 24}} defaultValue='James Market St' style={{marginTop: 25}}/>
-        <Text style={{fontSize: 20, marginTop: 10, marginBottom: 10}}>VS</Text>
-        <ModalDropdown options={['Usain Bolt', 'James Market St', 'Nick Market St']} onSelect={this.onPickOpponent.bind(this)} textStyle={{fontSize: 24}} defaultValue='Nick Market St' style={{marginBottom: 25}}/>
-        <RaceStatus status={this.state.raceStatus} playerName={'Player'} opponentName={'Opponent'} />
+        <ModalDropdown
+          options={['Usain Bolt', 'James Market St', 'Nick Market St']}
+          onSelect={this.onPickPlayer.bind(this)}
+          textStyle={{fontSize: 24}}
+          defaultValue='James Market St'
+          style={{marginTop: 25}}
+        />
+        <Text style={{
+          fontSize: 20,
+          marginTop: 10,
+          marginBottom: 10
+        }}>VS</Text>
+        <ModalDropdown
+          options={['Usain Bolt', 'James Market St', 'Nick Market St']}
+          onSelect={this.onPickOpponent.bind(this)}
+          textStyle={{fontSize: 24}}
+          defaultValue='Nick Market St'
+          style={{marginBottom: 25}}
+        />
+        <RaceStatus
+          status={this.state.raceStatus}
+          playerName={'Player'}
+          opponentName={'Opponent'}
+        />
         <RaceProgress progress={this.state.progress} />
         <View style={styles.buttons}>
           <Button
