@@ -22,6 +22,7 @@ import Race from './src/components/Race';
 import Replay from './src/components/Replay';
 import StatsView from './src/components/StatsView';
 import Friends from './src/components/Friends';
+import Challenge from './src/components/Challenge';
 
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils';
 import race from './assets/presetChallenges/standardWalk.json';
@@ -70,13 +71,17 @@ export default class RaceWithFriends extends Component {
         title: 'Race',
         id: 'Race'
       },
-      'My Stats': {
-        title: 'My Stats',
-        id: 'My Stats'
+      'My Runs': {
+        title: 'My Runs',
+        id: 'My Runs'
       },
       'Replay': {
         title: 'Replay',
         id: 'Replay'
+      },
+      'Challenge': {
+        title: 'Challenge',
+        id: 'Challenge'
       },
       'Friends': {
         title: 'Friends',
@@ -89,7 +94,7 @@ export default class RaceWithFriends extends Component {
   _renderScene(route, navigator) {
     if (route.id === 'Race') {
       return ( <Race userId={this.state.userId}/> );
-    } else if (route.id === 'My Stats') {
+    } else if (route.id === 'My Runs') {
       return ( <StatsView userId={this.state.userId}/> );
     } else if (route.id === 'Replay') {
       return ( <Replay /> );
@@ -203,7 +208,7 @@ class RaceDashboard extends Component {
 
   componentDidMount() {
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(['Race', 'My Stats', 'Replay', 'Friends'])
+      dataSource: this.state.dataSource.cloneWithRows(['Race', 'My Runs', 'Replay', 'Challenge', 'Friends'])
     });
   }
 
