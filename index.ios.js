@@ -1,8 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
 
 import React, { Component } from 'react';
 import {
@@ -40,7 +35,7 @@ export default class RaceWithFriends extends Component {
     this.state = {
       profile: '',
       userId: ''
-    }
+    };
   }
 
   componentWillMount() {
@@ -55,7 +50,7 @@ export default class RaceWithFriends extends Component {
         console.log('this.state.profile', this.state.profile);
         console.log('this.state.userId', this.state.userId);
       }
-    })
+    });
   }
 
   componentDidMount() {
@@ -88,11 +83,11 @@ export default class RaceWithFriends extends Component {
 
   _renderScene(route, navigator) {
     if (route.id === 'Race') {
-      return ( <Race navigator={navigator}/> );
+      return ( <Race userId={this.state.userId}/> );
     } else if (route.id === 'My Stats') {
-      return ( <StatsView navigator={navigator}/> );
+      return ( <StatsView /> );
     } else if (route.id === 'Replay') {
-      return ( <Replay navigator={navigator}/> );
+      return ( <Replay /> );
     }
   }
 
@@ -115,11 +110,34 @@ export default class RaceWithFriends extends Component {
         marginBottom: 5,
       },
     });
-    // const routes = [
-    //   {id: 'Dashboard'},
-    //   {id: 'Race'},
-    //   {id: 'Replay'}
-    // ];
+
+    const NavigationBarRouteMapper = {
+      LeftButton(route, navigator, index, navState) {
+        return (
+          <TouchableOpacity
+            // style={styles.navBarLeftButton}
+            onPress={() => { _emitter.emit('openMenu'); }}>
+            <Icon name='menu' size={25} color={'Black'} />
+          </TouchableOpacity>
+        );
+      },
+
+      RightButton(route, navigator, index, navState) {
+        return (
+          <TouchableOpacity /*style={styles.navBarRightButton}*/>
+            <Icon name='more-vert' size={25} color={'Black'} />
+          </TouchableOpacity>
+        );
+      },
+
+      Title(route, navigator, index, navState) {
+        return (
+          <Text /*style={[styles.navBarText, styles.navBarTitleText]}*/>
+            {route.title}
+          </Text>
+        );
+      }
+    };
 
     return (
       <Drawer
@@ -139,37 +157,20 @@ export default class RaceWithFriends extends Component {
         }}
         tweenHandler={(ratio) => ({main: { opacity: ( 2 - ratio) / 2 }})}>
         <Navigator
-        ref={(ref) => this._navigator = ref}
-        configureScene={(route) => Navigator.SceneConfigs.FloatFromLeft}
-        style={{flex: 1}}
-        initialRoute={{
-          id: 'Race',
-          title: 'Race'
-        }}
-        renderScene={(route, navigator) => this._renderScene(route, navigator)}
-        navigationBar={<Navigator.NavigationBar
-          routeMapper={NavigationBarRouteMapper}/>
-        }/>
+          ref={(ref) => this._navigator = ref}
+          configureScene={(route) => Navigator.SceneConfigs.FloatFromLeft}
+          style={{flex: 1}}
+          initialRoute={{
+            id: 'Race',
+            title: 'Race'
+          }}
+          renderScene={(route, navigator) => this._renderScene(route, navigator)}
+          navigationBar={<Navigator.NavigationBar
+            routeMapper={NavigationBarRouteMapper}/>
+          }/>
       </Drawer>
     );
-    // return (
-
-    //   <Navigator
-    //     initialRoute={routes[0]}
-    //     renderScene={(route, navigator) => {
-    //       return (
-    //         <View style={styles.container}>
-    //           {route.id === 'Dashboard' && <RaceDashboard navigator={navigator} />}
-    //           {route.id === 'Race' && <Race />}
-    //           {route.id === 'Replay' && <Replay />}
-    //         </View>
-    //       );
-    //     }}
-    //   />
-
-    // );
   }
-
 }
 
 class RaceDashboard extends Component {
@@ -180,11 +181,6 @@ class RaceDashboard extends Component {
         rowHasChanged: (row1, row2) => row1 !== row2
       })
     };
-    // this.onButtonPress = this.onButtonPress.bind(this);
-  }
-
-  onButtonPress(routeId) {
-    this.props.navigator.push({id: routeId});
   }
 
   _renderMenuItem(item) {
@@ -215,49 +211,6 @@ class RaceDashboard extends Component {
         renderRow={((item) => this._renderMenuItem(item)).bind(this)}/>
     );
   }
-
 }
 
-const NavigationBarRouteMapper = {
-  LeftButton(route, navigator, index, navState) {
-    return (
-      <TouchableOpacity
-        // style={styles.navBarLeftButton}
-        onPress={() => { _emitter.emit('openMenu'); }}>
-        <Icon name='menu' size={25} color={'Black'} />
-      </TouchableOpacity>
-    );
-  },
-
-  RightButton(route, navigator, index, navState) {
-    return (
-      <TouchableOpacity /*style={styles.navBarRightButton}*/>
-        <Icon name='more-vert' size={25} color={'Black'} />
-      </TouchableOpacity>
-    );
-  },
-
-  Title(route, navigator, index, navState) {
-    return (
-      <Text /*style={[styles.navBarText, styles.navBarTitleText]}*/>
-        {route.title}
-      </Text>
-    );
-  }
-};
-/*
-      <View>
-        <Text>Race With Friends Dashboard</Text>
-        <Button
-          onPress={ () => {this.onButtonPress('Race')} }
-          title='New Race'
-          color='green'
-        />
-        <Button
-          onPress={ () => {this.onButtonPress('Replay')} }
-          title='Replay Race'
-          color='blue'
-        />
-      </View>
-*/
 AppRegistry.registerComponent('RaceWithFriends', () => RaceWithFriends);
