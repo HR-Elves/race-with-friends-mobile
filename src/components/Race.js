@@ -1,8 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
 
 import React, { Component } from 'react';
 import {
@@ -14,6 +9,7 @@ import {
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
+import Prompt from 'react-native-prompt';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
@@ -26,7 +22,10 @@ export default class Race extends Component {
     super(props);
     this.state = {
       history: [],
-      raceStatus: null
+      raceStatus: null,
+      promptVisible: false,
+      raceName: null,
+      raceDescription: null
     };
     this.setTimeoutID = null;
     this.onLocationUpdate = this.onLocationUpdate.bind(this);
@@ -102,6 +101,35 @@ export default class Race extends Component {
     console.log('~~~', JSON.stringify(location));
   }
 
+  postRun() {
+    let body = {
+      userid: this.props.userId,
+      created: (new Date()).toISOString(),
+      name: this.state.raceName,
+      description: 'testDescription',
+      length: this.state.history[this.state.history.length - 1].distanceTotal,
+      duration: this.state.history[this.state.history.length - 1].timeTotal,
+      data: this.state.history,
+    };
+
+    // fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
+    // fetch('https://requestb.in/1kvpibw1', {
+    fetch('https://www.racewithfriends.tk:8000/users/' + this.props.userId + '/runs', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body)
+    }).then((response) => {
+      return response.json();
+    }).then((responseJSON) => {
+      console.warn('res.id =>', responseJSON.id);
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
   onRecord() {
     // This handler fires whenever bgGeo receives a location update.
     BackgroundGeolocation.on('location', this.onLocationUpdate);
@@ -118,14 +146,8 @@ export default class Race extends Component {
     BackgroundGeolocation.un('location', this.onLocationUpdate);
     BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
     BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
-
-    fetch('https://peaceful-dawn-56737.herokuapp.com/runs', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.state.history)
+    this.setState({
+      promptVisible: true
     });
   }
 
@@ -181,8 +203,37 @@ export default class Race extends Component {
         />
         <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
         <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
+        {this.state.promptVisible &&
+          <Prompt
+            title="Please name your race."
+            placeholder="Race Name"
+            defaultValue=""
+            visible={ this.state.promptVisible }
+            onCancel={ () => this.setState({
+              promptVisible: false,
+            }) }
+            onSubmit={ (value) => {
+              // console.error(typeof value);
+              this.setState({
+                promptVisible: false,
+                raceName: value
+              }, () => this.postRun());
+            }}/> }
       </View>
     );
   }
 }
 
+// &&
+//           <Prompt
+//             title="Please give your race a description."
+//             placeholder="Race Description"
+//             defaultValue=""
+//             visible={ this.state.promptVisible }
+//             onCancel={ () => this.setState({
+//               promptVisible: false,
+//             }) }
+//             onSubmit={ (value) => this.setState({
+//               promptVisible: false,
+//               raceDescription: value
+//             }) }/>

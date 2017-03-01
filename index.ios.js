@@ -83,11 +83,11 @@ export default class RaceWithFriends extends Component {
 
   _renderScene(route, navigator) {
     if (route.id === 'Race') {
-      return ( <Race navigator={navigator}/> );
+      return ( <Race userId={this.state.userId}/> );
     } else if (route.id === 'My Stats') {
-      return ( <StatsView navigator={navigator}/> );
+      return ( <StatsView /> );
     } else if (route.id === 'Replay') {
-      return ( <Replay navigator={navigator}/> );
+      return ( <Replay /> );
     }
   }
 
