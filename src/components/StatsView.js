@@ -54,7 +54,7 @@ export default class StatsView extends Component {
         <View style={styles.container}>
           <View style={styles.center}>
             {this.state.currentTab === 0 && <Text>My Stats</Text> }
-            {this.state.currentTab === 1 && <MyRuns /> }
+            {this.state.currentTab === 1 && <MyRuns userId={this.props.userId}/> }
           </View>
           <BottomNavigation
             labelColor="white"

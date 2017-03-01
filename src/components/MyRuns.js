@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  ScrollView
 } from 'react-native';
 
 import { Dimensions } from 'react-native';
@@ -28,36 +29,8 @@ export default class MyRuns extends Component {
     });
   }
 
-
-  // getRunsData(callback) {
-  //   let results = [];
-  //   results[0] = 
-  //     {
-  //       id: 0,
-  //       userid: 1234567890,
-  //       created: 'createdAtDate',
-  //       name: 'James Market St',
-  //       description: '100m dash on Market St',
-  //       length: james[james.length-1].distanceTotal,
-  //       duration: james[james.length-1].timeTotal,
-  //       data: james
-  //     };
-  //   results[1] = 
-  //      {
-  //       id: 1,
-  //       userid: 1234567890,
-  //       created: 'createdAtDate',
-  //       name: 'Nick Market St',
-  //       description: '100m dash on Market St',
-  //       length: nick[nick.length-1].distanceTotal,
-  //       duration: nick[nick.length-1].timeTotal,
-  //       data: nick
-  //     };     
-  //   callback(results);
-  // }
-
   getRunsData(callback) {
-    let userId = '1233197366796721';
+    let userId = this.props.userId;
     fetch('https://www.racewithfriends.tk:8000/users/' + userId + '/runs', 
       {
         method: 'GET',
@@ -82,10 +55,8 @@ export default class MyRuns extends Component {
     const styles = StyleSheet.create({
       container: {
         marginTop: 60,
+        marginBottom: 56,
         flex: 1,
-        width: Dimensions.get('window').width
-      },
-      listItem: {
         width: Dimensions.get('window').width
       }
     });
@@ -93,20 +64,23 @@ export default class MyRuns extends Component {
     return (
       <View style={styles.container}>
         <Subheader text="My Runs" />
-          {
-            this.state.runs.map((run) => {
-             return (
-                <ListItem
-                  divider
-                  centerElement={{
-                            primaryText: run.name,
-                            secondaryText: run.created,
-                        }}
-                  onPress={() => {}}               
-                />
-              );
-            })
-          }        
+        <ScrollView>
+        {
+          this.state.runs.map((run) => {
+           return (
+              <ListItem
+                key={run.id}
+                divider
+                centerElement={{
+                  primaryText: run.name,
+                  secondaryText: run.created,
+                }}
+                onPress={() => {}}               
+              />
+            );
+          })
+        } 
+        </ScrollView>       
       </View>
     );
   }
