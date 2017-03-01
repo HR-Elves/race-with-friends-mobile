@@ -203,22 +203,21 @@ export default class Race extends Component {
         />
         <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
         <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
-        {this.state.promptVisible &&
-          <Prompt
-            title="Please name your race."
-            placeholder="Race Name"
-            defaultValue=""
-            visible={ this.state.promptVisible }
-            onCancel={ () => this.setState({
+        {<Prompt
+          title="Please name your race."
+          placeholder="Race Name"
+          defaultValue=""
+          visible={ this.state.promptVisible }
+          onCancel={ () => this.setState({
+            promptVisible: false,
+          }) }
+          onSubmit={ (value) => {
+            // console.error(typeof value);
+            this.setState({
               promptVisible: false,
-            }) }
-            onSubmit={ (value) => {
-              // console.error(typeof value);
-              this.setState({
-                promptVisible: false,
-                raceName: value
-              }, () => this.postRun());
-            }}/> }
+              raceName: value
+            }, () => this.postRun());
+          }}/>}
       </View>
     );
   }

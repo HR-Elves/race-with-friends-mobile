@@ -157,17 +157,17 @@ export default class RaceWithFriends extends Component {
         }}
         tweenHandler={(ratio) => ({main: { opacity: ( 2 - ratio) / 2 }})}>
         <Navigator
-        ref={(ref) => this._navigator = ref}
-        configureScene={(route) => Navigator.SceneConfigs.FloatFromLeft}
-        style={{flex: 1}}
-        initialRoute={{
-          id: 'Race',
-          title: 'Race'
-        }}
-        renderScene={(route, navigator) => this._renderScene(route, navigator)}
-        navigationBar={<Navigator.NavigationBar
-          routeMapper={NavigationBarRouteMapper}/>
-        }/>
+          ref={(ref) => this._navigator = ref}
+          configureScene={(route) => Navigator.SceneConfigs.FloatFromLeft}
+          style={{flex: 1}}
+          initialRoute={{
+            id: 'Race',
+            title: 'Race'
+          }}
+          renderScene={(route, navigator) => this._renderScene(route, navigator)}
+          navigationBar={<Navigator.NavigationBar
+            routeMapper={NavigationBarRouteMapper}/>
+          }/>
       </Drawer>
     );
   }
