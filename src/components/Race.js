@@ -166,6 +166,7 @@ export default class Race extends Component {
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
+        marginTop: 50
       },
       welcome: {
         fontSize: 20,
