@@ -21,6 +21,7 @@ import _ from 'lodash';
 import Race from './src/components/Race';
 import Replay from './src/components/Replay';
 import StatsView from './src/components/StatsView';
+import Friends from './src/components/Friends';
 
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils';
 import race from './assets/presetChallenges/standardWalk.json';
@@ -76,6 +77,10 @@ export default class RaceWithFriends extends Component {
       'Replay': {
         title: 'Replay',
         id: 'Replay'
+      },
+      'Friends': {
+        title: 'Friends',
+        id: 'Friends'
       }
     };
     return componentMap[scene];
@@ -88,6 +93,8 @@ export default class RaceWithFriends extends Component {
       return ( <StatsView userId={this.state.userId}/> );
     } else if (route.id === 'Replay') {
       return ( <Replay /> );
+    } else if (route.id === 'Friends') {
+      return ( <Friends userId={this.state.userId}/> );
     }
   }
 
@@ -196,7 +203,7 @@ class RaceDashboard extends Component {
 
   componentDidMount() {
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(['Race', 'My Stats', 'Replay'])
+      dataSource: this.state.dataSource.cloneWithRows(['Race', 'My Stats', 'Replay', 'Friends'])
     });
   }
 
