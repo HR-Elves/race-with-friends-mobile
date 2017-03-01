@@ -31,13 +31,13 @@ export default class MyRuns extends Component {
 
   getRunsData(callback) {
     let userId = this.props.userId;
-    fetch('https://www.racewithfriends.tk:8000/users/' + userId + '/runs', 
+    fetch('https://www.racewithfriends.tk:8000/users/' + userId + '/runs',
       {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-      }
+        }
       })
       .then((response) => {
         return response.json();
@@ -48,7 +48,7 @@ export default class MyRuns extends Component {
       .catch((error) => {
         console.error(error);
       });
-  }    
+  }
 
 
   render() {
@@ -75,12 +75,12 @@ export default class MyRuns extends Component {
                   primaryText: run.name,
                   secondaryText: run.created,
                 }}
-                onPress={() => {}}               
+                onPress={() => {}}
               />
             );
           })
-        } 
-        </ScrollView>       
+        }
+        </ScrollView>
       </View>
     );
   }
