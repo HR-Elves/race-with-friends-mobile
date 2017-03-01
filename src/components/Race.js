@@ -15,6 +15,7 @@ import _ from 'lodash';
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
 import race from '../../assets/presetChallenges/standardWalk.json';
 import RaceProgress from './RaceProgress';
+import RaceStatus from './RaceStatus';
 
 export default class Race extends Component {
 
@@ -176,6 +177,12 @@ export default class Race extends Component {
         color: '#333333',
         marginBottom: 5,
       },
+      buttons: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        flexDirection: 'row'
+      }
     });
 
     let distanceToOpponent = this.state.raceStatus ? this.state.raceStatus.distanceToOpponent : 'initializing';
@@ -183,26 +190,28 @@ export default class Race extends Component {
 
     return (
       <View style={styles.container}>
-        <Text>
-          Version 1.4
-        </Text>
-        <Button
-          onPress={this.onRecord.bind(this)}
-          title="Record"
-          color='red'
+        <RaceStatus
+          status={this.state.raceStatus}
+          playerName={'You'}
+          opponentName={'Opponent'}
         />
-        <Button
-          onPress={this.onStopRecord.bind(this)}
-          title="Stop"
-          color='blue'
-        />
-        <Button
-          onPress={this.clearHistory.bind(this)}
-          title="Clear"
-          color='green'
-        />
-        <Text>{`Distance to opponent: ${distanceToOpponent}`}</Text>
-        <Text>{`Distance remaining: ${distanceRemaining}`}</Text>
+        <View style={styles.buttons}>
+          <Button
+            onPress={this.onRecord.bind(this)}
+            title='Record'
+            color='red'
+          />
+          <Button
+            onPress={this.onStopRecord.bind(this)}
+            title="Stop"
+            color='blue'
+          />
+          <Button
+            onPress={this.clearHistory.bind(this)}
+            title="Clear"
+            color='green'
+          />
+        </View>
         {<Prompt
           title="Please name your race."
           placeholder="Race Name"
