@@ -217,7 +217,10 @@ export default class Race extends Component {
               promptVisible: false,
               raceName: value
             }, () => this.postRun());
-          }}/>}
+          }}
+          submitText='Save Run'
+          cancelText={'Don\'t Save'}
+        />}
       </View>
     );
   }
