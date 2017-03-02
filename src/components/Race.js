@@ -5,17 +5,35 @@ import {
   Text,
   View,
   Button,
-  ProgressViewIOS
+  ProgressViewIOS,
+  Modal,
+  TouchableHighlight
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import Prompt from 'react-native-prompt';
+import ModalDropdown from 'react-native-modal-dropdown';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
-import race from '../../assets/presetChallenges/standardWalk.json';
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
+
+import usain from '../../assets/presetChallenges/UsainBolt100m';
+import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
+import james from '../../assets/presetChallenges/MarketSt3';
+import nick from '../../assets/presetChallenges/MarketSt4';
+import hare from '../../assets/presetChallenges/hare100m';
+
+const presets = {
+  'Usain Bolt': usain,
+  worldRecordRaceWalk100m: walk,
+  'James Market St': james,
+  'Nick Market St': nick,
+  hare100m: hare
+};
+
+let opponent = walk;
 
 export default class Race extends Component {
 
@@ -30,10 +48,12 @@ export default class Race extends Component {
       progress: {
         playerDist: 0,
         opponentDist: 0,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: opponent[opponent.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
-      }
+      },
+      raceTabOn: false,
+      showSetupRace: true
     };
     this.setTimeoutID = null;
     this.onLocationUpdate = this.onLocationUpdate.bind(this);
@@ -85,7 +105,7 @@ export default class Race extends Component {
     clearInterval(this.setTimeoutID); //Clear previous setTimeout.
 
     let currentLoc = processLocation(location, this.state.history);
-    let newRaceStatus = getRaceStatus(currentLoc, race, this.state.raceStatus);
+    let newRaceStatus = getRaceStatus(currentLoc, opponent, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
       BackgroundGeolocation.playSound(1001);
     }
@@ -107,7 +127,7 @@ export default class Race extends Component {
       progress: {
         playerDist: currentLoc.distanceTotal,
         opponentDist: currentLoc.distanceTotal - newRaceStatus.distanceToOpponent,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: opponent[opponent.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
       }
@@ -146,6 +166,9 @@ export default class Race extends Component {
   }
 
   onRecord() {
+    // if (opponent) {
+    //   console.error('You have not selected an opponent!');
+    // }
     // This handler fires whenever bgGeo receives a location update.
     BackgroundGeolocation.on('location', this.onLocationUpdate);
     // This handler fires when movement states changes (stationary->moving; moving->stationary)
@@ -179,11 +202,24 @@ export default class Race extends Component {
       progress: {
         playerDist: 0,
         opponentDist: 0,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: opponent[opponent.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
       }
     });
+  }
+
+  showSetupRace(visible) {
+    this.setState({
+      showSetupRace: visible
+    });
+  }
+
+  onPickOpponent(key, value) {
+    const newState = {};
+    newState.picked = value;
+    opponent = presets[value];
+    this.setState(newState);
   }
 
   render() {
@@ -193,7 +229,6 @@ export default class Race extends Component {
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
-        marginTop: 50
       },
       welcome: {
         fontSize: 20,
@@ -214,30 +249,57 @@ export default class Race extends Component {
     });
 
     return (
-      <View style={styles.container}>
-        <RaceProgress progress={this.state.progress} />
-        <RaceStatus
-          status={this.state.raceStatus}
-          playerName={'Player'}
-          opponentName={'Opponent'}
-        />
-        <View style={styles.buttons}>
-          <Button
-            onPress={this.onRecord.bind(this)}
-            title='Record'
-            color='red'
-          />
-          <Button
-            onPress={this.onStopRecord.bind(this)}
-            title="Stop"
-            color='blue'
-          />
-          <Button
-            onPress={this.clearHistory.bind(this)}
-            title="Clear"
-            color='green'
-          />
-        </View>
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF',
+        marginTop: 50
+      }}>
+        {!this.state.showSetupRace &&
+          <View style={styles.container}>
+            <RaceProgress progress={this.state.progress} />
+            <RaceStatus
+              status={this.state.raceStatus}
+              playerName={'Player'}
+              opponentName={'Opponent'}
+            />
+            <View style={styles.buttons}>
+              <Button
+                onPress={this.onRecord.bind(this)}
+                title='Record'
+                color='red'
+              />
+              <Button
+                onPress={this.onStopRecord.bind(this)}
+                title="Stop"
+                color='blue'
+              />
+              <Button
+                onPress={this.clearHistory.bind(this)}
+                title="Clear"
+                color='green'
+              />
+            </View>
+          </View>}
+        {this.state.showSetupRace &&
+          <View style={styles.container}>
+           <View style={styles.container}>
+            <Text style={{fontSize: 20}}>Setup Race</Text>
+            <Text>Select your opponent:</Text>
+            <ModalDropdown
+              options={['Usain Bolt', 'James Market St', 'Nick Market St', 'worldRecordRaceWalk100m', 'hare100m']}
+              onSelect={this.onPickOpponent.bind(this)}
+              textStyle={{fontSize: 24}}
+              style={{marginBottom: 25}}
+            />
+            <TouchableHighlight onPress={() => {
+              this.showSetupRace(!this.state.showSetupRace);
+            }}>
+              <Text>Done!</Text>
+            </TouchableHighlight>
+           </View>
+          </View>}
         {<Prompt
           title="Please name your race."
           placeholder="Race Name"

@@ -23,6 +23,7 @@ export default class RaceProgress extends Component {
     const progress = this.props.progress;
     let playerProgress = progress.playerDist / progress.totalDist;
     let opponentProgress = progress.opponentDist / progress.totalDist;
+    console.warn('player: ', playerProgress, ' opp: ', opponentProgress, ' total: ', progress.totalDist);
     return (
       <View>
         <View style={styles.progressView}>
