@@ -25,12 +25,23 @@ import james from '../../assets/presetChallenges/MarketSt3';
 import nick from '../../assets/presetChallenges/MarketSt4';
 import hare from '../../assets/presetChallenges/hare100m';
 
+
 const presets = {
   'Usain Bolt': usain,
   worldRecordRaceWalk100m: walk,
+  hare100m: hare
+};
+
+const myRuns = {
   'James Market St': james,
   'Nick Market St': nick,
-  hare100m: hare
+};
+
+const raceTypes = {
+  Presets: presets,
+  'My Runs': myRuns,
+  Challenges: 'Under Construction',
+  Live: 'Under Construction',
 };
 
 let opponent = walk;
@@ -52,8 +63,13 @@ export default class Race extends Component {
         playerWon: false,
         opponentWon: false
       },
-      raceTabOn: false,
-      showSetupRace: true
+      showSetupRace: true,
+      raceSetup: {
+        raceType: 'presets',
+        oppOptions: Object.keys(presets),
+        opponent: walk
+      }
+      // raceTabOn: false,
     };
     this.setTimeoutID = null;
     this.onLocationUpdate = this.onLocationUpdate.bind(this);
@@ -105,7 +121,7 @@ export default class Race extends Component {
     clearInterval(this.setTimeoutID); //Clear previous setTimeout.
 
     let currentLoc = processLocation(location, this.state.history);
-    let newRaceStatus = getRaceStatus(currentLoc, opponent, this.state.raceStatus);
+    let newRaceStatus = getRaceStatus(currentLoc, this.state.raceSetup.opponent, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
       BackgroundGeolocation.playSound(1001);
     }
@@ -215,10 +231,18 @@ export default class Race extends Component {
     });
   }
 
+  onPickRaceType(key, value) {
+    const newState = {};
+    newState.raceSetup = this.state.raceSetup;
+    newState.raceSetup.raceType = value;
+    newState.raceSetup.oppOptions = Object.keys(raceTypes[value]);
+    this.setState(newState);
+  }
+
   onPickOpponent(key, value) {
     const newState = {};
-    newState.picked = value;
-    opponent = presets[value];
+    newState.raceSetup = this.state.raceSetup;
+    newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
     this.setState(newState);
   }
 
@@ -286,9 +310,16 @@ export default class Race extends Component {
           <View style={styles.container}>
            <View style={styles.container}>
             <Text style={{fontSize: 20}}>Setup Race</Text>
-            <Text>Select your opponent:</Text>
+            <Text>Race type:</Text>
             <ModalDropdown
-              options={['Usain Bolt', 'James Market St', 'Nick Market St', 'worldRecordRaceWalk100m', 'hare100m']}
+              options={['Presets', 'My Runs', 'Challenges', 'Live']}
+              onSelect={this.onPickRaceType.bind(this)}
+              textStyle={{fontSize: 24}}
+              style={{marginBottom: 25}}
+            />
+            <Text>Opponent:</Text>
+            <ModalDropdown
+              options={this.state.raceSetup.oppOptions}
               onSelect={this.onPickOpponent.bind(this)}
               textStyle={{fontSize: 24}}
               style={{marginBottom: 25}}
@@ -315,8 +346,8 @@ export default class Race extends Component {
               raceName: value
             }, () => this.postRun());
           }}
-          submitText='Save Run'
-          cancelText={'Don\'t Save'}
+          submitText='Publish Run'
+          cancelText={'Don\'t Publish'}
         />}
       </View>
     );
