@@ -58,38 +58,38 @@ export default class Challenge extends Component {
       });
   }
 
-  getFriends(callback) {
-    let results = [];
-    results[0] = {
-      "fb_id": "1",
-      "fullname": "Otto von Racerstein",
-    };
-    results[1] = {
-      "fb_id": "2",
-      "fullname": "Runny McRunnerson",
-    };
-    callback(results);
-  } 
-
   // getFriends(callback) {
-  //   let userId = this.props.userId;
-  //   fetch('https://www.racewithfriends.tk:8000/friends/all/' + userId,
-  //     {
-  //       method: 'GET',
-  //       headers: {
-  //         'Accept': 'application/json',
-  //       }
-  //     })
-  //     .then((response) => {
-  //       return response.json();
-  //     })
-  //     .then((responseJson) => {
-  //       callback(responseJson);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // }
+  //   let results = [];
+  //   results[0] = {
+  //     "fb_id": "1",
+  //     "fullname": "Otto von Racerstein",
+  //   };
+  //   results[1] = {
+  //     "fb_id": "2",
+  //     "fullname": "Runny McRunnerson",
+  //   };
+  //   callback(results);
+  // } 
+
+  getFriends(callback) {
+    let userId = this.props.userId;
+    fetch('https://www.racewithfriends.tk:8000/friends/all/' + userId,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        }
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        callback(responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   onRunSelect(run) {
     this.setState({
