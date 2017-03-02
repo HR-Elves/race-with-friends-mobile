@@ -9,6 +9,7 @@ import {
 
 import { COLOR, ThemeProvider, ListItem, Subheader } from 'react-native-material-ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Prompt from 'react-native-prompt';
 
 import RunsList from './RunsList';
 import FriendsList from './FriendsList';
@@ -19,9 +20,9 @@ export default class Challenge extends Component {
     this.state = ({
       runs: [],
       friends: [],
-      displayState: 'selectRun',
+      displayState: 'selectRun',  // options are selectRun, selectFriends, and challengeSubmitted
       selectedRun: null,
-      selectedFriends: []
+      promptVisible: false
     });
   }
 
@@ -104,8 +105,18 @@ export default class Challenge extends Component {
     });
   }
 
-  onChallenge() {
-    
+  onChallengeButtonPressed() {
+    this.setState({
+      promptVisible: true
+    });
+  }
+
+  onSubmit(message) {
+    // do POST to server
+    this.setState({
+      promptVisible: false,
+      displayState: 'challengeSubmitted'
+    });   
   }
 
   render() {
@@ -119,6 +130,11 @@ export default class Challenge extends Component {
         marginBottom: 56,
         flex: 1,
         width: Dimensions.get('window').width
+      },
+      center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
       }
     });
 
@@ -154,13 +170,32 @@ export default class Challenge extends Component {
                   size={45}
                   backgroundColor="red"
                   borderRadius={15} 
-                  onPress={this.onChallenge.bind(this)}
+                  onPress={this.onChallengeButtonPressed.bind(this)}
                 > 
                   Issue Challenge!
                 </Icon.Button> 
               </View>
             </View>
           }
+          {this.state.displayState === 'challengeSubmitted' &&
+            <View style={styles.center}>
+              <Text>Your challenge has been issued to your friends!</Text>
+            </View>            
+          }
+          <Prompt
+            title='Write a message for your friends!'
+            placeholder={'Here\'s a challenge for you!'}
+            defaultValue=''
+            visible={ this.state.promptVisible }
+            onCancel={ () => this.setState({
+              promptVisible: false,
+            }) }
+            onSubmit={ (message) => {
+              this.onSubmit(message); 
+            }}
+            submitText='Challenge!'
+            cancelText='Cancel'
+          />
         </View>
       </ThemeProvider>
     );
