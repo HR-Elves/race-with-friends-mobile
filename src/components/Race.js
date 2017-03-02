@@ -26,7 +26,14 @@ export default class Race extends Component {
       raceStatus: null,
       promptVisible: false,
       raceName: null,
-      raceDescription: null
+      raceDescription: null,
+      progress: {
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
     };
     this.setTimeoutID = null;
     this.onLocationUpdate = this.onLocationUpdate.bind(this);
@@ -96,7 +103,14 @@ export default class Race extends Component {
     this.state.history.push(currentLoc);
     this.setState({
       history: this.state.history,
-      raceStatus: newRaceStatus
+      raceStatus: newRaceStatus,
+      progress: {
+        playerDist: currentLoc.distanceTotal,
+        opponentDist: currentLoc.distanceTotal - newRaceStatus.distanceToOpponent,
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
     });
 
     console.log('~~~', JSON.stringify(location));
@@ -153,9 +167,22 @@ export default class Race extends Component {
   }
 
   clearHistory() {
+    clearInterval(this.setTimeoutID);
+
+    BackgroundGeolocation.un('location', this.onLocationUpdate);
+    BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
+    BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
+
     this.setState({
       history: [],
       raceStatus: null,
+      progress: {
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: race[race.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
     });
   }
 
@@ -186,14 +213,12 @@ export default class Race extends Component {
       }
     });
 
-    let distanceToOpponent = this.state.raceStatus ? this.state.raceStatus.distanceToOpponent : 'initializing';
-    let distanceRemaining = this.state.raceStatus ? this.state.raceStatus.distanceRemaining : 'initializing';
-
     return (
       <View style={styles.container}>
+        <RaceProgress progress={this.state.progress} />
         <RaceStatus
           status={this.state.raceStatus}
-          playerName={'You'}
+          playerName={'Player'}
           opponentName={'Opponent'}
         />
         <View style={styles.buttons}>

@@ -10,7 +10,9 @@ export default class RaceProgress extends Component {
   constructor(props) {
     super(props);
   }
-
+  componentDidMount() {
+    // console.warn(JSON.stringify(this.props.progress));
+  }
   render() {
     const styles = StyleSheet.create({
       progressView: {
@@ -21,7 +23,6 @@ export default class RaceProgress extends Component {
     const progress = this.props.progress;
     let playerProgress = progress.playerDist / progress.totalDist;
     let opponentProgress = progress.opponentDist / progress.totalDist;
-
     return (
       <View>
         <View style={styles.progressView}>
