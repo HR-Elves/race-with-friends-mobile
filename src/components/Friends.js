@@ -3,14 +3,13 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
-  ScrollView,
   Dimensions
 } from 'react-native';
 
 import { COLOR, ThemeProvider, ListItem, Subheader } from 'react-native-material-ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import FriendsList from './FriendsList';
 import FriendView from './FriendView';
 
 export default class Friends extends Component {
@@ -31,18 +30,38 @@ export default class Friends extends Component {
     });    
   }
 
+  // getFriends(callback) {
+  //   let results = [];
+  //   results[0] = {
+  //     "fb_id": "1",
+  //     "fullname": "Otto von Racerstein",
+  //   };
+  //   results[1] = {
+  //     "fb_id": "2",
+  //     "fullname": "Runny McRunnerson",
+  //   };
+  //   callback(results);
+  // } 
+
   getFriends(callback) {
-    let results = [];
-    results[0] = {
-      "fb_id": "1",
-      "fullname": "Otto von Racerstein",
-    };
-    results[1] = {
-      "fb_id": "2",
-      "fullname": "Runny McRunnerson",
-    };
-    callback(results);
-  } 
+    let userId = this.props.userId;
+    fetch('https://www.racewithfriends.tk:8000/friends/all/' + userId,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        }
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        callback(responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   onFriendSelect(friend) {
     this.setState({
@@ -83,25 +102,9 @@ export default class Friends extends Component {
       <ThemeProvider uiTheme={uiTheme}> 
         <View style={styles.container}>
           {this.state.displayState === 'list' &&
-            <ScrollView style={styles.listContent}>
-            {
-              this.state.friends.map((friend) => {
-               return (
-                  <ListItem
-                    key={friend.fb_id}
-                    divider
-                    leftElement={<Icon size={20} color="black" name="tag-faces" />}
-                    centerElement={friend.fullname}
-                    rightElement={<Image 
-                      source={require('../../assets/images/green-check-mark.png')} 
-                      style={{width: 20, height: 20}}
-                    />} 
-                    onPress={() => { this.onFriendSelect(friend); }}               
-                  />
-                );
-              })
-            } 
-            </ScrollView>
+            <View style={styles.listContent}>
+              <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this)}/> 
+            </View>           
           }
           {this.state.displayState === 'selected' && 
             <View style={styles.center} >
