@@ -70,6 +70,26 @@ export default class Challenge extends Component {
     callback(results);
   } 
 
+  // getFriends(callback) {
+  //   let userId = this.props.userId;
+  //   fetch('https://www.racewithfriends.tk:8000/friends/all/' + userId,
+  //     {
+  //       method: 'GET',
+  //       headers: {
+  //         'Accept': 'application/json',
+  //       }
+  //     })
+  //     .then((response) => {
+  //       return response.json();
+  //     })
+  //     .then((responseJson) => {
+  //       callback(responseJson);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // }
+
   onRunSelect(run) {
     this.setState({
       selectedRun: run,
@@ -82,6 +102,10 @@ export default class Challenge extends Component {
     this.setState({
       friends: this.state.friends
     });
+  }
+
+  onChallenge() {
+    
   }
 
   render() {
@@ -119,9 +143,22 @@ export default class Challenge extends Component {
             </View>
           }
           {this.state.displayState === 'selectFriends' &&
-            <View style={styles.list}>
-              <Subheader text={`Choose friends to challenge with ${this.state.selectedRun.name}!`} />
-              <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this)}/>
+            <View style={styles.container}>
+              <View style={styles.list}>
+                <Subheader text={`Choose friends to challenge with ${this.state.selectedRun.name}!`} />
+                <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this)}/>         
+              </View>
+              <View>
+                <Icon.Button 
+                  name="flash-on" 
+                  size={45}
+                  backgroundColor="red"
+                  borderRadius={15} 
+                  onPress={this.onChallenge.bind(this)}
+                > 
+                  Issue Challenge!
+                </Icon.Button> 
+              </View>
             </View>
           }
         </View>
