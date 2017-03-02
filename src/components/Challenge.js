@@ -58,19 +58,6 @@ export default class Challenge extends Component {
       });
   }
 
-  // getFriends(callback) {
-  //   let results = [];
-  //   results[0] = {
-  //     "fb_id": "1",
-  //     "fullname": "Otto von Racerstein",
-  //   };
-  //   results[1] = {
-  //     "fb_id": "2",
-  //     "fullname": "Runny McRunnerson",
-  //   };
-  //   callback(results);
-  // } 
-
   getFriends(callback) {
     let userId = this.props.userId;
     fetch('https://www.racewithfriends.tk:8000/friends/all/' + userId,
@@ -112,11 +99,41 @@ export default class Challenge extends Component {
   }
 
   onSubmit(message) {
+    // determine which friends have been selected to receive the challenge
+    let opponents = [];
+    this.state.friends.forEach((friend) => {
+      if (friend.selected) {
+        opponents.push(friend.fb_id);
+      }
+    });
+
+    let postBody = {
+      run_id: this.state.selectedRun.id,
+      name: this.state.selectedRun.name,
+      description: this.state.selectedRun.description,
+      message: message,
+      created_on: (new Date()).toISOString(),
+      opponents: opponents
+    };
+
     // do POST to server
-    this.setState({
-      promptVisible: false,
-      displayState: 'challengeSubmitted'
-    });   
+    fetch('https://www.racewithfriends.tk:8000/users/' + this.props.userId + '/challenges', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postBody)
+    }).then((response) => {
+      return response.json();
+    }).then((responseJSON) => {
+      this.setState({
+        promptVisible: false,
+        displayState: 'challengeSubmitted'
+      }); 
+    }).catch((error) => {
+      console.error(error);
+    });
   }
 
   render() {
