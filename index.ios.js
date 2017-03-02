@@ -98,6 +98,8 @@ export default class RaceWithFriends extends Component {
       return ( <StatsView userId={this.state.userId}/> );
     } else if (route.id === 'Replay') {
       return ( <Replay /> );
+    } else if (route.id === 'Challenge') {
+      return ( <Challenge userId={this.state.userId}/> );
     } else if (route.id === 'Friends') {
       return ( <Friends userId={this.state.userId}/> );
     }
