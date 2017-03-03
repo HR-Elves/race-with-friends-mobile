@@ -26,7 +26,7 @@ export default class RunsList extends Component {
               leftElement={<Icon size={20} color="black" name="directions-run" />}
               centerElement={{
                 primaryText: run.name,
-                secondaryText: run.created,
+                secondaryText: `${Math.round(run.length)} meters, ${Math.round(run.duration/1000)} seconds`
               }}
               onPress={() => {this.props.onRunSelect(run);}}
             />
