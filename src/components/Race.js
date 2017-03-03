@@ -67,7 +67,7 @@ export default class Race extends Component {
       },
       showSetupRace: true,
       raceSetup: {
-        raceType: 'presets',
+        raceType: 'Presets',
         oppOptions: Object.keys(presets),
         opponent: walk
       }
@@ -262,28 +262,32 @@ export default class Race extends Component {
     const newState = {};
     newState.raceSetup = this.state.raceSetup;
     newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
-    this.setState(newState);
-
-    // console.error('newState: ', newState.raceSetup.opponent.run_id);
-    let runId = newState.raceSetup.opponent.run_id;
-    fetch('https://www.racewithfriends.tk:8000/runs/' + runId, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }).then((response) => {
-      return response.json();
-    }).then((responseJson) => {
-      const newState = {};
-      newState.raceSetup = this.state.raceSetup;
-      newState.raceSetup.opponent = responseJson.data;
-      this.setState(newState, () => {
-        // console.warn('Updated State!');
-      });
-    }).catch((error) => {
-      console.error('getChallenges error: ', error);
+    // console.error(JSON.stringify(newState));
+    this.setState(newState, () => {
+      if (newState.raceSetup.opponent.run_id) {
+        let runId = newState.raceSetup.opponent.run_id;
+        fetch('https://www.racewithfriends.tk:8000/runs/' + runId, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }).then((response) => {
+          return response.json();
+        }).then((responseJson) => {
+          const nextState = {};
+          nextState.raceSetup = this.state.raceSetup;
+          nextState.raceSetup.opponent = responseJson.data;
+          console.error(JSON.stringify(nextState));
+          this.setState(nextState, () => {
+            console.warn('Updated State!');
+          });
+        }).catch((error) => {
+          console.error('onPickOpponent error: ', error);
+        });
+      }
     });
+    // console.error('newState: ', newState.raceSetup.opponent.run_id);
   }
 
   getChallenges(callback) {
