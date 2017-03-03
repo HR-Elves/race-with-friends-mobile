@@ -42,7 +42,7 @@ let challenges;
 const raceTypes = {
   Presets: presets,
   'My Runs': myRuns,
-  Challenges: 'Under Construction',
+  Challenges: challenges,
   Live: 'Under Construction',
 };
 
@@ -80,9 +80,14 @@ export default class Race extends Component {
 
   componentWillMount() {
     this.beginGPSTracking();
-    console.warn('====== this.props at willMount = ', JSON.stringify(this.props.userId));
+    // console.warn('====== this.props at willMount = ', JSON.stringify(this.props.userId));
     // this.getChallenges((responseJSON) => {
-    //   console.warn(JSON.stringify(responseJSON));
+    //   // console.warn(JSON.stringify(responseJSON));
+    //   let newChallenges = {};
+    //   responseJSON.forEach((challenge) => {
+    //     newChallenges.challenge.name = challenge;
+    //   });
+    //   challenge = newChallenges;
     // });
   }
 
@@ -259,9 +264,9 @@ export default class Race extends Component {
   }
 
   getChallenges(callback) {
-    console.warn('userId=', this.props.userId);
-    let userId = this.props.userId;
-    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + userId, {
+    // console.warn('userId=', this.props.userId);
+    // let userId = this.props.userId;
+    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + this.props.userId, {
     fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
       method: 'GET',
       headers: {
