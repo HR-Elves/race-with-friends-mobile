@@ -139,6 +139,7 @@ export default class Race extends Component {
 
     let currentLoc = processLocation(location, this.state.history);
     let newRaceStatus = getRaceStatus(currentLoc, this.state.raceSetup.opponent, this.state.raceStatus);
+
     if (newRaceStatus.passedOpponent) {
       BackgroundGeolocation.playSound(1001);
     }
@@ -146,12 +147,6 @@ export default class Race extends Component {
       let pattern = [0];
       Vibration.vibrate(pattern);
     }
-
-    this.setTimeoutID = setTimeout((() => {
-      BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
-        this.onLocationUpdate(location);
-      });
-    }).bind(this), 10000);
 
     this.state.history.push(currentLoc);
     this.setState({
@@ -166,6 +161,17 @@ export default class Race extends Component {
       }
     });
 
+    if (!newRaceStatus.challengeDone) {
+      this.setTimeoutID = setTimeout((() => {
+        BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
+          this.onLocationUpdate(location);
+        });
+      }).bind(this), 10000);
+    } else { // challenge done
+      BackgroundGeolocation.un('location', this.onLocationUpdate);
+      BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
+      BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);      
+    }
     console.log('~~~', JSON.stringify(location));
   }
 
