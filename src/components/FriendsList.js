@@ -15,7 +15,7 @@ export default class Challenge extends Component {
     super(props);
   }
 
-  render() {   
+  render() {
     return (
       <ScrollView>
       {
@@ -24,20 +24,37 @@ export default class Challenge extends Component {
             <ListItem
               key={friend.fb_id}
               divider
-              leftElement={<Icon size={20} color="black" name="tag-faces" />}
-              centerElement={friend.fullname}
+              leftElement={
+                <Image
+                  style={{width: 50, height: 50}}
+                  source={{uri: friend.pic}}
+                />}
+              // leftElement={<Icon size={20} color="black" name="tag-faces" />}
+              centerElement={<Text style={styles.name}>{friend.fullname}</Text>}
+
+
               rightElement={friend.selected ?
-                <Image 
-                  source={require('../../assets/images/green-check-mark.png')} 
+                <Image
+                  source={require('../../assets/images/green-check-mark.png')}
                   style={{width: 20, height: 20}}
                 />
-                : <Text></Text>}
-              onPress={() => {this.props.onFriendSelect(friend);}}               
+                : <Text style={styles.empty}></Text>}
+              onPress={() => {this.props.onFriendSelect(friend);}}
             />
           );
         })
-      } 
+      }
       </ScrollView>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  name: {
+    // marginLeft: 75
+    textAlign: 'center'
+  },
+  empty: {
+    marginRight: 50
+  }
+});
