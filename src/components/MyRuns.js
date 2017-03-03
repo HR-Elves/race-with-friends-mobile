@@ -3,15 +3,14 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView
+  ScrollView, 
+  Dimensions
 } from 'react-native';
 
-import { Dimensions } from 'react-native';
-
-import james from '../../assets/presetChallenges/MarketSt3';
-import nick from '../../assets/presetChallenges/MarketSt4';
-
 import { ListItem, Subheader } from 'react-native-material-ui';
+
+import RunsList from './RunsList';
+import RunView from './RunView';
 
 export default class MyRuns extends Component {
   constructor(props) {
@@ -24,7 +23,9 @@ export default class MyRuns extends Component {
   componentWillMount() {
     this.getRunsData((result) => {
       this.setState ({
-        runs: result
+        runs: result,
+        selectedRun: null,
+        displayState: 'list'  // can be 'list' or 'selected'
       });
     });
   }
@@ -50,6 +51,12 @@ export default class MyRuns extends Component {
       });
   }
 
+  onRunSelect(run) {
+    this.setState({
+      selectedRun: run,
+      displayState: 'selected'
+    });
+  }
 
   render() {
     const styles = StyleSheet.create({
@@ -63,24 +70,17 @@ export default class MyRuns extends Component {
 
     return (
       <View style={styles.container}>
-        <Subheader text="My Runs" />
-        <ScrollView>
-        {
-          this.state.runs.map((run) => {
-           return (
-              <ListItem
-                key={run.id}
-                divider
-                centerElement={{
-                  primaryText: run.name,
-                  secondaryText: run.created,
-                }}
-                onPress={() => {}}
-              />
-            );
-          })
+        {this.state.displayState === 'list' &&
+          <View style={{flex: 1}}>
+            <Subheader text="My Runs" />
+            <RunsList runs={this.state.runs} onRunSelect={this.onRunSelect.bind(this)}/>
+          </View>
         }
-        </ScrollView>
+        {this.state.displayState === 'selected' &&
+          <View style={{flex: 1}}>
+            <RunView run={this.state.selectedRun} />
+          </View>
+        }
       </View>
     );
   }
