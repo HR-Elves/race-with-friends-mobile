@@ -9,7 +9,7 @@ import {
 import {ListItem} from 'react-native-material-ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export default class Challenge extends Component {
+export default class RunsList extends Component {
   constructor(props) {
     super(props);
   }

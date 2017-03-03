@@ -53,8 +53,8 @@ export default class StatsView extends Component {
       <ThemeProvider uiTheme={uiTheme}>    
         <View style={styles.container}>
           <View style={styles.center}>
-            {this.state.currentTab === 0 && <Text>My Stats</Text> }
-            {this.state.currentTab === 1 && <MyRuns userId={this.props.userId}/> }
+            {this.state.currentTab === 0 && <MyRuns userId={this.props.userId}/> }
+            {this.state.currentTab === 1 && <Text>My Stats</Text> }
           </View>
           <BottomNavigation
             labelColor="white"
@@ -63,14 +63,14 @@ export default class StatsView extends Component {
             onTabChange={this.onTabChange.bind(this)}
           >
             <Tab
-              barBackgroundColor="#37474F"
-              label="My Stats"
-              icon={<Icon size={24} color="white" name="show-chart" />}
-            />
-            <Tab
               barBackgroundColor="#00796B"
               label="My Runs"
               icon={<Icon size={24} color="white" name="directions-run" />}
+            />
+            <Tab
+              barBackgroundColor="#37474F"
+              label="My Stats"
+              icon={<Icon size={24} color="white" name="show-chart" />}
             />
           </BottomNavigation>
         </View>
