@@ -67,9 +67,10 @@ export default class Race extends Component {
       },
       showSetupRace: true,
       raceSetup: {
-        raceType: 'presets',
+        raceType: 'Presets',
         oppOptions: Object.keys(presets),
-        opponent: walk
+        opponent: walk,
+        challenge: walk
       }
       // raceTabOn: false,
     };
@@ -81,14 +82,15 @@ export default class Race extends Component {
   componentWillMount() {
     this.beginGPSTracking();
     // console.warn('====== this.props at willMount = ', JSON.stringify(this.props.userId));
-    // this.getChallenges((responseJSON) => {
-    //   // console.warn(JSON.stringify(responseJSON));
-    //   let newChallenges = {};
-    //   responseJSON.forEach((challenge) => {
-    //     newChallenges.challenge.name = challenge;
-    //   });
-    //   challenge = newChallenges;
-    // });
+    this.getChallenges((responseJSON) => {
+      // console.warn(JSON.stringify(responseJSON));
+      let newChallenges = {};
+      responseJSON.forEach((challenge) => {
+        newChallenges[challenge.name] = challenge;
+      });
+      raceTypes['Challenges'] = newChallenges;
+      // console.warn('Challenges loaded.');
+    });
   }
 
   componentDidMount() {
@@ -157,7 +159,7 @@ export default class Race extends Component {
         opponentDist: currentLoc.distanceTotal - newRaceStatus.distanceToOpponent,
         totalDist: opponent[opponent.length - 1].distanceTotal,
         playerWon: false,
-        opponentWon: false
+        opponentWon: false,
       }
     });
 
@@ -198,7 +200,7 @@ export default class Race extends Component {
     }).then((response) => {
       return response.json();
     }).then((responseJSON) => {
-      console.warn('res.id =>', responseJSON.id);
+      // console.warn('res.id =>', responseJSON.id);
     }).catch((error) => {
       console.error(error);
     });
@@ -258,6 +260,7 @@ export default class Race extends Component {
     const newState = {};
     newState.raceSetup = this.state.raceSetup;
     newState.raceSetup.raceType = value;
+    // console.warn('challenges = ', challenges);
     newState.raceSetup.oppOptions = Object.keys(raceTypes[value]);
     this.setState(newState);
   }
@@ -266,14 +269,40 @@ export default class Race extends Component {
     const newState = {};
     newState.raceSetup = this.state.raceSetup;
     newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
-    this.setState(newState);
+    newState.raceSetup.challenge = raceTypes[this.state.raceSetup.raceType][value];
+    // console.error(JSON.stringify(newState));
+    this.setState(newState, () => {
+      if (newState.raceSetup.opponent.run_id) {
+        let runId = newState.raceSetup.opponent.run_id;
+        fetch('https://www.racewithfriends.tk:8000/runs/' + runId, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }).then((response) => {
+          return response.json();
+        }).then((responseJson) => {
+          const nextState = {};
+          nextState.raceSetup = this.state.raceSetup;
+          nextState.raceSetup.opponent = responseJson.data;
+          // console.error(JSON.stringify(nextState));
+          this.setState(nextState, () => {
+            // console.warn('Updated State!');
+          });
+        }).catch((error) => {
+          console.error('onPickOpponent error: ', error);
+        });
+      }
+    });
+    // console.error('newState: ', newState.raceSetup.opponent.run_id);
   }
 
   getChallenges(callback) {
     // console.warn('userId=', this.props.userId);
     // let userId = this.props.userId;
-    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + this.props.userId, {
-    fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
+    fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + this.props.userId, {
+    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -334,49 +363,62 @@ export default class Race extends Component {
               <Button
                 onPress={this.onRecord.bind(this)}
                 title='Record'
-                color='red'
+                color='#dc143c' // Crimson
               />
               <Button
                 onPress={this.onStopRecord.bind(this)}
                 title="Stop"
-                color='blue'
+                color='#00008b' // Blue
               />
               <Button
                 onPress={this.clearHistory.bind(this)}
                 title="Clear"
-                color='green'
+                color='#008000' // Green
               />
             </View>
           </View>}
         {this.state.showSetupRace &&
           <View style={styles.container}>
-           <View style={styles.container}>
-            <Text style={{fontSize: 20}}>Setup Race</Text>
-            <Text>Race type:</Text>
-            <ModalDropdown
-              options={['Presets', 'My Runs', 'Challenges', 'Live']}
-              onSelect={this.onPickRaceType.bind(this)}
-              textStyle={{fontSize: 24}}
-              style={{marginBottom: 25}}
-            />
-            <Text>Opponent:</Text>
-            <ModalDropdown
-              options={this.state.raceSetup.oppOptions}
-              onSelect={this.onPickOpponent.bind(this)}
-              textStyle={{fontSize: 24}}
-              style={{marginBottom: 25}}
-            />
-            <TouchableHighlight onPress={() => {
-              this.showSetupRace(!this.state.showSetupRace);
-            }}>
-              <Text>Done!</Text>
-            </TouchableHighlight>
-           </View>
+            <View style={styles.container}>
+              <Text style={{fontSize: 26}}>Setup Race</Text>
+              <Text>Race type:</Text>
+              <ModalDropdown
+                options={['Presets', 'My Runs', 'Challenges', 'Live']}
+                onSelect={this.onPickRaceType.bind(this)}
+                textStyle={{fontSize: 24}}
+                defaultValue='Presets'
+                // style={{marginBottom: 25}}
+              />
+              <Text>Opponent:</Text>
+              <ModalDropdown
+                options={this.state.raceSetup.oppOptions}
+                onSelect={this.onPickOpponent.bind(this)}
+                textStyle={{fontSize: 24}}
+                defaultValue='worldRecordRaceWalk100m'
+                // style={{marginBottom: 25}}
+              />
+              <View style={{
+                flex: 1,
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                backgroundColor: '#F5FCFF',
+              }}>
+                <Text>{`Name: ${this.state.raceSetup.challenge.name ? this.state.raceSetup.challenge.name : 'Preset'}`}</Text>
+                <Text>{`Description: ${this.state.raceSetup.challenge.description ? this.state.raceSetup.challenge.description : 'Preset'}`}</Text>
+                <Text>{`Total Distance: ${Math.round(this.state.raceSetup.challenge.distanceTotal ? this.state.raceSetup.challenge.distanceTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].distanceTotal)} meters`}</Text>
+                <Text>{`Total Time: ${Math.round((this.state.raceSetup.challenge.timeTotal ? this.state.raceSetup.challenge.timeTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].timeTotal) / 1000)} seconds`}</Text>
+                <Text>{`Message: ${this.state.raceSetup.challenge.message ? this.state.raceSetup.challenge.message : '--'}`}</Text>
+                <TouchableHighlight onPress={() => {
+                  this.showSetupRace(!this.state.showSetupRace);
+                }}>
+                  <Text>Done!</Text>
+                </TouchableHighlight>
+              </View>
+            </View>
           </View>}
         {<Prompt
           title="Please name your race."
           placeholder="Race Name"
-          defaultValue=""
           visible={ this.state.promptVisible }
           onCancel={ () => this.setState({
             promptVisible: false,

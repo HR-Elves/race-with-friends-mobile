@@ -8,7 +8,8 @@ import {
   Button,
   Navigator,
   ListView,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
@@ -112,7 +113,7 @@ export default class RaceWithFriends extends Component {
           alignItems: 'center',
           backgroundColor: '#F5FCFF',
         }}>
-          <Text>Loading...</Text>
+          <Image source={require('./assets/images/StickmanRunning.gif')} />
         </View>
       );
     }
@@ -144,7 +145,7 @@ export default class RaceWithFriends extends Component {
           <TouchableOpacity
             // style={styles.navBarLeftButton}
             onPress={() => { _emitter.emit('openMenu'); }}>
-            <Icon name='menu' size={25} color={'Black'} />
+            <Icon name='menu' size={25} color={/*Black*/'#000000'} />
           </TouchableOpacity>
         );
       },
@@ -152,7 +153,7 @@ export default class RaceWithFriends extends Component {
       RightButton(route, navigator, index, navState) {
         return (
           <TouchableOpacity /*style={styles.navBarRightButton}*/>
-            <Icon name='more-vert' size={25} color={'Black'} />
+            <Icon name='more-vert' size={25} color={/*Black*/'#000000'} />
           </TouchableOpacity>
         );
       },
