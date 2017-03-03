@@ -81,14 +81,15 @@ export default class Race extends Component {
   componentWillMount() {
     this.beginGPSTracking();
     // console.warn('====== this.props at willMount = ', JSON.stringify(this.props.userId));
-    // this.getChallenges((responseJSON) => {
-    //   // console.warn(JSON.stringify(responseJSON));
-    //   let newChallenges = {};
-    //   responseJSON.forEach((challenge) => {
-    //     newChallenges.challenge.name = challenge;
-    //   });
-    //   challenge = newChallenges;
-    // });
+    this.getChallenges((responseJSON) => {
+      // console.warn(JSON.stringify(responseJSON));
+      let newChallenges = {};
+      responseJSON.forEach((challenge) => {
+        newChallenges[challenge.name] = challenge;
+      });
+      raceTypes['Challenges'] = newChallenges;
+      // console.warn('Challenges loaded.');
+    });
   }
 
   componentDidMount() {
@@ -192,7 +193,7 @@ export default class Race extends Component {
     }).then((response) => {
       return response.json();
     }).then((responseJSON) => {
-      console.warn('res.id =>', responseJSON.id);
+      // console.warn('res.id =>', responseJSON.id);
     }).catch((error) => {
       console.error(error);
     });
@@ -252,6 +253,7 @@ export default class Race extends Component {
     const newState = {};
     newState.raceSetup = this.state.raceSetup;
     newState.raceSetup.raceType = value;
+    // console.warn('challenges = ', challenges);
     newState.raceSetup.oppOptions = Object.keys(raceTypes[value]);
     this.setState(newState);
   }
@@ -266,8 +268,8 @@ export default class Race extends Component {
   getChallenges(callback) {
     // console.warn('userId=', this.props.userId);
     // let userId = this.props.userId;
-    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + this.props.userId, {
-    fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
+    fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + this.props.userId, {
+    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -345,21 +347,36 @@ export default class Race extends Component {
         {this.state.showSetupRace &&
           <View style={styles.container}>
            <View style={styles.container}>
-            <Text style={{fontSize: 20}}>Setup Race</Text>
+            <Text style={{fontSize: 26}}>Setup Race</Text>
             <Text>Race type:</Text>
             <ModalDropdown
               options={['Presets', 'My Runs', 'Challenges', 'Live']}
               onSelect={this.onPickRaceType.bind(this)}
               textStyle={{fontSize: 24}}
-              style={{marginBottom: 25}}
+              defaultValue='Presets'
+              // style={{marginBottom: 25}}
             />
             <Text>Opponent:</Text>
             <ModalDropdown
               options={this.state.raceSetup.oppOptions}
               onSelect={this.onPickOpponent.bind(this)}
               textStyle={{fontSize: 24}}
-              style={{marginBottom: 25}}
+              defaultValue='worldRecordRaceWalk100m'
+              // style={{marginBottom: 25}}
             />
+            <View style={{
+              flex: 1,
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              backgroundColor: '#F5FCFF',
+            }}>
+              <Text>{`Name: ${this.state.raceSetup.opponent.name ? this.state.raceSetup.opponent.name : 'Preset'}`}</Text>
+              <Text>{`Description: ${this.state.raceSetup.opponent.description ? this.state.raceSetup.opponent.description : 'Preset'}`}</Text>
+              <Text>{`Total Distance: ${this.state.raceSetup.opponent.distanceTotal ? this.state.raceSetup.opponent.distanceTotal : this.state.raceSetup.opponent[this.state.raceSetup.opponent.length - 1].distanceTotal} meters`}</Text>
+              <Text>{`Total Time: ${Math.round((this.state.raceSetup.opponent.timeTotal ? this.state.raceSetup.opponent.timeTotal : this.state.raceSetup.opponent[this.state.raceSetup.opponent.length - 1].timeTotal) / 1000)} seconds`}</Text>
+              <Text>{`Message: ${this.state.raceSetup.opponent.message ? this.state.raceSetup.opponent.message : '--'}`}</Text>
+
+            </View>
             <TouchableHighlight onPress={() => {
               this.showSetupRace(!this.state.showSetupRace);
             }}>
@@ -370,7 +387,6 @@ export default class Race extends Component {
         {<Prompt
           title="Please name your race."
           placeholder="Race Name"
-          defaultValue=""
           visible={ this.state.promptVisible }
           onCancel={ () => this.setState({
             promptVisible: false,
