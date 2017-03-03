@@ -264,6 +264,7 @@ export default class Race extends Component {
     newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
     this.setState(newState);
 
+    // console.error('newState: ', newState.raceSetup.opponent.run_id);
     let runId = newState.raceSetup.opponent.run_id;
     fetch('https://www.racewithfriends.tk:8000/runs/' + runId, {
       method: 'GET',
@@ -274,7 +275,12 @@ export default class Race extends Component {
     }).then((response) => {
       return response.json();
     }).then((responseJson) => {
-      console.warn(responseJson);
+      const newState = {};
+      newState.raceSetup = this.state.raceSetup;
+      newState.raceSetup.opponent = responseJson.data;
+      this.setState(newState, () => {
+        // console.warn('Updated State!');
+      });
     }).catch((error) => {
       console.error('getChallenges error: ', error);
     });
