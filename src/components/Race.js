@@ -69,7 +69,8 @@ export default class Race extends Component {
       raceSetup: {
         raceType: 'Presets',
         oppOptions: Object.keys(presets),
-        opponent: walk
+        opponent: walk,
+        challenge: walk
       }
       // raceTabOn: false,
     };
@@ -163,7 +164,7 @@ export default class Race extends Component {
         opponentDist: currentLoc.distanceTotal - newRaceStatus.distanceToOpponent,
         totalDist: opponent[opponent.length - 1].distanceTotal,
         playerWon: false,
-        opponentWon: false
+        opponentWon: false,
       }
     });
 
@@ -262,6 +263,7 @@ export default class Race extends Component {
     const newState = {};
     newState.raceSetup = this.state.raceSetup;
     newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
+    newState.raceSetup.challenge = raceTypes[this.state.raceSetup.raceType][value];
     // console.error(JSON.stringify(newState));
     this.setState(newState, () => {
       if (newState.raceSetup.opponent.run_id) {
@@ -278,9 +280,9 @@ export default class Race extends Component {
           const nextState = {};
           nextState.raceSetup = this.state.raceSetup;
           nextState.raceSetup.opponent = responseJson.data;
-          console.error(JSON.stringify(nextState));
+          // console.error(JSON.stringify(nextState));
           this.setState(nextState, () => {
-            console.warn('Updated State!');
+            // console.warn('Updated State!');
           });
         }).catch((error) => {
           console.error('onPickOpponent error: ', error);
@@ -395,11 +397,11 @@ export default class Race extends Component {
                 alignItems: 'center',
                 backgroundColor: '#F5FCFF',
               }}>
-                <Text>{`Name: ${this.state.raceSetup.opponent.name ? this.state.raceSetup.opponent.name : 'Preset'}`}</Text>
-                <Text>{`Description: ${this.state.raceSetup.opponent.description ? this.state.raceSetup.opponent.description : 'Preset'}`}</Text>
-                <Text>{`Total Distance: ${this.state.raceSetup.opponent.distanceTotal ? this.state.raceSetup.opponent.distanceTotal : this.state.raceSetup.opponent[this.state.raceSetup.opponent.length - 1].distanceTotal} meters`}</Text>
-                <Text>{`Total Time: ${Math.round((this.state.raceSetup.opponent.timeTotal ? this.state.raceSetup.opponent.timeTotal : this.state.raceSetup.opponent[this.state.raceSetup.opponent.length - 1].timeTotal) / 1000)} seconds`}</Text>
-                <Text>{`Message: ${this.state.raceSetup.opponent.message ? this.state.raceSetup.opponent.message : '--'}`}</Text>
+                <Text>{`Name: ${this.state.raceSetup.challenge.name ? this.state.raceSetup.challenge.name : 'Preset'}`}</Text>
+                <Text>{`Description: ${this.state.raceSetup.challenge.description ? this.state.raceSetup.challenge.description : 'Preset'}`}</Text>
+                <Text>{`Total Distance: ${Math.round(this.state.raceSetup.challenge.distanceTotal ? this.state.raceSetup.challenge.distanceTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].distanceTotal)} meters`}</Text>
+                <Text>{`Total Time: ${Math.round((this.state.raceSetup.challenge.timeTotal ? this.state.raceSetup.challenge.timeTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].timeTotal) / 1000)} seconds`}</Text>
+                <Text>{`Message: ${this.state.raceSetup.challenge.message ? this.state.raceSetup.challenge.message : '--'}`}</Text>
                 <TouchableHighlight onPress={() => {
                   this.showSetupRace(!this.state.showSetupRace);
                 }}>
