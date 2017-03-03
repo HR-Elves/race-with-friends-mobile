@@ -263,6 +263,21 @@ export default class Race extends Component {
     newState.raceSetup = this.state.raceSetup;
     newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
     this.setState(newState);
+
+    let runId = newState.raceSetup.opponent.run_id;
+    fetch('https://www.racewithfriends.tk:8000/runs/' + runId, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      return response.json();
+    }).then((responseJson) => {
+      console.warn(responseJson);
+    }).catch((error) => {
+      console.error('getChallenges error: ', error);
+    });
   }
 
   getChallenges(callback) {
@@ -330,59 +345,58 @@ export default class Race extends Component {
               <Button
                 onPress={this.onRecord.bind(this)}
                 title='Record'
-                color='red'
+                color='#dc143c' // Crimson
               />
               <Button
                 onPress={this.onStopRecord.bind(this)}
                 title="Stop"
-                color='blue'
+                color='#00008b' // Blue
               />
               <Button
                 onPress={this.clearHistory.bind(this)}
                 title="Clear"
-                color='green'
+                color='#008000' // Green
               />
             </View>
           </View>}
         {this.state.showSetupRace &&
           <View style={styles.container}>
-           <View style={styles.container}>
-            <Text style={{fontSize: 26}}>Setup Race</Text>
-            <Text>Race type:</Text>
-            <ModalDropdown
-              options={['Presets', 'My Runs', 'Challenges', 'Live']}
-              onSelect={this.onPickRaceType.bind(this)}
-              textStyle={{fontSize: 24}}
-              defaultValue='Presets'
-              // style={{marginBottom: 25}}
-            />
-            <Text>Opponent:</Text>
-            <ModalDropdown
-              options={this.state.raceSetup.oppOptions}
-              onSelect={this.onPickOpponent.bind(this)}
-              textStyle={{fontSize: 24}}
-              defaultValue='worldRecordRaceWalk100m'
-              // style={{marginBottom: 25}}
-            />
-            <View style={{
-              flex: 1,
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              backgroundColor: '#F5FCFF',
-            }}>
-              <Text>{`Name: ${this.state.raceSetup.opponent.name ? this.state.raceSetup.opponent.name : 'Preset'}`}</Text>
-              <Text>{`Description: ${this.state.raceSetup.opponent.description ? this.state.raceSetup.opponent.description : 'Preset'}`}</Text>
-              <Text>{`Total Distance: ${this.state.raceSetup.opponent.distanceTotal ? this.state.raceSetup.opponent.distanceTotal : this.state.raceSetup.opponent[this.state.raceSetup.opponent.length - 1].distanceTotal} meters`}</Text>
-              <Text>{`Total Time: ${Math.round((this.state.raceSetup.opponent.timeTotal ? this.state.raceSetup.opponent.timeTotal : this.state.raceSetup.opponent[this.state.raceSetup.opponent.length - 1].timeTotal) / 1000)} seconds`}</Text>
-              <Text>{`Message: ${this.state.raceSetup.opponent.message ? this.state.raceSetup.opponent.message : '--'}`}</Text>
-
+            <View style={styles.container}>
+              <Text style={{fontSize: 26}}>Setup Race</Text>
+              <Text>Race type:</Text>
+              <ModalDropdown
+                options={['Presets', 'My Runs', 'Challenges', 'Live']}
+                onSelect={this.onPickRaceType.bind(this)}
+                textStyle={{fontSize: 24}}
+                defaultValue='Presets'
+                // style={{marginBottom: 25}}
+              />
+              <Text>Opponent:</Text>
+              <ModalDropdown
+                options={this.state.raceSetup.oppOptions}
+                onSelect={this.onPickOpponent.bind(this)}
+                textStyle={{fontSize: 24}}
+                defaultValue='worldRecordRaceWalk100m'
+                // style={{marginBottom: 25}}
+              />
+              <View style={{
+                flex: 1,
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                backgroundColor: '#F5FCFF',
+              }}>
+                <Text>{`Name: ${this.state.raceSetup.opponent.name ? this.state.raceSetup.opponent.name : 'Preset'}`}</Text>
+                <Text>{`Description: ${this.state.raceSetup.opponent.description ? this.state.raceSetup.opponent.description : 'Preset'}`}</Text>
+                <Text>{`Total Distance: ${this.state.raceSetup.opponent.distanceTotal ? this.state.raceSetup.opponent.distanceTotal : this.state.raceSetup.opponent[this.state.raceSetup.opponent.length - 1].distanceTotal} meters`}</Text>
+                <Text>{`Total Time: ${Math.round((this.state.raceSetup.opponent.timeTotal ? this.state.raceSetup.opponent.timeTotal : this.state.raceSetup.opponent[this.state.raceSetup.opponent.length - 1].timeTotal) / 1000)} seconds`}</Text>
+                <Text>{`Message: ${this.state.raceSetup.opponent.message ? this.state.raceSetup.opponent.message : '--'}`}</Text>
+                <TouchableHighlight onPress={() => {
+                  this.showSetupRace(!this.state.showSetupRace);
+                }}>
+                  <Text>Done!</Text>
+                </TouchableHighlight>
+              </View>
             </View>
-            <TouchableHighlight onPress={() => {
-              this.showSetupRace(!this.state.showSetupRace);
-            }}>
-              <Text>Done!</Text>
-            </TouchableHighlight>
-           </View>
           </View>}
         {<Prompt
           title="Please name your race."

@@ -144,7 +144,7 @@ export default class RaceWithFriends extends Component {
           <TouchableOpacity
             // style={styles.navBarLeftButton}
             onPress={() => { _emitter.emit('openMenu'); }}>
-            <Icon name='menu' size={25} color={'Black'} />
+            <Icon name='menu' size={25} color={/*Black*/'#000000'} />
           </TouchableOpacity>
         );
       },
@@ -152,7 +152,7 @@ export default class RaceWithFriends extends Component {
       RightButton(route, navigator, index, navState) {
         return (
           <TouchableOpacity /*style={styles.navBarRightButton}*/>
-            <Icon name='more-vert' size={25} color={'Black'} />
+            <Icon name='more-vert' size={25} color={/*Black*/'#000000'} />
           </TouchableOpacity>
         );
       },
