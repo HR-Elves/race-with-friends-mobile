@@ -5,17 +5,48 @@ import {
   Text,
   View,
   Button,
-  ProgressViewIOS
+  ProgressViewIOS,
+  Modal,
+  TouchableHighlight
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import Prompt from 'react-native-prompt';
+import ModalDropdown from 'react-native-modal-dropdown';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
-import race from '../../assets/presetChallenges/standardWalk.json';
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
+
+import usain from '../../assets/presetChallenges/UsainBolt100m';
+import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
+import james from '../../assets/presetChallenges/MarketSt3';
+import nick from '../../assets/presetChallenges/MarketSt4';
+import hare from '../../assets/presetChallenges/hare100m';
+
+
+const presets = {
+  'Usain Bolt': usain,
+  worldRecordRaceWalk100m: walk,
+  hare100m: hare
+};
+
+const myRuns = {
+  'James Market St': james,
+  'Nick Market St': nick,
+};
+
+let challenges;
+
+const raceTypes = {
+  Presets: presets,
+  'My Runs': myRuns,
+  Challenges: challenges,
+  Live: 'Under Construction',
+};
+
+let opponent = walk;
 
 export default class Race extends Component {
 
@@ -26,7 +57,21 @@ export default class Race extends Component {
       raceStatus: null,
       promptVisible: false,
       raceName: null,
-      raceDescription: null
+      raceDescription: null,
+      progress: {
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: opponent[opponent.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      },
+      showSetupRace: true,
+      raceSetup: {
+        raceType: 'presets',
+        oppOptions: Object.keys(presets),
+        opponent: walk
+      }
+      // raceTabOn: false,
     };
     this.setTimeoutID = null;
     this.onLocationUpdate = this.onLocationUpdate.bind(this);
@@ -35,6 +80,21 @@ export default class Race extends Component {
 
   componentWillMount() {
     this.beginGPSTracking();
+    // console.warn('====== this.props at willMount = ', JSON.stringify(this.props.userId));
+    // this.getChallenges((responseJSON) => {
+    //   // console.warn(JSON.stringify(responseJSON));
+    //   let newChallenges = {};
+    //   responseJSON.forEach((challenge) => {
+    //     newChallenges.challenge.name = challenge;
+    //   });
+    //   challenge = newChallenges;
+    // });
+  }
+
+  componentDidMount() {
+    // this.getChallenges((responseJSON) => {
+    //   console.warn(JSON.stringify(responseJSON));
+    // });
   }
 
   beginGPSTracking() {
@@ -78,7 +138,7 @@ export default class Race extends Component {
     clearInterval(this.setTimeoutID); //Clear previous setTimeout.
 
     let currentLoc = processLocation(location, this.state.history);
-    let newRaceStatus = getRaceStatus(currentLoc, race, this.state.raceStatus);
+    let newRaceStatus = getRaceStatus(currentLoc, this.state.raceSetup.opponent, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
       BackgroundGeolocation.playSound(1001);
     }
@@ -96,7 +156,14 @@ export default class Race extends Component {
     this.state.history.push(currentLoc);
     this.setState({
       history: this.state.history,
-      raceStatus: newRaceStatus
+      raceStatus: newRaceStatus,
+      progress: {
+        playerDist: currentLoc.distanceTotal,
+        opponentDist: currentLoc.distanceTotal - newRaceStatus.distanceToOpponent,
+        totalDist: opponent[opponent.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
     });
 
     console.log('~~~', JSON.stringify(location));
@@ -132,6 +199,9 @@ export default class Race extends Component {
   }
 
   onRecord() {
+    // if (opponent) {
+    //   console.error('You have not selected an opponent!');
+    // }
     // This handler fires whenever bgGeo receives a location update.
     BackgroundGeolocation.on('location', this.onLocationUpdate);
     // This handler fires when movement states changes (stationary->moving; moving->stationary)
@@ -153,9 +223,62 @@ export default class Race extends Component {
   }
 
   clearHistory() {
+    clearInterval(this.setTimeoutID);
+
+    BackgroundGeolocation.un('location', this.onLocationUpdate);
+    BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
+    BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
+
     this.setState({
       history: [],
       raceStatus: null,
+      progress: {
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: opponent[opponent.length - 1].distanceTotal,
+        playerWon: false,
+        opponentWon: false
+      }
+    });
+  }
+
+  showSetupRace(visible) {
+    this.setState({
+      showSetupRace: visible
+    });
+  }
+
+  onPickRaceType(key, value) {
+    const newState = {};
+    newState.raceSetup = this.state.raceSetup;
+    newState.raceSetup.raceType = value;
+    newState.raceSetup.oppOptions = Object.keys(raceTypes[value]);
+    this.setState(newState);
+  }
+
+  onPickOpponent(key, value) {
+    const newState = {};
+    newState.raceSetup = this.state.raceSetup;
+    newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
+    this.setState(newState);
+  }
+
+  getChallenges(callback) {
+    // console.warn('userId=', this.props.userId);
+    // let userId = this.props.userId;
+    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + this.props.userId, {
+    fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      return response.json();
+    }).then((responseJson) => {
+      callback(responseJson);
+    }).catch((error) => {
+      console.error('getChallenges error: ', error);
     });
   }
 
@@ -166,7 +289,6 @@ export default class Race extends Component {
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
-        marginTop: 50
       },
       welcome: {
         fontSize: 20,
@@ -186,33 +308,65 @@ export default class Race extends Component {
       }
     });
 
-    let distanceToOpponent = this.state.raceStatus ? this.state.raceStatus.distanceToOpponent : 'initializing';
-    let distanceRemaining = this.state.raceStatus ? this.state.raceStatus.distanceRemaining : 'initializing';
-
     return (
-      <View style={styles.container}>
-        <RaceStatus
-          status={this.state.raceStatus}
-          playerName={'You'}
-          opponentName={'Opponent'}
-        />
-        <View style={styles.buttons}>
-          <Button
-            onPress={this.onRecord.bind(this)}
-            title='Record'
-            color='red'
-          />
-          <Button
-            onPress={this.onStopRecord.bind(this)}
-            title="Stop"
-            color='blue'
-          />
-          <Button
-            onPress={this.clearHistory.bind(this)}
-            title="Clear"
-            color='green'
-          />
-        </View>
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF',
+        marginTop: 50
+      }}>
+        {!this.state.showSetupRace &&
+          <View style={styles.container}>
+            <RaceProgress progress={this.state.progress} />
+            <RaceStatus
+              status={this.state.raceStatus}
+              playerName={'Player'}
+              opponentName={'Opponent'}
+            />
+            <View style={styles.buttons}>
+              <Button
+                onPress={this.onRecord.bind(this)}
+                title='Record'
+                color='red'
+              />
+              <Button
+                onPress={this.onStopRecord.bind(this)}
+                title="Stop"
+                color='blue'
+              />
+              <Button
+                onPress={this.clearHistory.bind(this)}
+                title="Clear"
+                color='green'
+              />
+            </View>
+          </View>}
+        {this.state.showSetupRace &&
+          <View style={styles.container}>
+           <View style={styles.container}>
+            <Text style={{fontSize: 20}}>Setup Race</Text>
+            <Text>Race type:</Text>
+            <ModalDropdown
+              options={['Presets', 'My Runs', 'Challenges', 'Live']}
+              onSelect={this.onPickRaceType.bind(this)}
+              textStyle={{fontSize: 24}}
+              style={{marginBottom: 25}}
+            />
+            <Text>Opponent:</Text>
+            <ModalDropdown
+              options={this.state.raceSetup.oppOptions}
+              onSelect={this.onPickOpponent.bind(this)}
+              textStyle={{fontSize: 24}}
+              style={{marginBottom: 25}}
+            />
+            <TouchableHighlight onPress={() => {
+              this.showSetupRace(!this.state.showSetupRace);
+            }}>
+              <Text>Done!</Text>
+            </TouchableHighlight>
+           </View>
+          </View>}
         {<Prompt
           title="Please name your race."
           placeholder="Race Name"
@@ -228,8 +382,8 @@ export default class Race extends Component {
               raceName: value
             }, () => this.postRun());
           }}
-          submitText='Save Run'
-          cancelText={'Don\'t Save'}
+          submitText='Publish Run'
+          cancelText={'Don\'t Publish'}
         />}
       </View>
     );
