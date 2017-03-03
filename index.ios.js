@@ -48,9 +48,11 @@ export default class RaceWithFriends extends Component {
         this.setState({
           profile: profile,
           userId: profile.identities[0].userId
-        });
-        console.log('this.state.profile', this.state.profile);
-        console.log('this.state.userId', this.state.userId);
+        }, (() => {
+          this._navigator.push(this.navigate('Race'));
+          console.log('===== this.state.userId', this.state.userId);
+          console.log('===== this.state.profile', this.state.profile);
+        }).bind(this));
       }
     });
   }
@@ -102,6 +104,17 @@ export default class RaceWithFriends extends Component {
       return ( <Challenge userId={this.state.userId}/> );
     } else if (route.id === 'Friends') {
       return ( <Friends userId={this.state.userId}/> );
+    } else {
+      return (
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#F5FCFF',
+        }}>
+          <Text>Loading...</Text>
+        </View>
+      );
     }
   }
 
@@ -175,8 +188,8 @@ export default class RaceWithFriends extends Component {
           configureScene={(route) => Navigator.SceneConfigs.FloatFromLeft}
           style={{flex: 1}}
           initialRoute={{
-            id: 'Race',
-            title: 'Race'
+            id: '',
+            title: ''
           }}
           renderScene={(route, navigator) => this._renderScene(route, navigator)}
           navigationBar={<Navigator.NavigationBar

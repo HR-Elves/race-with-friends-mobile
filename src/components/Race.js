@@ -37,6 +37,8 @@ const myRuns = {
   'Nick Market St': nick,
 };
 
+let challenges;
+
 const raceTypes = {
   Presets: presets,
   'My Runs': myRuns,
@@ -78,6 +80,16 @@ export default class Race extends Component {
 
   componentWillMount() {
     this.beginGPSTracking();
+    console.warn('====== this.props at willMount = ', JSON.stringify(this.props.userId));
+    // this.getChallenges((responseJSON) => {
+    //   console.warn(JSON.stringify(responseJSON));
+    // });
+  }
+
+  componentDidMount() {
+    // this.getChallenges((responseJSON) => {
+    //   console.warn(JSON.stringify(responseJSON));
+    // });
   }
 
   beginGPSTracking() {
@@ -244,6 +256,25 @@ export default class Race extends Component {
     newState.raceSetup = this.state.raceSetup;
     newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
     this.setState(newState);
+  }
+
+  getChallenges(callback) {
+    console.warn('userId=', this.props.userId);
+    let userId = this.props.userId;
+    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + userId, {
+    fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      return response.json();
+    }).then((responseJson) => {
+      callback(responseJson);
+    }).catch((error) => {
+      console.error('getChallenges error: ', error);
+    });
   }
 
   render() {
