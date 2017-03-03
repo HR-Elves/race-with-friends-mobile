@@ -8,7 +8,8 @@ import {
   Button,
   Navigator,
   ListView,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
@@ -112,7 +113,7 @@ export default class RaceWithFriends extends Component {
           alignItems: 'center',
           backgroundColor: '#F5FCFF',
         }}>
-          <Text>Loading...</Text>
+          <Image source={require('./assets/images/StickmanRunning.gif')} />
         </View>
       );
     }
