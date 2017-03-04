@@ -13,6 +13,7 @@ import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import Prompt from 'react-native-prompt';
 import ModalDropdown from 'react-native-modal-dropdown';
+import Speech from 'react-native-speech';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
@@ -94,6 +95,14 @@ export default class Race extends Component {
   }
 
   componentDidMount() {
+    // Speech.supportedVoices()
+    // .then(locales => {
+    //   console.error(locales); // ["ar-SA", "en-ZA", "nl-BE", "en-AU", "th-TH", ...]
+    // });
+    Speech.speak({
+      text: 'Welcome to Race With Friends, a social running app with real time competitive elements',
+      voice: 'en-AU'
+    });
     // this.getChallenges((responseJSON) => {
     //   console.warn(JSON.stringify(responseJSON));
     // });
@@ -172,7 +181,7 @@ export default class Race extends Component {
     } else { // challenge done
       BackgroundGeolocation.un('location', this.onLocationUpdate);
       BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
-      BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);      
+      BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
     }
     console.log('~~~', JSON.stringify(location));
   }
@@ -207,9 +216,6 @@ export default class Race extends Component {
   }
 
   onRecord() {
-    // if (opponent) {
-    //   console.error('You have not selected an opponent!');
-    // }
     // This handler fires whenever bgGeo receives a location update.
     BackgroundGeolocation.on('location', this.onLocationUpdate);
     // This handler fires when movement states changes (stationary->moving; moving->stationary)

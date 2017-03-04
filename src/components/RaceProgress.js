@@ -3,8 +3,9 @@ import {
   StyleSheet,
   Text,
   View,
-  ProgressViewIOS
+  Dimensions
 } from 'react-native';
+import ProgressBar from 'react-native-progress/Bar';
 
 export default class RaceProgress extends Component {
   constructor(props) {
@@ -28,18 +29,24 @@ export default class RaceProgress extends Component {
       <View>
         <View style={styles.progressView}>
           <Text>{'Player'}</Text>
-          <ProgressViewIOS
-            progressViewStyle='bar'
-            progressTintColor="green"
+          <ProgressBar
+            animated={true}
+            color='#00008b' // Blue
+            borderColor='#00008b' // Blue
+            width={Dimensions.get('window').width * 0.65}
+            height={Dimensions.get('window').height * 0.02}
             progress={playerProgress}
           />
           {progress.playerWon && <Text>Player Won!</Text>}
         </View>
         <View style={styles.progressView}>
           <Text>{'Opponent'}</Text>
-          <ProgressViewIOS
-            progressViewStyle='bar'
-            progressTintColor="red"
+          <ProgressBar
+            animated={true}
+            color='#dc143c' // Crimson
+            borderColor='#dc143c' // Crimson
+            width={Dimensions.get('window').width * 0.65}
+            height={Dimensions.get('window').height * 0.02}
             progress={opponentProgress}
           />
           {progress.opponentWon && <Text>Opponent Won!</Text>}
