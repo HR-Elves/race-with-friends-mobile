@@ -152,7 +152,10 @@ export default class Race extends Component {
     let newRaceStatus = getRaceStatus(currentLoc, this.state.raceSetup.opponent, this.state.raceStatus);
 
     if (newRaceStatus.passedOpponent) {
-      BackgroundGeolocation.playSound(1001);
+      Speech.speak({
+        text: 'You just passed your opponent!',
+        voice: 'en-AU'
+      });
     }
     if (newRaceStatus.distanceToOpponent > 0) {
       let pattern = [0];
@@ -179,6 +182,22 @@ export default class Race extends Component {
         });
       }).bind(this), 10000);
     } else { // challenge done
+      if (newRaceStatus.distanceToOpponent > 0) {
+        Speech.speak({
+          text: `Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters`,
+          voice: 'en-AU'
+        });
+      } else if (newRaceStatus.distanceToOpponent < 0) {
+        Speech.speak({
+          text: `Sorry, your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters`,
+          voice: 'en-AU'
+        });
+      } else {
+        Speech.speak({
+          text: 'Wow, you and your opponent tied!',
+          voice: 'en-AU'
+        });
+      }
       BackgroundGeolocation.un('location', this.onLocationUpdate);
       BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
       BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
