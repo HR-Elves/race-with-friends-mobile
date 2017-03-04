@@ -70,19 +70,19 @@ export function getProfile(callback) {
 // //TODO: difference between invalid and expired tokens
 export function verifyToken(token, callback) {
   fetch('http://127.0.0.1:5000/auth/' + token).then(response => { // change url
-    var isValid = JSON.parse(response._bodyInit)
-    console.log('$$$$$$', response._bodyInit)
+    var isValid = JSON.parse(response._bodyInit);
+    console.log('$$$$$$', response._bodyInit);
     if (!isValid) {
       loginUser(callback); //if token is expired or inValid redirect to login
     } else if (response.isExpired) { // Currently not handling difference between invalid and expired token
       loginUser(callback);
     } else if (isValid) {
-      getProfile(callback)
+      getProfile(callback);
       // callback(); //if token is valid app opens
     }
   }).catch(err => {
-    console.log('loginUtils -> verifyToken -> error', err)
-    loginUser(callback)
+    console.log('loginUtils -> verifyToken -> error', err);
+    loginUser(callback);
   })
 }
 
@@ -153,6 +153,27 @@ export function saveProfileAndToken(profile, token, callback) {
           callback(null, profile)
           // verifyProfile(profile, callback)
         }
+      })
+    }
+  })
+}
+
+export function saveUserInDb() {
+  AsyncStorage.getItem('profile', (err, profile) => {
+    if (err) {
+      console.log('saveUserInDb -> getItem', err);
+    } else {
+      fetch('https://mywebsite.com/endpoint/', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fb_id: profile.identities[0].userId,
+          fullname: profile.name,
+          pic: profile.picture
+        })
       })
     }
   })

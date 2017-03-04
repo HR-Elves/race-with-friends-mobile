@@ -32,7 +32,7 @@ export default class Challenge extends Component {
         this.setState ({
           runs: runs,
           friends: friends
-        });        
+        });
       });
     });
   }
@@ -54,7 +54,7 @@ export default class Challenge extends Component {
         callback(responseJson);
       })
       .catch((error) => {
-        console.error(error);
+        console.error('get runs error', error);
       });
   }
 
@@ -74,7 +74,7 @@ export default class Challenge extends Component {
         callback(responseJson);
       })
       .catch((error) => {
-        console.error(error);
+        console.error('get friends error', error);
       });
   }
 
@@ -130,7 +130,7 @@ export default class Challenge extends Component {
       this.setState({
         promptVisible: false,
         displayState: 'challengeSubmitted'
-      }); 
+      });
     }).catch((error) => {
       console.error(error);
     });
@@ -140,7 +140,7 @@ export default class Challenge extends Component {
     const styles = StyleSheet.create({
       container: {
         flex: 1,
-        backgroundColor: '#F5FCFF'        
+        backgroundColor: '#F5FCFF'
       },
       list: {
         marginTop: 60,
@@ -167,7 +167,7 @@ export default class Challenge extends Component {
     };
 
     return (
-      <ThemeProvider uiTheme={uiTheme}> 
+      <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
           {this.state.displayState === 'selectRun' &&
             <View style={styles.list}>
@@ -179,25 +179,25 @@ export default class Challenge extends Component {
             <View style={styles.container}>
               <View style={styles.list}>
                 <Subheader text={`Choose friends to challenge with ${this.state.selectedRun.name}!`} />
-                <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this)}/>         
+                <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this) }/>
               </View>
               <View>
-                <Icon.Button 
-                  name="flash-on" 
+                <Icon.Button
+                  name="flash-on"
                   size={45}
                   backgroundColor="red"
-                  borderRadius={15} 
+                  borderRadius={15}
                   onPress={this.onChallengeButtonPressed.bind(this)}
-                > 
+                >
                   Issue Challenge!
-                </Icon.Button> 
+                </Icon.Button>
               </View>
             </View>
           }
           {this.state.displayState === 'challengeSubmitted' &&
             <View style={styles.center}>
               <Text>Your challenge has been issued to your friends!</Text>
-            </View>            
+            </View>
           }
           <Prompt
             title='Write a message for your friends!'
@@ -208,7 +208,7 @@ export default class Challenge extends Component {
               promptVisible: false,
             }) }
             onSubmit={ (message) => {
-              this.onSubmit(message); 
+              this.onSubmit(message);
             }}
             submitText='Challenge!'
             cancelText='Cancel'
