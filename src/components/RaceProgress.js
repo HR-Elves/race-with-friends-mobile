@@ -31,8 +31,8 @@ export default class RaceProgress extends Component {
           <Text>{'Player'}</Text>
           <ProgressBar
             animated={true}
-            color='#008000' // Green
-            borderColor='#008000' // Green
+            color='#00008b' // Blue
+            borderColor='#00008b' // Blue
             width={Dimensions.get('window').width * 0.65}
             height={Dimensions.get('window').height * 0.02}
             progress={playerProgress}
