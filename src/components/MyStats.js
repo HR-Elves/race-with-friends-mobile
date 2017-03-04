@@ -14,19 +14,8 @@ import CommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 export default class MyStats extends Component {
   constructor(props) {
     super(props);
-    this.state = ({
-      runs: []
-    });
-  }
-
-  componentWillMount() {
-    this.getRunsData((result) => {     
-      this.distanceCovered = this.getDistanceCovered(result); 
-      this.totalRunTime = this.getTotalRunTime(result); 
-      this.setState ({
-        runs: result
-      });
-    });    
+    this.distanceCovered = this.getDistanceCovered(this.props.runs); 
+    this.totalRunTime = this.getTotalRunTime(this.props.runs);     
   }
 
   // returns result in meters
@@ -49,27 +38,6 @@ export default class MyStats extends Component {
     return Math.round((totalRunTime / 1000) / 60);    
   }
 
-  getRunsData(callback) {
-    let userId = this.props.userId;
-    fetch('https://www.racewithfriends.tk:8000/users/' + userId + '/runs',
-      {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJson) => {
-        callback(responseJson);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-
   render() {
     const styles = StyleSheet.create({
       container: {
@@ -88,7 +56,7 @@ export default class MyStats extends Component {
             divider
             leftElement={<Icon size={20} color="black" name="directions-run" />}
             centerElement={{
-              primaryText: `Total Runs: ${this.state.runs.length}`
+              primaryText: `Total Runs: ${this.props.runs.length}`
             }}
           />
           <ListItem

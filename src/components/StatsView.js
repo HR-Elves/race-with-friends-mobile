@@ -16,9 +16,39 @@ export default class StatsView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentTab: 0
+      currentTab: 0,
+      runs: []
     };
   }
+
+  componentWillMount() {
+    this.getRunsData((result) => {
+      this.setState ({
+        runs: result
+      });
+    });    
+  }
+
+  getRunsData(callback) {
+    let userId = this.props.userId;
+    fetch('https://www.racewithfriends.tk:8000/users/' + userId + '/runs',
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        callback(responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }  
 
   onTabChange(newTabIndex) {
     this.setState({
@@ -54,8 +84,8 @@ export default class StatsView extends Component {
       <ThemeProvider uiTheme={uiTheme}>    
         <View style={styles.container}>
           <View style={styles.center}>
-            {this.state.currentTab === 0 && <MyRuns userId={this.props.userId}/> }
-            {this.state.currentTab === 1 && <MyStats userId={this.props.userId}/> }
+            {this.state.currentTab === 0 && <MyRuns userId={this.props.userId} runs={this.state.runs} /> }
+            {this.state.currentTab === 1 && <MyStats userId={this.props.userId} runs={this.state.runs} />  }
           </View>
           <BottomNavigation
             labelColor="white"
