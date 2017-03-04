@@ -19,25 +19,6 @@ export default class FriendView extends Component {
     };
   }
 
-  getRunsData() {
-    // let userId = this.props.friend.fb_id;
-    // fetch('https://www.racewithfriends.tk:8000/users/' + userId + '/runs',
-    //   {
-    //     method: 'GET',
-    //     headers: {
-    //       'Accept': 'application/json',
-    //       'Content-Type': 'application/json',
-    //     }
-    //   })
-    //   .then((response) => {
-    //     console.log('$$$$', response);
-    //     this.setState({runs: response})
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    // });
-  }
-
   componentDidMount() {
     // this.getRunsData();
     let userId = this.props.friend.fb_id;
@@ -50,16 +31,9 @@ export default class FriendView extends Component {
         }
       })
       .then((response) => {
-        console.log('######', response);
-        this.setState({runs: JSON.parse(response._bodyInit)}, (err, success) => {
-          if (err) {
-            console.log('errrrrr', err)
-          } else {
-            console.log('sweet success', success)
-            console.log('#####', this.state.runs)
-          }
+        this.setState({
+          runs: JSON.parse(response._bodyInit)
         })
-        console.log('this.state.runs', this.state.runs)
       })
       .catch((error) => {
         console.error(error);
@@ -76,7 +50,7 @@ export default class FriendView extends Component {
           source={{uri: this.props.friend.pic}}
         />
         <Text style={styles.name} >{this.props.friend.fullname}</Text>
-        <Subheader text="My Runs" />
+        <Subheader text={this.props.friend.fullname.split(' ')[0] + "'s Runs"}/>
 
         <ScrollView>
         {
@@ -107,8 +81,8 @@ export default class FriendView extends Component {
 const styles = StyleSheet.create({
   pic:{
     // marginTop:50,
-    width:150,
-    height: 150,
+    // width:150,
+    // height: 150,
     // paddingBottom:10,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -118,9 +92,9 @@ const styles = StyleSheet.create({
   name:{
     // color:'#fff',
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex:1
+    textAlign: 'center',
+    alignItems: 'center'
+    // flex:1
   },
   container: {
     marginTop: 60,
