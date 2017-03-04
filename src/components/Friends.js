@@ -137,6 +137,7 @@ export default class Friends extends Component {
           {this.state.displayState === 'list' &&
             <View style={styles.listContent}>
               <FriendsList
+                searchable={true}
                 friends={this.state.friends}
                 onFriendSelect={this.onFriendSelect.bind(this)}
                 onButtonPress={this.onButtonPress.bind(this)}

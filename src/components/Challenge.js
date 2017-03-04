@@ -179,7 +179,7 @@ export default class Challenge extends Component {
             <View style={styles.container}>
               <View style={styles.list}>
                 <Subheader text={`Choose friends to challenge with ${this.state.selectedRun.name}!`} />
-                <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this)}/>
+                <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this) }/>
               </View>
               <View>
                 <Icon.Button

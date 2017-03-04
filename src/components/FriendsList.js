@@ -16,7 +16,8 @@ export default class FriendsList extends Component {
     super(props);
     this.state = {
       view: '',
-      text: ''
+      text: '',
+      searchable: true
     }
   }
 
@@ -24,11 +25,14 @@ export default class FriendsList extends Component {
   render() {
     return (
       <View>
+      {(this.props.searchable) ?
         <Button
           title="Search"
           style={{ text: { color: 'white' } }}
           onPress={this.props.onButtonPress}
         />
+        : <View></View>
+      }
         <ScrollView>
         {
           this.props.friends.map((friend) => {
