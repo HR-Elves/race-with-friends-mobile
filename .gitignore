@@ -2,6 +2,8 @@
 #
 .DS_Store
 
+
+
 #API keys
 config/facebook-app-key.js
 
@@ -61,3 +63,9 @@ ios/RaceWithFriends.xcodeproj/project.pbxproj
 ios/RaceWithFriends.xcodeproj/xcshareddata/xcschemes/RaceWithFriends.xcscheme
 ios/RaceWithFriends/Info.plist
 ios/RaceWithFriendsTests/Info.plist
+
+# Android
+android/app/build.gradle
+android/settings.gradle
+android/app/src/main/assets/
+android/app/src/main/java/com/racewithfriends/MainApplication.java
