@@ -24,8 +24,6 @@ export default class RunView extends Component {
       },
     });
 
-    let runData = this.props.run.data;
-
     return (
      <MapView
         style={{
