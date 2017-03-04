@@ -95,10 +95,10 @@ export default class Race extends Component {
   }
 
   componentDidMount() {
-    Speech.supportedVoices()
-    .then(locales => {
-      console.error(locales); // ["ar-SA", "en-ZA", "nl-BE", "en-AU", "th-TH", ...]
-    });
+    // Speech.supportedVoices()
+    // .then(locales => {
+    //   console.error(locales); // ["ar-SA", "en-ZA", "nl-BE", "en-AU", "th-TH", ...]
+    // });
     Speech.speak({
       text: 'Welcome to Race With Friends, a social running app with real time competitive elements',
       voice: 'en-AU'
