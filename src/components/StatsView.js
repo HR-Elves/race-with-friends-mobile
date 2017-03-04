@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLOR, ThemeProvider } from 'react-native-material-ui';
 
 import MyRuns from './MyRuns';
+import MyStats from './MyStats';
 
 export default class StatsView extends Component {
   constructor(props) {
@@ -54,7 +55,7 @@ export default class StatsView extends Component {
         <View style={styles.container}>
           <View style={styles.center}>
             {this.state.currentTab === 0 && <MyRuns userId={this.props.userId}/> }
-            {this.state.currentTab === 1 && <Text>My Stats</Text> }
+            {this.state.currentTab === 1 && <MyStats userId={this.props.userId}/> }
           </View>
           <BottomNavigation
             labelColor="white"
