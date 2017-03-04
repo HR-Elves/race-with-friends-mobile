@@ -11,31 +11,15 @@ import { ListItem, Subheader } from 'react-native-material-ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import StatsUtils from '../utils/statsUtils';
+
 export default class MyStats extends Component {
   constructor(props) {
     super(props);
-    this.distanceCovered = this.getDistanceCovered(this.props.runs); 
-    this.totalRunTime = this.getTotalRunTime(this.props.runs);     
-  }
-
-  // returns result in meters
-  getDistanceCovered(runs) {
-    let distanceCovered = 0;
-    runs.forEach((run) => {
-      let runDistance = run.data[run.data.length - 1].distanceTotal;
-      distanceCovered += runDistance;
-    });
-    return Math.round(distanceCovered);
-  }
-
-  // returns result in minutes
-  getTotalRunTime(runs) {
-    let totalRunTime = 0;
-    runs.forEach((run) => {
-      let runTime = run.data[run.data.length - 1].timeTotal;
-      totalRunTime += runTime;
-    });
-    return Math.round((totalRunTime / 1000) / 60);    
+    this.distanceCovered = StatsUtils.getDistanceCovered(this.props.runs); 
+    this.totalRunTime = Math.round((StatsUtils.getTotalRunTime(this.props.runs) / 1000) / 60); // convert milliseconds to minutes
+    this.averageSpeed = StatsUtils.getAverageSpeed(this.props.runs); 
+    this.maxSpeed = StatsUtils.getMaxSpeed(this.props.runs);    
   }
 
   render() {
@@ -73,6 +57,22 @@ export default class MyStats extends Component {
             leftElement={<Icon size={20} color="black" name="access-time" />}
             centerElement={{
               primaryText: `Total Run Time: ${this.totalRunTime} minutes`
+            }}
+          />
+          <ListItem
+            key={'Average Speed'}
+            divider
+            leftElement={<Icon size={20} color="black" name="show-chart" />}
+            centerElement={{
+              primaryText: `Average Speed: ${this.averageSpeed} meters / second`
+            }}
+          />
+          <ListItem
+            key={'Max Speed'}
+            divider
+            leftElement={<Icon size={20} color="black" name="show-chart" />}
+            centerElement={{
+              primaryText: `Max Speed: ${this.maxSpeed} meters / second`
             }}
           />
         </ScrollView>

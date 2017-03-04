@@ -4,6 +4,8 @@ import {
   Text,
   View,
   ScrollView,
+  Modal,
+  TextInput,
   Dimensions
 } from 'react-native';
 
@@ -22,7 +24,12 @@ export default class Challenge extends Component {
       friends: [],
       displayState: 'selectRun',  // options are selectRun, selectFriends, and challengeSubmitted
       selectedRun: null,
-      promptVisible: false
+      modalVisible: false,
+      messages: {
+        raceStart: '',
+        playerWon: '',
+        opponentWon: ''
+      }
     });
   }
 
@@ -94,11 +101,11 @@ export default class Challenge extends Component {
 
   onChallengeButtonPressed() {
     this.setState({
-      promptVisible: true
+      modalVisible: true
     });
   }
 
-  onSubmit(message) {
+  onSubmit() {
     // determine which friends have been selected to receive the challenge
     let opponents = [];
     this.state.friends.forEach((friend) => {
@@ -111,7 +118,7 @@ export default class Challenge extends Component {
       run_id: this.state.selectedRun.id,
       name: this.state.selectedRun.name,
       description: this.state.selectedRun.description,
-      message: message,
+      message: JSON.stringify(this.state.messages),
       created_on: (new Date()).toISOString(),
       opponents: opponents
     };
@@ -128,7 +135,7 @@ export default class Challenge extends Component {
       return response.json();
     }).then((responseJSON) => {
       this.setState({
-        promptVisible: false,
+        modalVisible: false,
         displayState: 'challengeSubmitted'
       });
     }).catch((error) => {
@@ -152,6 +159,9 @@ export default class Challenge extends Component {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+      },
+      text: {
+        height: 70,       
       }
     });
 
@@ -199,22 +209,81 @@ export default class Challenge extends Component {
               <Text>Your challenge has been issued to your friends!</Text>
             </View>
           }
-          <Prompt
-            title='Write a message for your friends!'
-            placeholder={'Here\'s a challenge for you!'}
-            defaultValue=''
-            visible={ this.state.promptVisible }
-            onCancel={ () => this.setState({
-              promptVisible: false,
-            }) }
-            onSubmit={ (message) => {
-              this.onSubmit(message);
-            }}
-            submitText='Challenge!'
-            cancelText='Cancel'
-          />
+        <Modal
+          animationType={"slide"}
+          transparent={false}
+          visible={this.state.modalVisible}
+          >
+            <View style={styles.list}>
+              <Text>Enter a message for your opponent when the race starts: </Text>
+              <TextInput
+                style={styles.text}
+                onChangeText={(text) => { 
+                  let messages = this.state.messages;
+                  messages.raceStart = text;
+                  this.setState({messages: messages});
+                  }
+                }
+                value={this.state.messages.raceStart}
+                maxLength={80}
+                placeholder={'You\'re in for a challenge!'}
+              />
+              <Text>Enter a message for your opponent if they lose: </Text>
+              <TextInput
+                style={styles.text}
+                onChangeText={(text) => { 
+                  let messages = this.state.messages;
+                  messages.opponentWon = text;
+                  this.setState({messages: messages});
+                  }
+                }
+                value={this.state.messages.opponentWon}
+                maxLength={80}
+                placeholder={'Better luck next time!'}
+              />
+              <Text>Enter a message for your opponent if they win: </Text>
+              <TextInput
+                style={styles.text}
+                onChangeText={(text) => { 
+                  let messages = this.state.messages;
+                  messages.playerWon = text;
+                  this.setState({messages: messages});
+                  }
+                }
+                value={this.state.messages.playerWon}
+                maxLength={80}
+                placeholder={'I can\'t believe you beat me!'}
+              />
+              <Icon.Button
+                name="flash-on"
+                size={45}
+                backgroundColor="red"
+                borderRadius={15}
+                onPress={this.onSubmit.bind(this)}
+              >
+                Go!
+              </Icon.Button>
+            </View>
+        </Modal>
         </View>
       </ThemeProvider>
     );
   }
 }
+
+
+
+          // <Prompt
+          //   title='Write a message for your friends!'
+          //   placeholder={'Here\'s a challenge for you!'}
+          //   defaultValue=''
+          //   visible={ this.state.promptVisible }
+          //   onCancel={ () => this.setState({
+          //     promptVisible: false,
+          //   }) }
+          //   onSubmit={ (message) => {
+          //     this.onSubmit(message);
+          //   }}
+          //   submitText='Challenge!'
+          //   cancelText='Cancel'
+          // />
