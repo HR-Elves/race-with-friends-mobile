@@ -216,9 +216,6 @@ export default class Race extends Component {
   }
 
   onRecord() {
-    // if (opponent) {
-    //   console.error('You have not selected an opponent!');
-    // }
     // This handler fires whenever bgGeo receives a location update.
     BackgroundGeolocation.on('location', this.onLocationUpdate);
     // This handler fires when movement states changes (stationary->moving; moving->stationary)
