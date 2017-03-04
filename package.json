@@ -15,6 +15,7 @@
     "react-native-button": "^1.8.2",
     "react-native-drawer": "^2.3.0",
     "react-native-lock": "^0.4.0",
+    "react-native-maps": "0.13.0",
     "react-native-material-bottom-navigation": "^0.3.0",
     "react-native-material-ui": "^1.8.0",
     "react-native-modal-dropdown": "^0.4.1",
