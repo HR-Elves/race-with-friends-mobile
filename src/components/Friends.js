@@ -57,6 +57,7 @@ export default class Friends extends Component {
         return response.json();
       })
       .then((responseJson) => {
+        console.log('######',responseJson)
         callback(responseJson);
       })
       .catch((error) => {
