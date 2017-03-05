@@ -46,7 +46,7 @@ export default class Friends extends Component {
 
   getFriends(callback) {
     let userId = this.props.userId;
-    fetch('https://www.racewithfriends.tk:8000/friends/all/' + userId,
+    fetch('https://racewithfriends.tk:8000/friends/all/' + userId,
       {
         method: 'GET',
         headers: {
@@ -79,7 +79,7 @@ export default class Friends extends Component {
   }
 
   onAddFriend(fb_id) {
-    fetch('https://www.racewithfriends.tk:8000/addfriend/', {
+    fetch('https://racewithfriends.tk:8000/addfriend/', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

@@ -16,7 +16,7 @@ export function checkAuth(callback) {
 }
 
 export function verifyToken(token, callback) {
-  fetch('http://127.0.0.1:4000/auth/' + token).then(response => { // change url
+  fetch('https://racewithfriends.tk:8000/?token=' + token).then(response => { // change url
     console.log('server responding to auth check', response.status)
     if (response.status !== 200) {
       callback('Token Not Valid', null);
@@ -64,7 +64,7 @@ export function saveUserInDb() {
       console.log('saveUserInDb -> getItem', err);
     } else {
       profile = JSON.parse(profile);
-      fetch('http://127.0.0.1:4000/adduser/', {
+      fetch('https://racewithfriends.tk:8000/adduser/', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

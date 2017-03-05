@@ -104,21 +104,6 @@ export default class RaceWithFriends extends Component {
     });
   }
 
-    // loginUser((err, profile) => {
-    //   if (err) {
-    //     console.log('componentWillMount -> authorizeUser Error', err);
-    //   } else {
-    //     this.setState({
-    //       profile: profile,
-    //       userId: profile.identities[0].userId,
-    //       pic: profile.extaInfo.picture_large
-    //     }, (() => {
-    //       this._navigator.push(this.navigate('Race'));
-    //       console.log('===== this.state.userId', this.state.userId);
-    //       console.log('===== this.state.profile', this.state.profile);
-    //     }).bind(this));
-    //   }
-    // });
 
   navigate(scene) {
     var componentMap = {
