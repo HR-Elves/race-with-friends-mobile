@@ -58,35 +58,53 @@ export function saveProfileAndToken(profile, token, callback) {
   })
 }
 
-// export function saveUserInDb(callback) {
-//   AsyncStorage.getItem('profile', (err, profile) => {
-//     if (err) {
-//       console.log('saveUserInDb -> getItem', err);
-//     } else {
-//       fetch('https://racewithfriends.tk/endpoint/', {
-//         method: 'POST',
-//         headers: {
-//           'Accept': 'application/json',
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           fb_id: profile.identities[0].userId,
-//           fullname: profile.name,
-//           pic: profile.picture
-//         })
-//       })
-//     }
-//   })
-// }
+export function saveUserInDb() {
+  AsyncStorage.getItem('profile', (err, profile) => {
+    if (err) {
+      console.log('saveUserInDb -> getItem', err);
+    } else {
+      profile = JSON.parse(profile);
+      fetch('http://127.0.0.1:4000/adduser/', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fb_id: profile.identities[0].userId,
+          fullname: profile.name,
+          pic: profile.extraInfo.picture_large
+        })
+      }).then(response => {
+        console.log(response);
+        response = JSON.parse(response._bodyInit);
+        if (response.code === 'ER_DUP_ENTRY') {
+          console.log('User Already Exists in DB')
+          // updateProfilePic(profile.identities[0].userId, profile.extraInfo.picture_large, callback)
+        } else {
+          console.log('User added to DB');
+        }
+      }).catch(err => {
+        console.log('saveUserInDb error', err)
+      })
+    }
+  })
+}
 
-// export function logOutUser(callback) {
-//   var items = ['token', 'profile'];
-//   AsyncStorage.multiRemove(items, (err) => {
-//     if (err) {
-//       console.log('loginUtils -> logOutUser -> remove token', err);
-//     } else {
-//       console.log('Profile Removed');
-//       this.setState({isLoggedIn: false})
-//     }
-//   });
+// export function updateProfilePic(userId, picURL, callback) {
+//   fetch('https://127.0.0.1:4000/user/profile/', {
+//     method: 'POST',
+//     headers: {
+//       'Accept': 'application/json',
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({
+//       fb_id: userId,
+//       pic: picURL
+//     })
+//   }).then(response => {
+//     callback(null, 'profile updated');
+//   }).catch(err => {
+//     callback('err', null);
+//   })
 // }

@@ -27,9 +27,7 @@ import Challenge from './src/components/Challenge';
 
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils';
 import race from './assets/presetChallenges/standardWalk.json';
-import {checkAuth, loginUser} from './src/utils/loginUtils.js';
-import Auth0Lock from 'react-native-lock';
-import facebookKey from './config/facebook-app-key';
+import {checkAuth, loginUser, saveUserInDb} from './src/utils/loginUtils.js';
 
 let _emitter = new EventEmitter();
 
@@ -45,10 +43,11 @@ export default class RaceWithFriends extends Component {
       isLoggedIn: false
     };
 
+    this.logOutUser = this.logOutUser.bind(this);
+
   }
 
   componentDidMount() {
-    // this.logOutUser();
     checkAuth((err, success) => {
       if (err) {
         loginUser((err, success) => {
@@ -64,6 +63,10 @@ export default class RaceWithFriends extends Component {
     _emitter.addListener('openMenu', () => {
       this._drawer.open();
     });
+
+    // _emitter.addListener('back', () => {
+    //   this._navigator.pop();
+    // });
   }
 
   getProfile() {
@@ -72,6 +75,7 @@ export default class RaceWithFriends extends Component {
         console.log('getProfile -> getItem', err);
       }
       else {
+        saveUserInDb();
         profile = JSON.parse(profile);
         this.setState({
           profile: profile,
@@ -100,7 +104,6 @@ export default class RaceWithFriends extends Component {
     });
   }
 
-
     // loginUser((err, profile) => {
     //   if (err) {
     //     console.log('componentWillMount -> authorizeUser Error', err);
@@ -116,17 +119,6 @@ export default class RaceWithFriends extends Component {
     //     }).bind(this));
     //   }
     // });
-
-  // componentDidMount() {
-  //   // _emitter.addListener('openMenu', () => {
-  //   //   this._drawer.open();
-  //   // });
-  //   // _emitter.addListener('back', () => {
-  //   //   this._navigator.pop();
-  //   // });
-  // }
-
-
 
   navigate(scene) {
     var componentMap = {
