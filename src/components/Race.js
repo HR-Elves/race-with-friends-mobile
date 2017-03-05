@@ -47,8 +47,6 @@ const raceTypes = {
   Live: 'Under Construction',
 };
 
-let opponent = walk;
-
 export default class Race extends Component {
 
   constructor(props) {
@@ -62,7 +60,7 @@ export default class Race extends Component {
       progress: {
         playerDist: 0,
         opponentDist: 0,
-        totalDist: opponent[opponent.length - 1].distanceTotal,
+        totalDist: walk[walk.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
       },
@@ -95,17 +93,6 @@ export default class Race extends Component {
   }
 
   componentDidMount() {
-    // Speech.supportedVoices()
-    // .then(locales => {
-    //   console.error(locales); // ["ar-SA", "en-ZA", "nl-BE", "en-AU", "th-TH", ...]
-    // });
-    // Speech.speak({
-    //   text: 'Welcome to Race With Friends, a social running app with real time competitive elements',
-    //   voice: 'en-AU'
-    // });
-    // this.getChallenges((responseJSON) => {
-    //   console.warn(JSON.stringify(responseJSON));
-    // });
   }
 
   beginGPSTracking() {
@@ -162,18 +149,25 @@ export default class Race extends Component {
       Vibration.vibrate(pattern);
     }
 
-    this.state.history.push(currentLoc);
-    this.setState({
-      history: this.state.history,
-      raceStatus: newRaceStatus,
-      progress: {
-        playerDist: currentLoc.distanceTotal,
-        opponentDist: currentLoc.distanceTotal - newRaceStatus.distanceToOpponent,
-        totalDist: opponent[opponent.length - 1].distanceTotal,
-        playerWon: false,
-        opponentWon: false,
-      }
-    });
+    let newState = this.state;
+    newState.history.push(currentLoc);
+    newState.raceStatus = newRaceStatus;
+    newState.progress.playerDist = currentLoc.distanceTotal;
+    newState.progress.opponentDist = currentLoc.distanceTotal - newRaceStatus.distanceToOpponent;
+    this.setState(newState);
+
+    // this.state.history.push(currentLoc);
+    // this.setState({
+    //   history: this.state.history,
+    //   raceStatus: newRaceStatus,
+    //   progress: {
+    //     playerDist: currentLoc.distanceTotal,
+    //     opponentDist: currentLoc.distanceTotal - newRaceStatus.distanceToOpponent,
+    //     totalDist: opponent[opponent.length - 1].distanceTotal,
+    //     playerWon: false,
+    //     opponentWon: false,
+    //   }
+    // });
 
     if (!newRaceStatus.challengeDone) {
       this.setTimeoutID = setTimeout((() => {
@@ -262,17 +256,26 @@ export default class Race extends Component {
     BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
     BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
 
-    this.setState({
-      history: [],
-      raceStatus: null,
-      progress: {
-        playerDist: 0,
-        opponentDist: 0,
-        totalDist: opponent[opponent.length - 1].distanceTotal,
-        playerWon: false,
-        opponentWon: false
-      }
-    });
+    let newState = this.state;
+    newState.history = [];
+    newState.raceStatus = null;
+    newState.progress.playerDist = 0;
+    newState.progress.opponentDist = 0;
+    newState.progress.playerWon = false;
+    newState.progress.opponentWon = false;
+    this.setState(newState);
+
+    // this.setState({
+    //   history: [],
+    //   raceStatus: null,
+    //   progress: {
+    //     playerDist: 0,
+    //     opponentDist: 0,
+    //     totalDist: opponent[opponent.length - 1].distanceTotal,
+    //     playerWon: false,
+    //     opponentWon: false
+    //   }
+    // });
   }
 
   showSetupRace(visible) {
