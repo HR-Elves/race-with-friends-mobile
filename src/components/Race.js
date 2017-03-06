@@ -110,7 +110,7 @@ export default class Race extends Component {
 
     Tts.addEventListener('tts-finish', (event) => {
       // console.warn('tts-finish: ', event);
-      if (speechQueue.size() === 1) {
+      if (speechQueue.size() > 0) {
         Tts.speak(speechQueue.dequeue());
       }
     });
