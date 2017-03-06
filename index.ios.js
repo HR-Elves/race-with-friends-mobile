@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   Image
 } from 'react-native';
-import {Vibration} from 'react-native';
+import {AsyncStorage, Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import Drawer from 'react-native-drawer';
 import RNButton from 'react-native-button';
@@ -27,7 +27,7 @@ import Challenge from './src/components/Challenge';
 
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils';
 import race from './assets/presetChallenges/standardWalk.json';
-import {checkStorage, logOutUser, loginUser, authorizeUser} from './src/utils/loginUtils.js';
+import {checkAuth, loginUser, saveUserInDb} from './src/utils/loginUtils.js';
 
 let _emitter = new EventEmitter();
 
@@ -37,28 +37,29 @@ export default class RaceWithFriends extends Component {
     super(props);
     this.state = {
       profile: '',
-      userId: ''
+      userId: '',
+      pic: '',
+      token: '',
+      isLoggedIn: false
     };
-  }
 
-  componentWillMount() {
-    loginUser((err, profile) => {
-      if (err) {
-        console.log('componentWillMount -> authorizeUser Error', err);
-      } else {
-        this.setState({
-          profile: profile,
-          userId: profile.identities[0].userId
-        }, (() => {
-          this._navigator.push(this.navigate('Race'));
-          console.log('===== this.state.userId', this.state.userId);
-          console.log('===== this.state.profile', this.state.profile);
-        }).bind(this));
-      }
-    });
+    this.logOutUser = this.logOutUser.bind(this);
+
   }
 
   componentDidMount() {
+    checkAuth((err, success) => {
+      if (err) {
+        loginUser((err, success) => {
+          if (!err) {
+            this.getProfile();
+          }
+        })
+      } else {
+        this.getProfile();
+      }
+    });
+
     _emitter.addListener('openMenu', () => {
       this._drawer.open();
     });
@@ -67,6 +68,42 @@ export default class RaceWithFriends extends Component {
     //   this._navigator.pop();
     // });
   }
+
+  getProfile() {
+    AsyncStorage.getItem('profile', (err, profile) => {
+      if (err) {
+        console.log('getProfile -> getItem', err);
+      }
+      else {
+        saveUserInDb();
+        profile = JSON.parse(profile);
+        this.setState({
+          profile: profile,
+          userId: profile.identities[0].userId,
+          pic: profile.extraInfo.picture_large,
+          isLoggedIn: true
+        }, (() => {
+          this._navigator.push(this.navigate('Race'));
+          console.log('===== this.state.userId', this.state.userId);
+          console.log('===== this.state.profile', this.state.profile);
+        }).bind(this));
+      }
+    })
+  }
+
+
+  logOutUser() {
+    var items = ['token', 'profile'];
+    AsyncStorage.multiRemove(items, (err) => {
+      if (err) {
+        console.log('loginUtils -> logOutUser -> remove token', err);
+      } else {
+        console.log('Profile Removed');
+        this.setState({isLoggedIn: false})
+      }
+    });
+  }
+
 
   navigate(scene) {
     var componentMap = {
