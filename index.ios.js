@@ -147,7 +147,7 @@ export default class RaceWithFriends extends Component {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#F5FCFF',
+          backgroundColor: '#F5FCFF'
         }}>
           <Image source={require('./assets/images/StickmanRunning.gif')} />
         </View>
@@ -207,7 +207,9 @@ export default class RaceWithFriends extends Component {
       <Drawer
         ref={(ref) => this._drawer = ref}
         type="overlay"
-        content={<RaceDashboard navigate={((route) => {
+        content={<RaceDashboard
+          profile={this.state.profile}
+          navigate={((route) => {
           this._navigator.push(this.navigate(route));
           this._drawer.close();
         }).bind(this)}/>}
@@ -249,6 +251,7 @@ class RaceDashboard extends Component {
 
   _renderMenuItem(item) {
     return (<RNButton
+      style={{ padding: 15, borderWidth: 1, marginTop: 1, marginBottom: 1, backgroundColor: '#F6F6F6', width:275 }}
       onPress={()=> this._onItemSelect(item)}>
       {item}
     </RNButton>);
@@ -265,14 +268,52 @@ class RaceDashboard extends Component {
   }
 
   render() {
+    const styles = StyleSheet.create({
+      container: {
+        marginTop: 20,
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column'
+      },
+      text: {
+        marginTop: 10
+      },
+      image: {
+        width: 275,
+        height: 275,
+
+        // flex: 1
+      }
+    })
+
+    if (this.props.profile) {
+      console.log('#########', this.props.profile.name.split(' ')[0])
+    }
+
+//<Image source={{uri: this.props.profile.extraInfo.picture_large}} />
+
     return (
-      <ListView
-        style={{
-          backgroundColor: '#FFF',
-          top: 20
-        }}
-        dataSource={this.state.dataSource}
-        renderRow={((item) => this._renderMenuItem(item)).bind(this)}/>
+
+      <View style={styles.container}>
+        <View>
+          {this.props.profile ? <Image style={styles.image} source={{uri: this.props.profile.extraInfo.picture_large}}/> : <Text></Text>}
+        </View>
+
+        <View>
+          {this.props.profile ? <Text style={styles.text}>{'Welcome ' + this.props.profile.name.split(' ')[0]}</Text> : <Text></Text>}
+        </View>
+
+        <ListView
+          style={{
+            backgroundColor: '#FFF',
+            top: 20,
+            padding: 10
+          }}
+          dataSource={this.state.dataSource}
+          renderRow={((item) => this._renderMenuItem(item)).bind(this)}
+        />
+      </View>
     );
   }
 }
