@@ -183,6 +183,7 @@ export default class Race extends Component {
         });
       }).bind(this), 10000);
     } else { // challenge done
+      // console.warn('last newRaceStatus', newRaceStatus);
       if (newRaceStatus.distanceToOpponent > 0) {
         // console.warn('we won!');
         if (typeof this.state.raceSetup.challenge.message === 'object') {
@@ -318,7 +319,13 @@ export default class Race extends Component {
           nextState.raceSetup = this.state.raceSetup;
           nextState.raceSetup.opponent = responseJson.data;
 
-          let messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
+          let messageParsed;
+          try {
+            messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
+          } catch (error) {
+            //Do nothing.
+          }
+
           if (typeof messageParsed === 'object') {
             nextState.raceSetup.challenge.message = messageParsed;
           }

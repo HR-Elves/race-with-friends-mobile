@@ -17,7 +17,7 @@ export function findDistance(lat1, lon1, lat2, lon2) {
 
   var d = R * c;
   return d;
-};
+}
 
 export function processLocation(location, history) {
   if (location.location) { //Sometimes location object comes as {location: {coords:{}}} or {coords:{}}
@@ -60,10 +60,10 @@ export function processLocation(location, history) {
   };
 
   return newLocation;
-};
+}
 
 export function getRaceStatus(currentLoc, raceObj, prevRaceStatus) {
-  if(!prevRaceStatus) {
+  if (!prevRaceStatus) {
     return {
       distanceToOpponent: 0,    // if positive, user is ahead of opponent; if negative, user is behind opponent
       passedOpponent: false,
@@ -75,12 +75,12 @@ export function getRaceStatus(currentLoc, raceObj, prevRaceStatus) {
     };
   } else {
     let oldDistanceToOpponent = prevRaceStatus.distanceToOpponent;
-    let currentRaceIndex = findCurrentRaceIndex(currentLoc, raceObj, prevRaceStatus.lastRaceIndexChecked)
+    let currentRaceIndex = findCurrentRaceIndex(currentLoc, raceObj, prevRaceStatus.lastRaceIndexChecked);
     let newDistanceToOpponent = findDistanceToOpponent(currentLoc, raceObj, currentRaceIndex);
 
     let passedOpponent = false;
     let passedByOpponent = false;
-    if(oldDistanceToOpponent < 0 && newDistanceToOpponent > 0) {
+    if (oldDistanceToOpponent < 0 && newDistanceToOpponent > 0) {
       passedOpponent = true;
     } else if (oldDistanceToOpponent > 0 && newDistanceToOpponent < 0) {
       passedByOpponent = true;
@@ -99,17 +99,18 @@ export function getRaceStatus(currentLoc, raceObj, prevRaceStatus) {
       lastRaceIndexChecked: currentRaceIndex
     };
   }
-};
+}
 
 export function findCurrentRaceIndex(currentLoc, raceObj, lastRaceIndexChecked) {
   let index;
-  for(index = lastRaceIndexChecked; index < raceObj.length; index++) {
-    if(raceObj[index].timeTotal >= currentLoc.timeTotal) {
+  for (index = lastRaceIndexChecked; index < raceObj.length; index++) {
+    if (raceObj[index].timeTotal >= currentLoc.timeTotal) {
       break;
     }
   }
 
-  if(index === raceObj.length) {
+  if (index === raceObj.length) {
+    console.warn('out of bounds!');
     // out of bounds condition due to opponent finishing race
     index = raceObj.length - 1;
   }
@@ -125,23 +126,24 @@ export function findCurrentRaceIndex(currentLoc, raceObj, lastRaceIndexChecked) 
 export function findDistanceToOpponent(currentLoc, raceObj, currentRaceIndex) {
   let index = currentRaceIndex;
 
-  if(raceObj[index].timeTotal === currentLoc.timeTotal) {
+  if (raceObj[index].timeTotal === currentLoc.timeTotal) {
     // if the current time perfectly matches a point in the recorded challenge...
+    // console.warn('findDistanceToOpponent no interpolation: ', currentLoc, raceObj[index]);
     return currentLoc.distanceTotal - raceObj[index].distanceTotal;
   } else {
     // we don't have a perfect synchronization between the current run and the recorded run,
     // therefore we need to interpolate data points in the recorded run to infer the opponent's exact location
     // at this point in time
-    if(!raceObj[index-1]) { // this condition occurs at the beginning of the race when we only have one data point
+    if (!raceObj[index - 1]) { // this condition occurs at the beginning of the race when we only have one data point
                             // therefore we can't interpolate so we'll wait until we have another data point
       return 0;
     } else {
-      let p1 = raceObj[index-1];
+      let p1 = raceObj[index - 1];
       let p2 = raceObj[index];
       let timeBetweenPoints = p2.timeTotal - p1.timeTotal;
       let distanceBetweenPoints = p2.distanceTotal - p1.distanceTotal;
       let timeAfterP1 = currentLoc.timeTotal - p1.timeTotal;
-      let opponentDistanceTotal  = p1.distanceTotal + (timeAfterP1 / timeBetweenPoints) * (p2.distanceTotal - p1.distanceTotal);
+      let opponentDistanceTotal = p1.distanceTotal + (timeAfterP1 / timeBetweenPoints) * (p2.distanceTotal - p1.distanceTotal);
       return currentLoc.distanceTotal - opponentDistanceTotal;
     }
   }
