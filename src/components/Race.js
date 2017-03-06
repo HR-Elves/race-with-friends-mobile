@@ -109,7 +109,7 @@ export default class Race extends Component {
     });
 
     Tts.addEventListener('tts-finish', (event) => {
-      console.warn('tts-finish: ', event);
+      // console.warn('tts-finish: ', event);
       if (speechQueue.size() === 1) {
         Tts.speak(speechQueue.dequeue());
       }
@@ -184,7 +184,7 @@ export default class Race extends Component {
       }).bind(this), 10000);
     } else { // challenge done
       if (newRaceStatus.distanceToOpponent > 0) {
-        console.warn('we won!');
+        // console.warn('we won!');
         if (this.state.raceSetup.challenge.message.raceStart) {
           this.waitAndSpeak(this.state.raceSetup.challenge.message.playerWon);
         } else {
@@ -243,7 +243,6 @@ export default class Race extends Component {
     BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
     BackgroundGeolocation.changePace(true);
 
-    console.warn('onReacord => ', this.state.raceSetup.challenge.message.raceStart);
     if (this.state.raceSetup.challenge.message.raceStart) {
       this.waitAndSpeak(this.state.raceSetup.challenge.message.raceStart);
     } else {
@@ -325,7 +324,7 @@ export default class Race extends Component {
           }
            // console.error(JSON.stringify(nextState));
           this.setState(nextState, () => {
-            console.warn('Updated State! ', nextState.raceSetup.challenge.message);
+            // console.warn('Updated State! ', nextState.raceSetup.challenge.message);
           });
         }).catch((error) => {
           console.error('onPickOpponent error: ', error);
@@ -455,7 +454,7 @@ export default class Race extends Component {
                 <Text>{`Description: ${this.state.raceSetup.challenge.description ? this.state.raceSetup.challenge.description : 'Preset'}`}</Text>
                 <Text>{`Total Distance: ${Math.round(this.state.raceSetup.challenge.distanceTotal ? this.state.raceSetup.challenge.distanceTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].distanceTotal)} meters`}</Text>
                 <Text>{`Total Time: ${Math.round((this.state.raceSetup.challenge.timeTotal ? this.state.raceSetup.challenge.timeTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].timeTotal) / 1000)} seconds`}</Text>
-                <Text>{`Message: ${this.state.raceSetup.challenge.message ? this.state.raceSetup.challenge.message : '--'}`}</Text>
+                <Text>{`Message: ${this.state.raceSetup.challenge.message ? typeof this.state.raceSetup.challenge.message === 'object' ? 'Customized messages successfully loaded!' : '--' : '--'}`}</Text>
                 <TouchableHighlight onPress={() => {
                   this.showSetupRace(!this.state.showSetupRace);
                 }}>
