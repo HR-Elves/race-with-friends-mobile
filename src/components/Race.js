@@ -191,7 +191,7 @@ export default class Race extends Component {
           this.waitAndSpeak(`Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
         }
       } else if (newRaceStatus.distanceToOpponent < 0) {
-        if (this.state.raceSetup.challenge.message.raceStart) {
+        if (typeof this.state.raceSetup.challenge.message === 'object') {
           this.waitAndSpeak(this.state.raceSetup.challenge.message.opponentWon);
         } else {
           this.waitAndSpeak(`I'm Sorry to report that your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);

@@ -73,8 +73,7 @@ export default class RaceWithFriends extends Component {
     AsyncStorage.getItem('profile', (err, profile) => {
       if (err) {
         console.log('getProfile -> getItem', err);
-      }
-      else {
+      } else {
         saveUserInDb();
         profile = JSON.parse(profile);
         this.setState({
