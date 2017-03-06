@@ -185,7 +185,7 @@ export default class Race extends Component {
     } else { // challenge done
       if (newRaceStatus.distanceToOpponent > 0) {
         // console.warn('we won!');
-        if (this.state.raceSetup.challenge.message.raceStart) {
+        if (typeof this.state.raceSetup.challenge.message === 'object') {
           this.waitAndSpeak(this.state.raceSetup.challenge.message.playerWon);
         } else {
           this.waitAndSpeak(`Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
@@ -243,7 +243,7 @@ export default class Race extends Component {
     BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
     BackgroundGeolocation.changePace(true);
 
-    if (this.state.raceSetup.challenge.message.raceStart) {
+    if (typeof this.state.raceSetup.challenge.message === 'object') {
       this.waitAndSpeak(this.state.raceSetup.challenge.message.raceStart);
     } else {
       this.waitAndSpeak('oh mer gherd, we are now recording!');
@@ -358,7 +358,7 @@ export default class Race extends Component {
       Tts.setDefaultLanguage(voice);
     }
     speechQueue.queue(message);
-    console.warn('speechQueue: ', speechQueue.storage);
+    // console.warn('speechQueue: ', speechQueue.storage);
     if (speechQueue.size() > 0) {
       Tts.speak(speechQueue.dequeue());
     }
