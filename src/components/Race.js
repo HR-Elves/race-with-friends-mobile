@@ -14,6 +14,7 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import Prompt from 'react-native-prompt';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Speech from 'react-native-speech';
+import Tts from 'react-native-tts';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
@@ -46,6 +47,23 @@ const raceTypes = {
   Challenges: challenges,
   Live: 'Under Construction',
 };
+
+class SpeechQueue {
+  constructor() {
+    this.storage = [];
+  }
+  size() {
+    return this.storage.length;
+  }
+  queue(speech) {
+    this.storage.unshift(speech);
+  }
+  dequeue() {
+    return this.storage.pop();
+  }
+}
+
+let speechQueue = new SpeechQueue();
 
 export default class Race extends Component {
 
@@ -90,6 +108,14 @@ export default class Race extends Component {
       raceTypes['Challenges'] = newChallenges;
       // console.warn('Challenges loaded.');
     });
+
+    Tts.addEventListener('tts-finish', (event) => {
+      console.warn('tts-finish: ', event);
+      if (speechQueue.size() > 0) {
+        Tts.speak(speechQueue.dequeue());
+      }
+    });
+    Tts.addEventListener('tts-cancel', (event) => console.warn('tts-cancel: ', event));
   }
 
   beginGPSTracking() {
@@ -127,6 +153,7 @@ export default class Race extends Component {
         });
       }
     });
+
   }
 
   onLocationUpdate(location) {
@@ -137,10 +164,6 @@ export default class Race extends Component {
 
     if (newRaceStatus.passedOpponent) {
       this.waitAndSpeak('You just passed your opponent! 1 2 3 4  5 6 7 8 9 10 10 10 10 10 10 10 10 10');
-      // Speech.speak({
-      //   text: 'You just passed your opponent!',
-      //   voice: 'en-AU'
-      // });
     }
     if (newRaceStatus.distanceToOpponent > 0) {
       let pattern = [0];
@@ -154,19 +177,6 @@ export default class Race extends Component {
     newState.progress.opponentDist = currentLoc.distanceTotal - newRaceStatus.distanceToOpponent;
     this.setState(newState);
 
-    // this.state.history.push(currentLoc);
-    // this.setState({
-    //   history: this.state.history,
-    //   raceStatus: newRaceStatus,
-    //   progress: {
-    //     playerDist: currentLoc.distanceTotal,
-    //     opponentDist: currentLoc.distanceTotal - newRaceStatus.distanceToOpponent,
-    //     totalDist: opponent[opponent.length - 1].distanceTotal,
-    //     playerWon: false,
-    //     opponentWon: false,
-    //   }
-    // });
-
     if (!newRaceStatus.challengeDone) {
       this.setTimeoutID = setTimeout((() => {
         BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
@@ -177,22 +187,10 @@ export default class Race extends Component {
       if (newRaceStatus.distanceToOpponent > 0) {
         console.warn('we won!');
         this.waitAndSpeak(`Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
-        // Speech.speak({
-        //   text: `Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters`,
-        //   voice: 'en-AU'
-        // });
       } else if (newRaceStatus.distanceToOpponent < 0) {
-        this.waitAndSpeak(`Sorry, your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
-        // Speech.speak({
-        //   text: `Sorry, your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters`,
-        //   voice: 'en-AU'
-        // });
+        this.waitAndSpeak(`I'm Sorry to report that your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
       } else {
         this.waitAndSpeak('Wow, you and your opponent tied!');
-        // Speech.speak({
-        //   text: 'Wow, you and your opponent tied!',
-        //   voice: 'en-AU'
-        // });
       }
       BackgroundGeolocation.un('location', this.onLocationUpdate);
       BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
@@ -268,18 +266,6 @@ export default class Race extends Component {
     newState.progress.playerWon = false;
     newState.progress.opponentWon = false;
     this.setState(newState);
-
-    // this.setState({
-    //   history: [],
-    //   raceStatus: null,
-    //   progress: {
-    //     playerDist: 0,
-    //     opponentDist: 0,
-    //     totalDist: opponent[opponent.length - 1].distanceTotal,
-    //     playerWon: false,
-    //     opponentWon: false
-    //   }
-    // });
   }
 
   showSetupRace(visible) {
@@ -350,26 +336,16 @@ export default class Race extends Component {
   }
 
   waitAndSpeak(message, voice) {
-    const context = this;
-    Speech.isSpeaking()
-    .then(speaking => {
-      console.warn('trying to speak, speaking = ', speaking);
-      if (speaking) {
-        console.warn('ok, ill wait!');
-        setTimeout(() => {
-          context.waitAndSpeak(message, voice);
-        }, 1000);
-      } else {
-        console.warn('speaking now!');
-        Speech.speak({
-          text: message,
-          voice: voice ? voice : 'en-AU'
-        });
+    if (voice) {
+      Tts.setDefaultLanguage(voice);
+    }
+    speechQueue.queue(message);
+    console.warn('speechQueue: ', speechQueue.storage);
+    if (SpeechQueue > 0) {
+      while (speechQueue.size() > 0) {
+        Tts.speak(speechQueue.dequeue());
       }
-    })
-    .catch((error) => {
-      console.warn('waitAndSpeak error: ', error);
-    });
+    }
   }
 
   render() {
