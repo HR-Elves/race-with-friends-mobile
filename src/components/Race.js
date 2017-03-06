@@ -13,7 +13,6 @@ import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import Prompt from 'react-native-prompt';
 import ModalDropdown from 'react-native-modal-dropdown';
-import Speech from 'react-native-speech';
 import Tts from 'react-native-tts';
 import _ from 'lodash';
 
@@ -111,7 +110,7 @@ export default class Race extends Component {
 
     Tts.addEventListener('tts-finish', (event) => {
       console.warn('tts-finish: ', event);
-      if (speechQueue.size() > 0) {
+      if (speechQueue.size() === 1) {
         Tts.speak(speechQueue.dequeue());
       }
     });
@@ -186,9 +185,17 @@ export default class Race extends Component {
     } else { // challenge done
       if (newRaceStatus.distanceToOpponent > 0) {
         console.warn('we won!');
-        this.waitAndSpeak(`Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+        if (this.state.raceSetup.challenge.message.raceStart) {
+          this.waitAndSpeak(this.state.raceSetup.challenge.message.playerWon);
+        } else {
+          this.waitAndSpeak(`Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+        }
       } else if (newRaceStatus.distanceToOpponent < 0) {
-        this.waitAndSpeak(`I'm Sorry to report that your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+        if (this.state.raceSetup.challenge.message.raceStart) {
+          this.waitAndSpeak(this.state.raceSetup.challenge.message.opponentWon);
+        } else {
+          this.waitAndSpeak(`I'm Sorry to report that your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+        }
       } else {
         this.waitAndSpeak('Wow, you and your opponent tied!');
       }
@@ -236,7 +243,12 @@ export default class Race extends Component {
     BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
     BackgroundGeolocation.changePace(true);
 
-    this.waitAndSpeak('oh mer gherd, we are now recording!');
+    console.warn('onReacord => ', this.state.raceSetup.challenge.message.raceStart);
+    if (this.state.raceSetup.challenge.message.raceStart) {
+      this.waitAndSpeak(this.state.raceSetup.challenge.message.raceStart);
+    } else {
+      this.waitAndSpeak('oh mer gherd, we are now recording!');
+    }
   }
 
   onStopRecord() {
@@ -288,6 +300,8 @@ export default class Race extends Component {
     newState.raceSetup = this.state.raceSetup;
     newState.raceSetup.opponent = raceTypes[this.state.raceSetup.raceType][value];
     newState.raceSetup.challenge = raceTypes[this.state.raceSetup.raceType][value];
+
+
     // console.error(JSON.stringify(newState));
     this.setState(newState, () => {
       if (newState.raceSetup.opponent.run_id) {
@@ -304,9 +318,14 @@ export default class Race extends Component {
           const nextState = {};
           nextState.raceSetup = this.state.raceSetup;
           nextState.raceSetup.opponent = responseJson.data;
-          // console.error(JSON.stringify(nextState));
+
+          let messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
+          if (typeof messageParsed === 'object') {
+            nextState.raceSetup.challenge.message = messageParsed;
+          }
+           // console.error(JSON.stringify(nextState));
           this.setState(nextState, () => {
-            // console.warn('Updated State!');
+            console.warn('Updated State! ', nextState.raceSetup.challenge.message);
           });
         }).catch((error) => {
           console.error('onPickOpponent error: ', error);
@@ -341,10 +360,8 @@ export default class Race extends Component {
     }
     speechQueue.queue(message);
     console.warn('speechQueue: ', speechQueue.storage);
-    if (SpeechQueue > 0) {
-      while (speechQueue.size() > 0) {
-        Tts.speak(speechQueue.dequeue());
-      }
+    if (speechQueue.size() > 0) {
+      Tts.speak(speechQueue.dequeue());
     }
   }
 
