@@ -77,6 +77,15 @@ export default class Replay extends Component {
 
   componentWillMount() {
     this.initializeBgGeo();
+    this.getChallenges((responseJSON) => {
+      // console.warn(JSON.stringify(responseJSON));
+      let newChallenges = {};
+      responseJSON.forEach((challenge) => {
+        newChallenges[challenge.name] = challenge;
+      });
+      raceTypes['Challenges'] = newChallenges;
+      // console.warn('Challenges loaded.');
+    });
   }
 
   initializeBgGeo() {
@@ -175,8 +184,45 @@ export default class Replay extends Component {
     }
   }
 
+  getChallenges(callback) {
+    // console.warn('userId=', this.props.userId);
+    // let userId = this.props.userId;
+    fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + this.props.userId, {
+    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      return response.json();
+    }).then((responseJson) => {
+      callback(responseJson);
+    }).catch((error) => {
+      console.error('getChallenges error: ', error);
+    });
+  }
+
+  getRunByRunId(runId, callback) {
+    fetch('https://www.racewithfriends.tk:8000/runs/' + runId, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      return response.json();
+    }).then((responseJson) => {
+      callback(responseJson);
+    }).catch((error) => {
+      console.error('getRunByRunId error: ', error);
+    });
+  }
+
   onPlay() {
+    // console.error(this.playerSetup.player);
     let location = this.state.playerSetup.player[this.playerIndex];
+    // console.warn('onPlay, location: ', JSON.stringify(location));
     this.setTimeoutID = setTimeout((() => {
       this.onLocationUpdate(location);
     }).bind(this), location.timeDelta);
@@ -219,7 +265,29 @@ export default class Replay extends Component {
     newState.playerSetup = this.state.playerSetup;
     newState.playerSetup.player = raceTypes[this.state.playerSetup.runnerType][value];
     this.setState(newState, () => {
-      console.warn('newState.playerSetup = ', newState.playerSetup);
+      // console.warn('newState.playerSetup = ', newState.playerSetup);
+      if (newState.playerSetup.player.run_id) {
+        let runId = newState.playerSetup.player.run_id;
+        this.getRunByRunId(runId, (responseJson) => {
+          const nextState = {};
+          nextState.playerSetup = this.state.playerSetup;
+          nextState.playerSetup.player = responseJson.data;
+          // let messageParsed;
+          // try {
+          //   messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
+          // } catch (error) {
+          //   //Do nothing.
+          // }
+
+          // if (typeof messageParsed === 'object') {
+          //   nextState.raceSetup.challenge.message = messageParsed;
+          // }
+           // console.error(JSON.stringify(nextState));
+          this.setState(nextState, () => {
+            // console.warn('Updated State!');
+          });
+        });
+      }
     });
   }
 
@@ -238,25 +306,31 @@ export default class Replay extends Component {
     newState.opponentSetup = this.state.opponentSetup;
     newState.opponentSetup.opponent = raceTypes[this.state.opponentSetup.runnerType][value];
     this.setState(newState, () => {
-      console.warn('newState.opponentSetup = ', newState.opponentSetup);
+      // console.warn('newState.opponentSetup = ', newState.opponentSetup);
+      if (newState.opponentSetup.opponent.run_id) {
+        let runId = newState.opponentSetup.opponent.run_id;
+        this.getRunByRunId(runId, (responseJson) => {
+          const nextState = {};
+          nextState.opponentSetup = this.state.opponentSetup;
+          nextState.opponentSetup.opponent = responseJson.data;
+          // let messageParsed;
+          // try {
+          //   messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
+          // } catch (error) {
+          //   //Do nothing.
+          // }
+
+          // if (typeof messageParsed === 'object') {
+          //   nextState.raceSetup.challenge.message = messageParsed;
+          // }
+           // console.error(JSON.stringify(nextState));
+          this.setState(nextState, () => {
+            // console.warn('Updated State!');
+          });
+        });
+      }
     });
   }
-  // onPickPlayer(index, value) {
-  //   console.log('*****', index, value);
-  //   const newState = {};
-  //   newState.picked = this.state.picked;
-  //   newState.picked.player = value;
-  //   player = ghosts[value];
-  //   this.setState(newState);
-  // }
-
-  // onPickOpponent(key, value) {
-  //   const newState = {};
-  //   newState.picked = this.state.picked;
-  //   newState.picked.opponent = value;
-  //   race = ghosts[value];
-  //   this.setState(newState);
-  // }
 
   render() {
     const styles = StyleSheet.create({
