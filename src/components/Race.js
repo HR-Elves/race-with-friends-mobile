@@ -7,7 +7,9 @@ import {
   Button,
   ProgressViewIOS,
   Modal,
-  TouchableHighlight
+  TouchableHighlight,
+  Image,
+  Dimensions
 } from 'react-native';
 import {Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
@@ -430,6 +432,14 @@ export default class Race extends Component {
                 color='#008000' // Green
               />
             </View>
+            {this.state.raceStatus && this.state.raceStatus.challengeDone && <Image
+              source={require('../../assets/images/StickmanRunning.gif')}
+              resizeMode='contain'
+              style={{
+                height: Dimensions.get('window').height * 0.4,
+                width: Dimensions.get('window').width * 0.4
+              }}
+              />}
           </View>}
         {this.state.showSetupRace &&
           <View style={styles.container}>
