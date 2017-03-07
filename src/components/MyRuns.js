@@ -3,11 +3,11 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView, 
+  ScrollView,
   Dimensions
 } from 'react-native';
 
-import { ListItem, Subheader } from 'react-native-material-ui';
+import { Subheader } from 'react-native-material-ui';
 
 import RunsList from './RunsList';
 import RunView from './RunView';

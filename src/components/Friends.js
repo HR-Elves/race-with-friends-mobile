@@ -23,26 +23,13 @@ export default class Friends extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getFriends((result) => {
       this.setState ({
         friends: result
       });
     });
   }
-
-  // getFriends(callback) {
-  //   let results = [];
-  //   results[0] = {
-  //     "fb_id": "1",
-  //     "fullname": "Otto von Racerstein",
-  //   };
-  //   results[1] = {
-  //     "fb_id": "2",
-  //     "fullname": "Runny McRunnerson",
-  //   };
-  //   callback(results);
-  // }
 
   getFriends(callback) {
     let userId = this.props.userId;
@@ -57,7 +44,6 @@ export default class Friends extends Component {
         return response.json();
       })
       .then((responseJson) => {
-        console.log('######',responseJson)
         callback(responseJson);
       })
       .catch((error) => {
@@ -91,7 +77,6 @@ export default class Friends extends Component {
       })
     })
     .then((response) => {
-      console.log('#####', response)
       this.getFriends((results) => {
         this.setState({
           displayState: 'list',
@@ -122,14 +107,9 @@ export default class Friends extends Component {
     });
 
     const uiTheme = {
-        palette: {
-            primaryColor: COLOR.green500,
-        },
-        toolbar: {
-            container: {
-                height: 50,
-            },
-        },
+      palette: {
+        primaryColor: COLOR.green500
+      }
     };
 
     return (
