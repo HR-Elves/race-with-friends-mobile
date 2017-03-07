@@ -88,6 +88,11 @@ export function getRaceStatus(currentLoc, raceObj, prevRaceStatus) {
 
     let distanceRemaining = raceObj[raceObj.length - 1].distanceTotal - currentLoc.distanceTotal;
     let challengeDone = (distanceRemaining <= 0) || currentRaceIndex >= raceObj.length - 1;
+    
+    // bandaid fix to solve discrepancy in voice reporting and text display
+    if(challengeDone && distanceRemaining > 0) {
+      newDistanceToOpponent = -distanceRemaining;
+    };
 
     return {
       distanceToOpponent: newDistanceToOpponent,

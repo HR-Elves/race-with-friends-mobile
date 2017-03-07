@@ -20,11 +20,17 @@ import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
 import james from '../../assets/presetChallenges/MarketSt3';
 import nick from '../../assets/presetChallenges/MarketSt4';
 import hare from '../../assets/presetChallenges/hareFromFable';
+import test1 from '../../assets/presetChallenges/test1';
+import test2 from '../../assets/presetChallenges/test2';
+import test3 from '../../assets/presetChallenges/test3';
 
 const presets = {
   'Usain Bolt': usain,
   worldRecordRaceWalk100m: walk,
-  hare100m: hare
+  hare100m: hare,
+  test1: test1,
+  test2: test2,
+  test3: test3
 };
 
 const myRuns = {
@@ -144,6 +150,7 @@ export default class Replay extends Component {
     let newLocation = this.state.playerSetup.player[this.playerIndex];
 
     if (newRaceStatus.challengeDone) {
+      // console.warn('newRaceStatus: ', newRaceStatus);
       if (newRaceStatus.distanceToOpponent < 0) { // Opponent Won
         if (typeof this.state.opponentSetup.challenge.message === 'object') {
           this.waitAndSpeak(this.state.opponentSetup.challenge.message.opponentWon);
