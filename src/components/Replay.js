@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {Vibration} from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
-import BackgroundGeolocation from 'react-native-background-geolocation';
+import Tts from 'react-native-tts';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
@@ -41,6 +41,23 @@ const raceTypes = {
   Live: 'Under Construction',
 };
 
+class SpeechQueue {
+  constructor() {
+    this.storage = [];
+  }
+  size() {
+    return this.storage.length;
+  }
+  queue(speech) {
+    this.storage.unshift(speech);
+  }
+  dequeue() {
+    return this.storage.pop();
+  }
+}
+
+let speechQueue = new SpeechQueue();
+
 export default class Replay extends Component {
 
   constructor(props) {
@@ -58,12 +75,14 @@ export default class Replay extends Component {
       playerSetup: {
         runnerType: 'Presets',
         options: Object.keys(presets),
-        player: walk
+        player: walk,
+        challenge: walk
       },
       opponentSetup: {
         runnerType: 'Presets',
         options: Object.keys(presets),
-        opponent: walk
+        opponent: walk,
+        challenge: walk
       }
       // picked: {
       //   player: 'James Market St',
@@ -76,7 +95,6 @@ export default class Replay extends Component {
   }
 
   componentWillMount() {
-    this.initializeBgGeo();
     this.getChallenges((responseJSON) => {
       // console.warn(JSON.stringify(responseJSON));
       let newChallenges = {};
@@ -86,50 +104,21 @@ export default class Replay extends Component {
       raceTypes['Challenges'] = newChallenges;
       // console.warn('Challenges loaded.');
     });
-  }
 
-  initializeBgGeo() {
-    // Now configure the plugin.
-    BackgroundGeolocation.configure({
-      // Geolocation Options
-      desiredAccuracy: 0,
-      locationUpdateInterval: 1000,
-      fastestLocationUpdateInterval: 500,
-      stationaryRadius: 1,
-      disableElasticity: true,
-      desiredOdometerAccuracy: 0,
-      // Activity Recognition Options
-      stopTimeout: 60, // Minutes
-      disableMotionActivityUpdates: true,
-      stopDetectionDelay: 60, // Minutes
-      // HTTP / SQLite Persistence Options
-      url: 'https://salty-stream-73177.herokuapp.com/',
-      method: 'POST',
-      autoSync: false, // POST each location immediately to server
-      // Application config
-      debug: false, // debug sounds & notifications
-      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
-      stopOnTerminate: true, // Allow the background-service to continue tracking when user closes the app.
-      startOnBoot: false, // Auto start tracking when device is powered-up.
-      heartbeatInterval: 1,
-      preventSuspend: true,
-      // pausesLocationUpdatesAutomatically: false,
-    }, function(state) {
-      console.log('- BackgroundGeolocation is configured and ready: ', state.enabled);
-
-      if (!state.enabled) {
-        BackgroundGeolocation.start(function() {
-          console.log('- Start success');
-        });
+    Tts.addEventListener('tts-finish', (event) => {
+      // console.warn('tts-finish: ', event);
+      if (speechQueue.size() > 0) {
+        Tts.speak(speechQueue.dequeue());
       }
     });
+    Tts.addEventListener('tts-cancel', (event) => console.warn('tts-cancel: ', event));
   }
 
   onLocationUpdate(location) {
     console.log('~~~ calling onLocation ~~~ ', this.setTimeoutID);
     let newRaceStatus = getRaceStatus(location, this.state.opponentSetup.opponent, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
-      BackgroundGeolocation.playSound(1001);
+      this.waitAndSpeak('You just passed your opponent! 1 2 3 4  5 6 7 8 9 10 10 10 10 10 10 10 10 10');
     }
     if (newRaceStatus.distanceToOpponent > 0) {
       let pattern = [0];
@@ -155,7 +144,12 @@ export default class Replay extends Component {
     let newLocation = this.state.playerSetup.player[this.playerIndex];
 
     if (newRaceStatus.challengeDone) {
-      if (newRaceStatus.distanceToOpponent <= 0) {
+      if (newRaceStatus.distanceToOpponent < 0) { // Opponent Won
+        if (typeof this.state.opponentSetup.challenge.message === 'object') {
+          this.waitAndSpeak(this.state.opponentSetup.challenge.message.opponentWon);
+        } else {
+          this.waitAndSpeak(`I'm Sorry to report that your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+        }
         this.setState({
           progress: {
             playerDist: location.distanceTotal,
@@ -165,13 +159,29 @@ export default class Replay extends Component {
             opponentWon: true
           }
         });
-      } else if (newRaceStatus.distanceToOpponent > 0) {
+      } else if (newRaceStatus.distanceToOpponent > 0) { // Player Won
+        if (typeof this.state.playerSetup.challenge.message === 'object') {
+          this.waitAndSpeak(this.state.playerSetup.challenge.message.playerWon);
+        } else {
+          this.waitAndSpeak(`Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+        }
         this.setState({
           progress: {
             playerDist: location.distanceTotal,
             opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
             totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
             playerWon: true,
+            opponentWon: false
+          }
+        });
+      } else {
+        this.waitAndSpeak('Wow, you and your opponent tied!');
+        this.setState({
+          progress: {
+            playerDist: location.distanceTotal,
+            opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
+            totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
+            playerWon: false,
             opponentWon: false
           }
         });
@@ -226,7 +236,13 @@ export default class Replay extends Component {
     this.setTimeoutID = setTimeout((() => {
       this.onLocationUpdate(location);
     }).bind(this), location.timeDelta);
-    console.log('~~~ setting ~~~', this.setTimeoutID);
+    // console.log('~~~ setting ~~~', this.setTimeoutID);
+    // console.warn(this.state.playerSetup.challenge.message);
+    if (typeof this.state.playerSetup.challenge.message === 'object') {
+      this.waitAndSpeak(this.state.playerSetup.challenge.message.raceStart);
+    } else {
+      this.waitAndSpeak('oh mer gherd, we are now recording!');
+    }
   }
 
   onPause() {
@@ -264,6 +280,7 @@ export default class Replay extends Component {
     const newState = {};
     newState.playerSetup = this.state.playerSetup;
     newState.playerSetup.player = raceTypes[this.state.playerSetup.runnerType][value];
+    newState.playerSetup.challenge = raceTypes[this.state.playerSetup.runnerType][value];
     this.setState(newState, () => {
       // console.warn('newState.playerSetup = ', newState.playerSetup);
       if (newState.playerSetup.player.run_id) {
@@ -272,16 +289,16 @@ export default class Replay extends Component {
           const nextState = {};
           nextState.playerSetup = this.state.playerSetup;
           nextState.playerSetup.player = responseJson.data;
-          // let messageParsed;
-          // try {
-          //   messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
-          // } catch (error) {
-          //   //Do nothing.
-          // }
+          let messageParsed;
+          try {
+            messageParsed = JSON.parse(nextState.playerSetup.challenge.message);
+          } catch (error) {
+            //Do nothing.
+          }
 
-          // if (typeof messageParsed === 'object') {
-          //   nextState.raceSetup.challenge.message = messageParsed;
-          // }
+          if (typeof messageParsed === 'object') {
+            nextState.playerSetup.challenge.message = messageParsed;
+          }
            // console.error(JSON.stringify(nextState));
           this.setState(nextState, () => {
             // console.warn('Updated State!');
@@ -305,6 +322,7 @@ export default class Replay extends Component {
     const newState = {};
     newState.opponentSetup = this.state.opponentSetup;
     newState.opponentSetup.opponent = raceTypes[this.state.opponentSetup.runnerType][value];
+    newState.opponentSetup.challenge = raceTypes[this.state.opponentSetup.runnerType][value];
     this.setState(newState, () => {
       // console.warn('newState.opponentSetup = ', newState.opponentSetup);
       if (newState.opponentSetup.opponent.run_id) {
@@ -330,6 +348,17 @@ export default class Replay extends Component {
         });
       }
     });
+  }
+
+  waitAndSpeak(message, voice) {
+    if (voice) {
+      Tts.setDefaultLanguage(voice);
+    }
+    speechQueue.queue(message);
+    // console.warn('speechQueue: ', speechQueue.storage);
+    if (speechQueue.size() > 0) {
+      Tts.speak(speechQueue.dequeue());
+    }
   }
 
   render() {
