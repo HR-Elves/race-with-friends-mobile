@@ -139,18 +139,17 @@ export default class Replay extends Component {
       Vibration.vibrate(pattern);
     }
 
-    this.state.history.push(racerLoc);
-    this.setState({
-      history: this.state.history,
-      raceStatus: newRaceStatus,
-      progress: {
-        playerDist: racerLoc.distanceTotal,
-        opponentDist: racerLoc.distanceTotal - newRaceStatus.distanceToOpponent,
-        totalDist: race[race.length - 1].distanceTotal,
-        playerWon: false,
-        opponentWon: false
-      }
-    });
+    const newState = this.state;
+    newState.raceStatus = newRaceStatus;
+    newState.progress.playerDist = racerLoc.distanceTotal;
+    newState.progress.opponentDist = racerLoc.distanceTotal - newRaceStatus.distanceToOpponent;
+    newState.progress.totalDist = race[race.length - 1].distanceTotal;
+    if (this.state.playersSwapped) {
+      newState.progress.playerDist = racerLoc.distanceTotal - newRaceStatus.distanceToOpponent;
+      newState.progress.opponentDist = racerLoc.distanceTotal;
+      newState.progress.totalDist = race[race.length - 1].distanceTotal;
+    }
+    this.setState(newState);
 
     if (newRaceStatus.challengeDone) {
       // console.warn('newRaceStatus: ', newRaceStatus);
@@ -159,10 +158,18 @@ export default class Replay extends Component {
         if (typeof this.state.opponentSetup.challenge.message === 'object') {
           this.waitAndSpeak(this.state.opponentSetup.challenge.message.opponentWon);
         } else {
-          this.waitAndSpeak(`Wow: The opponent beat the player by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+          if (this.playersSwapped) {
+            this.waitAndSpeak(`Wow: The player beat the opponent by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+          } else {
+            this.waitAndSpeak(`Wow: The opponent beat the player by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+          }
         }
-
-        this.setState({
+        if (this.playersSwapped) {
+          newState.progress.opponentWon = true;
+        } else {
+          newState.progress.playerWon = true;
+        }
+        this.setState(newState /*{
           progress: {
             playerDist: racerLoc.distanceTotal,
             opponentDist: racerLoc.distanceTotal - newRaceStatus.distanceToOpponent,
@@ -170,16 +177,26 @@ export default class Replay extends Component {
             playerWon: false,
             opponentWon: true
           }
-        });
+        }*/);
       } else if (newRaceStatus.distanceToOpponent > 0) { // Player Won
 
         if (typeof this.state.playerSetup.challenge.message === 'object') {
           this.waitAndSpeak(this.state.playerSetup.challenge.message.playerWon);
         } else {
-          this.waitAndSpeak(`Incredible, the player beat the opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+          if (this.state.playersSwapped) {
+            this.waitAndSpeak(`Incredible, the opponent beat the player by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+          } else {
+            console.warn('playersSwapped: ', this.state.playersSwapped);
+            this.waitAndSpeak(`Incredible, the player beat the opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+          }
         }
 
-        this.setState({
+        if (this.state.playersSwapped) {
+          newState.progress.opponentWon = true;
+        } else {
+          newState.progress.playerWon = true;
+        }
+        this.setState(newState /*{
           progress: {
             playerDist: racerLoc.distanceTotal,
             opponentDist: racerLoc.distanceTotal - newRaceStatus.distanceToOpponent,
@@ -187,18 +204,18 @@ export default class Replay extends Component {
             playerWon: true,
             opponentWon: false
           }
-        });
+        }*/);
       } else {
         this.waitAndSpeak('Hmmm, the player and the opponent tied!');
-        this.setState({
-          progress: {
-            playerDist: racerLoc.distanceTotal,
-            opponentDist: racerLoc.distanceTotal - newRaceStatus.distanceToOpponent,
-            totalDist: race[race.length - 1].distanceTotal,
-            playerWon: false,
-            opponentWon: false
-          }
-        });
+        // this.setState({
+        //   progress: {
+        //     playerDist: racerLoc.distanceTotal,
+        //     opponentDist: racerLoc.distanceTotal - newRaceStatus.distanceToOpponent,
+        //     totalDist: race[race.length - 1].distanceTotal,
+        //     playerWon: false,
+        //     opponentWon: false
+        //   }
+        // });
       }
     } else {
       let nextRacerLoc;
@@ -261,23 +278,31 @@ export default class Replay extends Component {
     // If the player's total time is greater than that of the opponent,
       racer = opponent[this.racerIndex];
       race = player;
-      if (!this.state.playersSwapped) {
-        this.setState({ playersSwapped: true });
-      }
+      this.setState({ playersSwapped: true }, () => {
+        console.warn(this.state.playersSwapped);
+        this.setTimeoutID = setTimeout((() => {
+          this.onLocationUpdate(racer, race);
+        }).bind(this), racer.timeDelta);
+      });
       // use the opponent instead for deriving the current racer location.
     } else {
       // otherwise use player to derive the current racer location.
       racer = player[this.racerIndex];
       race = opponent;
-      if (this.state.playersSwapped) {
-        this.setState({ playersSwapped: false });
-      }
+      // if (this.state.playersSwapped && this.state.playersSwapped !== null) {
+      this.setState({ playersSwapped: false }, () => {
+        console.warn(this.state.playersSwapped);
+        this.setTimeoutID = setTimeout((() => {
+          this.onLocationUpdate(racer, race);
+        }).bind(this), racer.timeDelta);
+      });
+      // }
     }
-
     // console.warn('onPlay, location: ', JSON.stringify(location));
-    this.setTimeoutID = setTimeout((() => {
-      this.onLocationUpdate(racer, race);
-    }).bind(this), racer.timeDelta);
+
+    // this.setTimeoutID = setTimeout((() => {
+    //   this.onLocationUpdate(racer, race);
+    // }).bind(this), racer.timeDelta);
 
     if (typeof this.state.playerSetup.challenge.message === 'object') {
       this.waitAndSpeak(this.state.playerSetup.challenge.message.raceStart);
@@ -293,9 +318,18 @@ export default class Replay extends Component {
 
   onReset() {
     this.onPause();
-    this.setState({
+    const newState = {};
+    newState.progress = this.state.progress;
+    newState.raceStatus = null;
+    newState.playersSwapped = null;
+    newState.progress.playerDist = 0;
+    newState.progress.opponentDist = 0;
+    newState.progress.playerWon = false;
+    newState.progress.opponentWon = false;
+    this.setState(newState/*{
       history: [],
       raceStatus: null,
+      playersSwapped: null,
       progress: {
         playerDist: 0,
         opponentDist: 0,
@@ -303,7 +337,7 @@ export default class Replay extends Component {
         playerWon: false,
         opponentWon: false
       }
-    });
+    }*/);
     this.racerIndex = 0;
   }
 
