@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 import {ListItem} from 'react-native-material-ui';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class FriendsList extends Component {
   constructor(props) {
@@ -45,7 +44,6 @@ export default class FriendsList extends Component {
                     style={{width: 50, height: 50}}
                     source={{uri: friend.pic}}
                   />}
-                // leftElement={<Icon size={20} color="black" name="tag-faces" />}
                 centerElement={<Text style={styles.name}>{friend.fullname}</Text>}
                 rightElement={friend.selected ?
                   <Image
@@ -66,13 +64,9 @@ export default class FriendsList extends Component {
 
 const styles = StyleSheet.create({
   search: {
-    flexDirection: 'row',
-    // justifyContent: 'left',
-    // alignItems: 'left'
-    // flex:1    //Step 1
+    flexDirection: 'row'
   },
   name: {
-    // marginLeft: 75
     textAlign: 'center'
   },
   empty: {

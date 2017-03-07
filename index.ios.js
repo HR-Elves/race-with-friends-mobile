@@ -1,5 +1,5 @@
 
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
   AppRegistry,
   StyleSheet,
@@ -9,7 +9,9 @@ import {
   Navigator,
   ListView,
   TouchableOpacity,
-  Image
+  Image,
+  TouchableHighlight,
+  Dimensions
 } from 'react-native';
 import {AsyncStorage, Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
@@ -28,6 +30,8 @@ import Challenge from './src/components/Challenge';
 import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtils';
 import race from './assets/presetChallenges/standardWalk.json';
 import {checkAuth, loginUser, saveUserInDb} from './src/utils/loginUtils.js';
+
+import { COLOR, ThemeProvider, ListItem, Subheader } from 'react-native-material-ui';
 
 let _emitter = new EventEmitter();
 
@@ -48,6 +52,8 @@ export default class RaceWithFriends extends Component {
   }
 
   componentDidMount() {
+    // this.logOutUser();
+
     checkAuth((err, success) => {
       if (err) {
         loginUser((err, success) => {
@@ -98,11 +104,24 @@ export default class RaceWithFriends extends Component {
         console.log('loginUtils -> logOutUser -> remove token', err);
       } else {
         console.log('Profile Removed');
-        this.setState({isLoggedIn: false});
+
+        var that = this;
+        this.setState({isLoggedIn: false}, () => {
+          checkAuth((err, success) => {
+            if (err) {
+              loginUser((err, success) => {
+                if (!err) {
+                  that.getProfile();
+                }
+              })
+            } else {
+              that.getProfile();
+            }
+          });
+        });
       }
     });
   }
-
 
   navigate(scene) {
     var componentMap = {
@@ -147,7 +166,7 @@ export default class RaceWithFriends extends Component {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#F5FCFF',
+          backgroundColor: '#F5FCFF'
         }}>
           <Image source={require('./assets/images/StickmanRunning.gif')} />
         </View>
@@ -162,17 +181,7 @@ export default class RaceWithFriends extends Component {
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
-      },
-      welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-      },
-      instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-      },
+      }
     });
 
     const NavigationBarRouteMapper = {
@@ -188,7 +197,9 @@ export default class RaceWithFriends extends Component {
 
       RightButton(route, navigator, index, navState) {
         return (
-          <TouchableOpacity /*style={styles.navBarRightButton}*/>
+          <TouchableOpacity /*style={styles.navBarRightButton}*/
+            // onPress={() => { _emitter.emit('openMenu'); }}
+            >
             <Icon name='more-vert' size={25} color={/*Black*/'#000000'} />
           </TouchableOpacity>
         );
@@ -207,7 +218,10 @@ export default class RaceWithFriends extends Component {
       <Drawer
         ref={(ref) => this._drawer = ref}
         type="overlay"
-        content={<RaceDashboard navigate={((route) => {
+        content={<RaceDashboard
+          profile={this.state.profile}
+          logout={this.logOutUser}
+          navigate={((route) => {
           this._navigator.push(this.navigate(route));
           this._drawer.close();
         }).bind(this)}/>}
@@ -248,10 +262,22 @@ class RaceDashboard extends Component {
   }
 
   _renderMenuItem(item) {
-    return (<RNButton
-      onPress={()=> this._onItemSelect(item)}>
-      {item}
-    </RNButton>);
+
+    const uiTheme = {
+      palette: {
+        primaryColor: COLOR.green500
+      }
+    };
+
+    return (
+      <ThemeProvider uiTheme={uiTheme} >
+        <ListItem
+          divider
+          onPress={()=> this._onItemSelect(item)}
+          centerElement={<Text >{item}</Text>}
+        />
+      </ThemeProvider>
+    );
   }
 
   _onItemSelect(item) {
@@ -265,14 +291,63 @@ class RaceDashboard extends Component {
   }
 
   render() {
+    const styles = StyleSheet.create({
+      container: {
+        // marginTop: 20,
+        flex: 1,
+        backgroundColor: '#F5FCFF',
+        width: 275,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column'
+      },
+      text: {
+        marginTop: 20
+      },
+      image: {
+        marginTop: 25,
+        width: 275,
+        height: 275,
+      },
+      //this is where to affect list of pages
+      listContent: {
+        backgroundColor: '#F5FCFF',
+        // marginTop: 20,
+        top: 20,
+        padding: 10,
+        width: 275
+      },
+      button: {
+        marginBottom: 15
+      }
+    })
+
+
     return (
-      <ListView
-        style={{
-          backgroundColor: '#FFF',
-          top: 20
-        }}
-        dataSource={this.state.dataSource}
-        renderRow={((item) => this._renderMenuItem(item)).bind(this)}/>
+
+      <View style={styles.container}>
+        <View>
+          {this.props.profile ? <Image style={styles.image} source={{uri: this.props.profile.extraInfo.picture_large}}/> : <Text></Text>}
+        </View>
+
+        <View>
+          {this.props.profile ? <Text style={styles.text}>{'Welcome ' + this.props.profile.name.split(' ')[0] + '!'}</Text> : <Text></Text>}
+        </View>
+
+        <ListView
+          style={styles.listContent}
+          dataSource={this.state.dataSource}
+          renderRow={((item) => this._renderMenuItem(item)).bind(this)}
+        />
+        <Button
+          style={styles.button}
+          onPress={() => {
+            this.props.logout();
+          }}
+          title="Sign Out"
+          color="#841584"
+        />
+      </View>
     );
   }
 }
