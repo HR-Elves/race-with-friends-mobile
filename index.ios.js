@@ -10,7 +10,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  Vibration,
   View
 } from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
@@ -264,6 +263,20 @@ class RaceDashboard extends Component {
         primaryColor: COLOR.green500
       }
     };
+    const styles = {
+      icon: {
+        width: 20,
+        height: 20
+      }
+    }
+// ['Race', 'My Runs', 'Replay', 'Challenge', 'Friends']
+    var imgSource = {
+      'Challenge': require('./assets/images/flags.jpg'),
+      'Race': require('./assets/images/race-icon.png'),
+      'My Runs': require('./assets/images/stop-watch.png'),
+      'Replay': require('./assets/images/video.png'),
+      'Friends': require('./assets/images/friends.png')
+    };
 
     return (
       <ThemeProvider uiTheme={uiTheme} >
@@ -271,9 +284,11 @@ class RaceDashboard extends Component {
           divider
           onPress={()=> this._onItemSelect(item)}
           centerElement={<Text >{item}</Text>}
+          rightElement={<Image style={styles.icon}source={imgSource[item]}/>}
         />
       </ThemeProvider>
     );
+
   }
 
   _onItemSelect(item) {
@@ -289,10 +304,10 @@ class RaceDashboard extends Component {
   render() {
     const styles = StyleSheet.create({
       container: {
-        // marginTop: 20,
+        marginTop: 20,
         flex: 1,
         backgroundColor: '#F5FCFF',
-        width: 275,
+        width: 300,
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column'
@@ -301,20 +316,23 @@ class RaceDashboard extends Component {
         marginTop: 20
       },
       image: {
-        marginTop: 25,
-        width: 275,
-        height: 275,
+        marginTop: 45,
+        height: 150,
+        borderRadius: 75,
+        width: 150
       },
       //this is where to affect list of pages
       listContent: {
         backgroundColor: '#F5FCFF',
-        // marginTop: 20,
-        top: 20,
+        marginTop: 80,
         padding: 10,
-        width: 275
+        width: 295
       },
       button: {
-        marginBottom: 15
+        // marginBottom: 100,
+        // backgroundColor: 'blue',
+        // borderWidth: 2,
+        // backgroundColor: COLOR.green500
       }
     })
 
@@ -341,7 +359,7 @@ class RaceDashboard extends Component {
             this.props.logout();
           }}
           title="Sign Out"
-          color="#841584"
+          color={COLOR.green500}
         />
       </View>
     );
