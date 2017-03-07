@@ -71,7 +71,7 @@ export default class Replay extends Component {
     this.state = {
       history: [],
       raceStatus: null,
-      playersSwapped: true,
+      playersSwapped: null,
       progress: {
         playerDist: 0,
         opponentDist: 0,
@@ -132,7 +132,7 @@ export default class Replay extends Component {
     });
 
     if (newRaceStatus.passedOpponent) {
-      // this.waitAndSpeak('You just passed your opponent!');
+      this.waitAndSpeak('The player just passed the opponent!');
     }
     if (newRaceStatus.distanceToOpponent > 0) {
       let pattern = [0];
@@ -156,11 +156,11 @@ export default class Replay extends Component {
       // console.warn('newRaceStatus: ', newRaceStatus);
       if (newRaceStatus.distanceToOpponent < 0) { // Opponent Won
 
-        // if (typeof this.state.opponentSetup.challenge.message === 'object') {
-        //   this.waitAndSpeak(this.state.opponentSetup.challenge.message.opponentWon);
-        // } else {
-        //   this.waitAndSpeak(`I'm Sorry to report that your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
-        // }
+        if (typeof this.state.opponentSetup.challenge.message === 'object') {
+          this.waitAndSpeak(this.state.opponentSetup.challenge.message.opponentWon);
+        } else {
+          this.waitAndSpeak(`Wow: The opponent beat the player by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+        }
 
         this.setState({
           progress: {
@@ -173,11 +173,11 @@ export default class Replay extends Component {
         });
       } else if (newRaceStatus.distanceToOpponent > 0) { // Player Won
 
-        // if (typeof this.state.playerSetup.challenge.message === 'object') {
-        //   this.waitAndSpeak(this.state.playerSetup.challenge.message.playerWon);
-        // } else {
-        //   this.waitAndSpeak(`Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
-        // }
+        if (typeof this.state.playerSetup.challenge.message === 'object') {
+          this.waitAndSpeak(this.state.playerSetup.challenge.message.playerWon);
+        } else {
+          this.waitAndSpeak(`Incredible, the player beat the opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+        }
 
         this.setState({
           progress: {
@@ -189,7 +189,7 @@ export default class Replay extends Component {
           }
         });
       } else {
-        this.waitAndSpeak('Wow, you and your opponent tied!');
+        this.waitAndSpeak('Hmmm, the player and the opponent tied!');
         this.setState({
           progress: {
             playerDist: racerLoc.distanceTotal,
@@ -257,7 +257,7 @@ export default class Replay extends Component {
     let racer;
     let race;
 
-    if (this.state.playersSwapped && player[player.length - 1].timeTotal > opponent[opponent.length - 1].timeTotal) {
+    if (this.state.playersSwapped || player[player.length - 1].timeTotal > opponent[opponent.length - 1].timeTotal) {
     // If the player's total time is greater than that of the opponent,
       racer = opponent[this.racerIndex];
       race = player;
@@ -279,11 +279,11 @@ export default class Replay extends Component {
       this.onLocationUpdate(racer, race);
     }).bind(this), racer.timeDelta);
 
-    // if (typeof this.state.playerSetup.challenge.message === 'object') {
-    //   this.waitAndSpeak(this.state.playerSetup.challenge.message.raceStart);
-    // } else {
-    //   this.waitAndSpeak('oh mer gherd, we are now recording!');
-    // }
+    if (typeof this.state.playerSetup.challenge.message === 'object') {
+      this.waitAndSpeak(this.state.playerSetup.challenge.message.raceStart);
+    } else {
+      this.waitAndSpeak('Oh-your-marks, get-set, Oh, they already started!');
+    }
   }
 
   onPause() {
@@ -372,16 +372,16 @@ export default class Replay extends Component {
           const nextState = {};
           nextState.opponentSetup = this.state.opponentSetup;
           nextState.opponentSetup.opponent = responseJson.data;
-          // let messageParsed;
-          // try {
-          //   messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
-          // } catch (error) {
-          //   //Do nothing.
-          // }
+          let messageParsed;
+          try {
+            messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
+          } catch (error) {
+            //Do nothing.
+          }
 
-          // if (typeof messageParsed === 'object') {
-          //   nextState.raceSetup.challenge.message = messageParsed;
-          // }
+          if (typeof messageParsed === 'object') {
+            nextState.raceSetup.challenge.message = messageParsed;
+          }
            // console.error(JSON.stringify(nextState));
           this.setState(nextState, () => {
             // console.warn('Updated State!');
