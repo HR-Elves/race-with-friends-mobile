@@ -2,24 +2,23 @@
 import React, { Component, PropTypes } from 'react';
 import {
   AppRegistry,
+  AsyncStorage,
+  Button,
+  Image,
+  ListView,
+  Navigator,
   StyleSheet,
   Text,
-  View,
-  Button,
-  Navigator,
-  ListView,
   TouchableOpacity,
-  Image,
-  TouchableHighlight,
-  Dimensions
+  Vibration,
+  View
 } from 'react-native';
-import {AsyncStorage, Vibration} from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import Drawer from 'react-native-drawer';
-import RNButton from 'react-native-button';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { EventEmitter } from 'fbemitter';
 import _ from 'lodash';
+import { COLOR, ThemeProvider, ListItem } from 'react-native-material-ui';
 
 import Race from './src/components/Race';
 import Replay from './src/components/Replay';
@@ -31,7 +30,6 @@ import {findDistance, processLocation, getRaceStatus} from './src/utils/raceUtil
 import race from './assets/presetChallenges/standardWalk.json';
 import {checkAuth, loginUser, saveUserInDb} from './src/utils/loginUtils.js';
 
-import { COLOR, ThemeProvider, ListItem, Subheader } from 'react-native-material-ui';
 
 let _emitter = new EventEmitter();
 
@@ -52,8 +50,6 @@ export default class RaceWithFriends extends Component {
   }
 
   componentDidMount() {
-    // this.logOutUser();
-
     checkAuth((err, success) => {
       if (err) {
         loginUser((err, success) => {
