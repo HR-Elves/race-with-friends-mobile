@@ -12,23 +12,34 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
+import RaceProgress from './RaceProgress';
+import RaceStatus from './RaceStatus';
+
 import usain from '../../assets/presetChallenges/UsainBolt100m';
 import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
 import james from '../../assets/presetChallenges/MarketSt3';
 import nick from '../../assets/presetChallenges/MarketSt4';
-import hare from '../../assets/presetChallenges/hare100m';
-import RaceProgress from './RaceProgress';
-import RaceStatus from './RaceStatus';
+import hare from '../../assets/presetChallenges/hareFromFable';
 
-const ghosts = {
+const presets = {
   'Usain Bolt': usain,
   worldRecordRaceWalk100m: walk,
-  'James Market St': james,
-  'Nick Market St': nick,
   hare100m: hare
 };
-let player = james;
-let race = nick;
+
+const myRuns = {
+  'James Market St': james,
+  'Nick Market St': nick,
+};
+
+let challenges;
+
+const raceTypes = {
+  Presets: presets,
+  'My Runs': myRuns,
+  Challenges: challenges,
+  Live: 'Under Construction',
+};
 
 export default class Replay extends Component {
 
@@ -40,14 +51,24 @@ export default class Replay extends Component {
       progress: {
         playerDist: 0,
         opponentDist: 0,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: 100,
         playerWon: false,
         opponentWon: false
       },
-      picked: {
-        player: 'James Market St',
-        opponent: 'Nick Market St'
+      playerSetup: {
+        runnerType: 'Presets',
+        options: Object.keys(presets),
+        player: walk
+      },
+      opponentSetup: {
+        runnerType: 'Presets',
+        options: Object.keys(presets),
+        opponent: walk
       }
+      // picked: {
+      //   player: 'James Market St',
+      //   opponent: 'Nick Market St'
+      // }
     };
     this.playerIndex = 0;
     this.setTimeoutID = null;
@@ -97,7 +118,7 @@ export default class Replay extends Component {
 
   onLocationUpdate(location) {
     console.log('~~~ calling onLocation ~~~ ', this.setTimeoutID);
-    let newRaceStatus = getRaceStatus(location, race, this.state.raceStatus);
+    let newRaceStatus = getRaceStatus(location, this.state.opponentSetup.opponent, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
       BackgroundGeolocation.playSound(1001);
     }
@@ -113,7 +134,7 @@ export default class Replay extends Component {
       progress: {
         playerDist: location.distanceTotal,
         opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
       }
@@ -122,7 +143,7 @@ export default class Replay extends Component {
     console.log('~~~', JSON.stringify(location));
 
     this.playerIndex++;
-    let newLocation = player[this.playerIndex];
+    let newLocation = this.state.playerSetup.player[this.playerIndex];
 
     if (newRaceStatus.challengeDone) {
       if (newRaceStatus.distanceToOpponent <= 0) {
@@ -130,7 +151,7 @@ export default class Replay extends Component {
           progress: {
             playerDist: location.distanceTotal,
             opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
-            totalDist: race[race.length - 1].distanceTotal,
+            totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
             playerWon: false,
             opponentWon: true
           }
@@ -140,7 +161,7 @@ export default class Replay extends Component {
           progress: {
             playerDist: location.distanceTotal,
             opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
-            totalDist: race[race.length - 1].distanceTotal,
+            totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
             playerWon: true,
             opponentWon: false
           }
@@ -155,7 +176,7 @@ export default class Replay extends Component {
   }
 
   onPlay() {
-    let location = player[this.playerIndex];
+    let location = this.state.playerSetup.player[this.playerIndex];
     this.setTimeoutID = setTimeout((() => {
       this.onLocationUpdate(location);
     }).bind(this), location.timeDelta);
@@ -175,7 +196,7 @@ export default class Replay extends Component {
       progress: {
         playerDist: 0,
         opponentDist: 0,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
       }
@@ -183,22 +204,59 @@ export default class Replay extends Component {
     this.playerIndex = 0;
   }
 
-  onPickPlayer(index, value) {
-    console.log('*****', index, value);
+  onPickPlayerType(key, value) {
     const newState = {};
-    newState.picked = this.state.picked;
-    newState.picked.player = value;
-    player = ghosts[value];
-    this.setState(newState);
+    newState.playerSetup = this.state.playerSetup;
+    newState.playerSetup.runnerType = value;
+    newState.playerSetup.options = Object.keys(raceTypes[value]);
+    this.setState(newState, () => {
+      // console.warn('newState loaded!');
+    });
+  }
+
+  onPickPlayer(key, value) {
+    const newState = {};
+    newState.playerSetup = this.state.playerSetup;
+    newState.playerSetup.player = raceTypes[this.state.playerSetup.runnerType][value];
+    this.setState(newState, () => {
+      console.warn('newState.playerSetup = ', newState.playerSetup);
+    });
+  }
+
+  onPickOpponentType(key, value) {
+    const newState = {};
+    newState.opponentSetup = this.state.opponentSetup;
+    newState.opponentSetup.runnerType = value;
+    newState.opponentSetup.options = Object.keys(raceTypes[value]);
+    this.setState(newState, () => {
+      // console.warn('newState loaded!');
+    });
   }
 
   onPickOpponent(key, value) {
     const newState = {};
-    newState.picked = this.state.picked;
-    newState.picked.opponent = value;
-    race = ghosts[value];
-    this.setState(newState);
+    newState.opponentSetup = this.state.opponentSetup;
+    newState.opponentSetup.opponent = raceTypes[this.state.opponentSetup.runnerType][value];
+    this.setState(newState, () => {
+      console.warn('newState.opponentSetup = ', newState.opponentSetup);
+    });
   }
+  // onPickPlayer(index, value) {
+  //   console.log('*****', index, value);
+  //   const newState = {};
+  //   newState.picked = this.state.picked;
+  //   newState.picked.player = value;
+  //   player = ghosts[value];
+  //   this.setState(newState);
+  // }
+
+  // onPickOpponent(key, value) {
+  //   const newState = {};
+  //   newState.picked = this.state.picked;
+  //   newState.picked.opponent = value;
+  //   race = ghosts[value];
+  //   this.setState(newState);
+  // }
 
   render() {
     const styles = StyleSheet.create({
@@ -223,31 +281,57 @@ export default class Replay extends Component {
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         flexDirection: 'row'
+      },
+      dropdown: {
+        flex: 1,
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        flexDirection: 'row'
       }
     });
 
     return (
       <View style={styles.container}>
         <Text style={{marginBottom: 0, marginTop: 50}}>Select Racers:</Text>
-        <ModalDropdown
-          options={['Usain Bolt', 'James Market St', 'Nick Market St']}
-          onSelect={this.onPickPlayer.bind(this)}
-          textStyle={{fontSize: 24}}
-          defaultValue='James Market St'
-          style={{marginTop: 25}}
-        />
+        <View style={styles.dropdown}>
+          <ModalDropdown
+            options={['Presets', 'My Runs', 'Challenges']}
+            onSelect={this.onPickPlayerType.bind(this)}
+            textStyle={{fontSize: 18}}
+            defaultValue='Presets'
+            // style={{marginTop: 25}}
+          />
+          <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
+          <ModalDropdown
+            options={this.state.playerSetup.options}
+            onSelect={this.onPickPlayer.bind(this)}
+            textStyle={{fontSize: 24}}
+            defaultValue='worldRecordRaceWalk100m'
+            // style={{marginTop: 25}}
+          />
+        </View>
         <Text style={{
           fontSize: 20,
-          marginTop: 10,
-          marginBottom: 10
+          // marginTop: 10,
+          // marginBottom: 10
         }}>VS</Text>
-        <ModalDropdown
-          options={['Usain Bolt', 'James Market St', 'Nick Market St']}
-          onSelect={this.onPickOpponent.bind(this)}
-          textStyle={{fontSize: 24}}
-          defaultValue='Nick Market St'
-          style={{marginBottom: 25}}
-        />
+        <View style={styles.dropdown}>
+          <ModalDropdown
+            options={['Presets', 'My Runs', 'Challenges']}
+            onSelect={this.onPickOpponentType.bind(this)}
+            textStyle={{fontSize: 18}}
+            defaultValue='Presets'
+            // style={{marginTop: 25}}
+          />
+          <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
+          <ModalDropdown
+            options={this.state.opponentSetup.options}
+            onSelect={this.onPickOpponent.bind(this)}
+            textStyle={{fontSize: 24}}
+            defaultValue='worldRecordRaceWalk100m'
+            // style={{marginTop: 25}}
+          />
+        </View>
         <RaceStatus
           status={this.state.raceStatus}
           playerName={'Player'}
