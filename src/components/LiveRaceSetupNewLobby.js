@@ -8,7 +8,11 @@ import { Avatar, Card, ListItem, Button} from 'react-native-material-ui';
 import uiTheme from './uiTheme.js';
 import FriendsPicker from './FriendsPicker.js'
 
-const SERVER = 'http://127.0.0.1:5002';
+// Development local server
+// const SERVER = 'http://127.0.0.1:5002';
+
+
+const SERVER = 'https://racewithfriends.tk:8000'
 
 const styles = StyleSheet.create({
   container: {

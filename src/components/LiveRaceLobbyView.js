@@ -10,8 +10,13 @@ import { Avatar, Card, ListItem, Subheader, Toolbar, Checkbox, Button} from 'rea
 import uiTheme from './uiTheme.js';
 import LiveRaceSetupNewLobby from './LiveRaceSetupNewLobby.js';
 
-const SERVER = 'http://127.0.0.1:5002';
-const SOCKETSERVER = 'ws://127.0.0.1:5002';
+// Development Server
+// const SERVER = 'http://127.0.0.1:5002';
+// const SOCKETSERVER = 'ws://127.0.0.1:5002';
+
+const SERVER = 'https://racewithfriends.tk:8000'
+const SOCKETSERVER = 'wss://racewithfriends.tk:8000';
+
 
 // Temporary Styles Sheet Manual Definition
 const styles = StyleSheet.create({
