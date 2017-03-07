@@ -22,6 +22,7 @@ import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.j
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
 import PostRace from './PostRace';
+import LiveRaceLobbyView from './LiveRaceLobbyView.js'
 
 import usain from '../../assets/presetChallenges/UsainBolt100m';
 import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
@@ -47,7 +48,7 @@ const raceTypes = {
   Presets: presets,
   'My Runs': myRuns,
   Challenges: challenges,
-  Live: 'Under Construction',
+  Live: 'live',
 };
 
 class SpeechQueue {
@@ -85,7 +86,7 @@ export default class Race extends Component {
         playerWon: false,
         opponentWon: false
       },
-      showSetupRace: true,
+      showSetupRace: true, //Render the race setup
       raceSetup: {
         raceType: 'Presets',
         oppOptions: Object.keys(presets),
@@ -119,6 +120,13 @@ export default class Race extends Component {
       }
     });
     Tts.addEventListener('tts-cancel', (event) => console.warn('tts-cancel: ', event));
+
+  componentDidMount() {
+    // Speech.supportedVoices()
+    // .then(locales => {
+    //   console.error(locales); // ["ar-SA", "en-ZA", "nl-BE", "en-AU", "th-TH", ...]
+    // });
+
   }
 
   beginGPSTracking() {
@@ -297,6 +305,7 @@ export default class Race extends Component {
     newState.raceSetup.raceType = value;
     // console.warn('challenges = ', challenges);
     newState.raceSetup.oppOptions = Object.keys(raceTypes[value]);
+
     this.setState(newState);
   }
 
@@ -447,7 +456,7 @@ export default class Race extends Component {
               // />
             }
           </View>}
-        {this.state.showSetupRace &&
+        {this.state.showSetupRace && this.state.raceSetup.raceType !== 'Live' &&
           <View style={styles.container}>
             <View style={styles.container}>
               <Text style={{fontSize: 26}}>Setup Race</Text>
@@ -486,6 +495,10 @@ export default class Race extends Component {
               </View>
             </View>
           </View>}
+        {/* Conditional rendering of the "Live Race" lobby when users select Live Race as the option */}
+          {this.state.raceSetup.raceType  === 'Live' &&
+            <LiveRaceLobbyView userID={this.props.userId}/>
+          }
         {<Prompt
           title="Please name your race."
           placeholder="Race Name"
