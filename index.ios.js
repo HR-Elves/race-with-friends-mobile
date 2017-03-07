@@ -54,7 +54,7 @@ export default class RaceWithFriends extends Component {
           if (!err) {
             this.getProfile();
           }
-        })
+        });
       } else {
         this.getProfile();
       }
@@ -87,7 +87,7 @@ export default class RaceWithFriends extends Component {
           console.log('===== this.state.profile', this.state.profile);
         }).bind(this));
       }
-    })
+    });
   }
 
 
@@ -98,7 +98,7 @@ export default class RaceWithFriends extends Component {
         console.log('loginUtils -> logOutUser -> remove token', err);
       } else {
         console.log('Profile Removed');
-        this.setState({isLoggedIn: false})
+        this.setState({isLoggedIn: false});
       }
     });
   }
@@ -136,7 +136,7 @@ export default class RaceWithFriends extends Component {
     } else if (route.id === 'My Runs') {
       return ( <StatsView userId={this.state.userId}/> );
     } else if (route.id === 'Replay') {
-      return ( <Replay /> );
+      return ( <Replay userId={this.state.userId}/> );
     } else if (route.id === 'Challenge') {
       return ( <Challenge userId={this.state.userId}/> );
     } else if (route.id === 'Friends') {

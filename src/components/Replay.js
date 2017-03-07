@@ -8,27 +8,55 @@ import {
 } from 'react-native';
 import {Vibration} from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
-import BackgroundGeolocation from 'react-native-background-geolocation';
+import Tts from 'react-native-tts';
 import _ from 'lodash';
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
+import RaceProgress from './RaceProgress';
+import RaceStatus from './RaceStatus';
+
 import usain from '../../assets/presetChallenges/UsainBolt100m';
 import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
 import james from '../../assets/presetChallenges/MarketSt3';
 import nick from '../../assets/presetChallenges/MarketSt4';
-import hare from '../../assets/presetChallenges/hare100m';
-import RaceProgress from './RaceProgress';
-import RaceStatus from './RaceStatus';
+import hare from '../../assets/presetChallenges/hareFromFable';
 
-const ghosts = {
+const presets = {
   'Usain Bolt': usain,
   worldRecordRaceWalk100m: walk,
-  'James Market St': james,
-  'Nick Market St': nick,
   hare100m: hare
 };
-let player = james;
-let race = nick;
+
+const myRuns = {
+  'James Market St': james,
+  'Nick Market St': nick,
+};
+
+let challenges;
+
+const raceTypes = {
+  Presets: presets,
+  'My Runs': myRuns,
+  Challenges: challenges,
+  Live: 'Under Construction',
+};
+
+class SpeechQueue {
+  constructor() {
+    this.storage = [];
+  }
+  size() {
+    return this.storage.length;
+  }
+  queue(speech) {
+    this.storage.unshift(speech);
+  }
+  dequeue() {
+    return this.storage.pop();
+  }
+}
+
+let speechQueue = new SpeechQueue();
 
 export default class Replay extends Component {
 
@@ -40,14 +68,26 @@ export default class Replay extends Component {
       progress: {
         playerDist: 0,
         opponentDist: 0,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: 100,
         playerWon: false,
         opponentWon: false
       },
-      picked: {
-        player: 'James Market St',
-        opponent: 'Nick Market St'
+      playerSetup: {
+        runnerType: 'Presets',
+        options: Object.keys(presets),
+        player: walk,
+        challenge: walk
+      },
+      opponentSetup: {
+        runnerType: 'Presets',
+        options: Object.keys(presets),
+        opponent: walk,
+        challenge: walk
       }
+      // picked: {
+      //   player: 'James Market St',
+      //   opponent: 'Nick Market St'
+      // }
     };
     this.playerIndex = 0;
     this.setTimeoutID = null;
@@ -55,51 +95,30 @@ export default class Replay extends Component {
   }
 
   componentWillMount() {
-    this.initializeBgGeo();
-  }
+    this.getChallenges((responseJSON) => {
+      // console.warn(JSON.stringify(responseJSON));
+      let newChallenges = {};
+      responseJSON.forEach((challenge) => {
+        newChallenges[challenge.name] = challenge;
+      });
+      raceTypes['Challenges'] = newChallenges;
+      // console.warn('Challenges loaded.');
+    });
 
-  initializeBgGeo() {
-    // Now configure the plugin.
-    BackgroundGeolocation.configure({
-      // Geolocation Options
-      desiredAccuracy: 0,
-      locationUpdateInterval: 1000,
-      fastestLocationUpdateInterval: 500,
-      stationaryRadius: 1,
-      disableElasticity: true,
-      desiredOdometerAccuracy: 0,
-      // Activity Recognition Options
-      stopTimeout: 60, // Minutes
-      disableMotionActivityUpdates: true,
-      stopDetectionDelay: 60, // Minutes
-      // HTTP / SQLite Persistence Options
-      url: 'https://salty-stream-73177.herokuapp.com/',
-      method: 'POST',
-      autoSync: false, // POST each location immediately to server
-      // Application config
-      debug: false, // debug sounds & notifications
-      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
-      stopOnTerminate: true, // Allow the background-service to continue tracking when user closes the app.
-      startOnBoot: false, // Auto start tracking when device is powered-up.
-      heartbeatInterval: 1,
-      preventSuspend: true,
-      // pausesLocationUpdatesAutomatically: false,
-    }, function(state) {
-      console.log('- BackgroundGeolocation is configured and ready: ', state.enabled);
-
-      if (!state.enabled) {
-        BackgroundGeolocation.start(function() {
-          console.log('- Start success');
-        });
+    Tts.addEventListener('tts-finish', (event) => {
+      // console.warn('tts-finish: ', event);
+      if (speechQueue.size() > 0) {
+        Tts.speak(speechQueue.dequeue());
       }
     });
+    Tts.addEventListener('tts-cancel', (event) => console.warn('tts-cancel: ', event));
   }
 
   onLocationUpdate(location) {
     console.log('~~~ calling onLocation ~~~ ', this.setTimeoutID);
-    let newRaceStatus = getRaceStatus(location, race, this.state.raceStatus);
+    let newRaceStatus = getRaceStatus(location, this.state.opponentSetup.opponent, this.state.raceStatus);
     if (newRaceStatus.passedOpponent) {
-      BackgroundGeolocation.playSound(1001);
+      this.waitAndSpeak('You just passed your opponent! 1 2 3 4  5 6 7 8 9 10 10 10 10 10 10 10 10 10');
     }
     if (newRaceStatus.distanceToOpponent > 0) {
       let pattern = [0];
@@ -113,7 +132,7 @@ export default class Replay extends Component {
       progress: {
         playerDist: location.distanceTotal,
         opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
       }
@@ -122,26 +141,47 @@ export default class Replay extends Component {
     console.log('~~~', JSON.stringify(location));
 
     this.playerIndex++;
-    let newLocation = player[this.playerIndex];
+    let newLocation = this.state.playerSetup.player[this.playerIndex];
 
     if (newRaceStatus.challengeDone) {
-      if (newRaceStatus.distanceToOpponent <= 0) {
+      if (newRaceStatus.distanceToOpponent < 0) { // Opponent Won
+        if (typeof this.state.opponentSetup.challenge.message === 'object') {
+          this.waitAndSpeak(this.state.opponentSetup.challenge.message.opponentWon);
+        } else {
+          this.waitAndSpeak(`I'm Sorry to report that your opponent beat you by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+        }
         this.setState({
           progress: {
             playerDist: location.distanceTotal,
             opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
-            totalDist: race[race.length - 1].distanceTotal,
+            totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
             playerWon: false,
             opponentWon: true
           }
         });
-      } else if (newRaceStatus.distanceToOpponent > 0) {
+      } else if (newRaceStatus.distanceToOpponent > 0) { // Player Won
+        if (typeof this.state.playerSetup.challenge.message === 'object') {
+          this.waitAndSpeak(this.state.playerSetup.challenge.message.playerWon);
+        } else {
+          this.waitAndSpeak(`Congratulations, you beat your opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+        }
         this.setState({
           progress: {
             playerDist: location.distanceTotal,
             opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
-            totalDist: race[race.length - 1].distanceTotal,
+            totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
             playerWon: true,
+            opponentWon: false
+          }
+        });
+      } else {
+        this.waitAndSpeak('Wow, you and your opponent tied!');
+        this.setState({
+          progress: {
+            playerDist: location.distanceTotal,
+            opponentDist: location.distanceTotal - newRaceStatus.distanceToOpponent,
+            totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
+            playerWon: false,
             opponentWon: false
           }
         });
@@ -154,12 +194,55 @@ export default class Replay extends Component {
     }
   }
 
+  getChallenges(callback) {
+    // console.warn('userId=', this.props.userId);
+    // let userId = this.props.userId;
+    fetch('https://www.racewithfriends.tk:8000/challenges?opponent=' + this.props.userId, {
+    // fetch('https://www.racewithfriends.tk:8000/challenges?opponent=10210021929398105', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      return response.json();
+    }).then((responseJson) => {
+      callback(responseJson);
+    }).catch((error) => {
+      console.error('getChallenges error: ', error);
+    });
+  }
+
+  getRunByRunId(runId, callback) {
+    fetch('https://www.racewithfriends.tk:8000/runs/' + runId, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      return response.json();
+    }).then((responseJson) => {
+      callback(responseJson);
+    }).catch((error) => {
+      console.error('getRunByRunId error: ', error);
+    });
+  }
+
   onPlay() {
-    let location = player[this.playerIndex];
+    // console.error(this.playerSetup.player);
+    let location = this.state.playerSetup.player[this.playerIndex];
+    // console.warn('onPlay, location: ', JSON.stringify(location));
     this.setTimeoutID = setTimeout((() => {
       this.onLocationUpdate(location);
     }).bind(this), location.timeDelta);
-    console.log('~~~ setting ~~~', this.setTimeoutID);
+    // console.log('~~~ setting ~~~', this.setTimeoutID);
+    // console.warn(this.state.playerSetup.challenge.message);
+    if (typeof this.state.playerSetup.challenge.message === 'object') {
+      this.waitAndSpeak(this.state.playerSetup.challenge.message.raceStart);
+    } else {
+      this.waitAndSpeak('oh mer gherd, we are now recording!');
+    }
   }
 
   onPause() {
@@ -175,7 +258,7 @@ export default class Replay extends Component {
       progress: {
         playerDist: 0,
         opponentDist: 0,
-        totalDist: race[race.length - 1].distanceTotal,
+        totalDist: this.state.opponentSetup.opponent[this.state.opponentSetup.opponent.length - 1].distanceTotal,
         playerWon: false,
         opponentWon: false
       }
@@ -183,21 +266,99 @@ export default class Replay extends Component {
     this.playerIndex = 0;
   }
 
-  onPickPlayer(index, value) {
-    console.log('*****', index, value);
+  onPickPlayerType(key, value) {
     const newState = {};
-    newState.picked = this.state.picked;
-    newState.picked.player = value;
-    player = ghosts[value];
-    this.setState(newState);
+    newState.playerSetup = this.state.playerSetup;
+    newState.playerSetup.runnerType = value;
+    newState.playerSetup.options = Object.keys(raceTypes[value]);
+    this.setState(newState, () => {
+      // console.warn('newState loaded!');
+    });
+  }
+
+  onPickPlayer(key, value) {
+    const newState = {};
+    newState.playerSetup = this.state.playerSetup;
+    newState.playerSetup.player = raceTypes[this.state.playerSetup.runnerType][value];
+    newState.playerSetup.challenge = raceTypes[this.state.playerSetup.runnerType][value];
+    this.setState(newState, () => {
+      // console.warn('newState.playerSetup = ', newState.playerSetup);
+      if (newState.playerSetup.player.run_id) {
+        let runId = newState.playerSetup.player.run_id;
+        this.getRunByRunId(runId, (responseJson) => {
+          const nextState = {};
+          nextState.playerSetup = this.state.playerSetup;
+          nextState.playerSetup.player = responseJson.data;
+          let messageParsed;
+          try {
+            messageParsed = JSON.parse(nextState.playerSetup.challenge.message);
+          } catch (error) {
+            //Do nothing.
+          }
+
+          if (typeof messageParsed === 'object') {
+            nextState.playerSetup.challenge.message = messageParsed;
+          }
+           // console.error(JSON.stringify(nextState));
+          this.setState(nextState, () => {
+            // console.warn('Updated State!');
+          });
+        });
+      }
+    });
+  }
+
+  onPickOpponentType(key, value) {
+    const newState = {};
+    newState.opponentSetup = this.state.opponentSetup;
+    newState.opponentSetup.runnerType = value;
+    newState.opponentSetup.options = Object.keys(raceTypes[value]);
+    this.setState(newState, () => {
+      // console.warn('newState loaded!');
+    });
   }
 
   onPickOpponent(key, value) {
     const newState = {};
-    newState.picked = this.state.picked;
-    newState.picked.opponent = value;
-    race = ghosts[value];
-    this.setState(newState);
+    newState.opponentSetup = this.state.opponentSetup;
+    newState.opponentSetup.opponent = raceTypes[this.state.opponentSetup.runnerType][value];
+    newState.opponentSetup.challenge = raceTypes[this.state.opponentSetup.runnerType][value];
+    this.setState(newState, () => {
+      // console.warn('newState.opponentSetup = ', newState.opponentSetup);
+      if (newState.opponentSetup.opponent.run_id) {
+        let runId = newState.opponentSetup.opponent.run_id;
+        this.getRunByRunId(runId, (responseJson) => {
+          const nextState = {};
+          nextState.opponentSetup = this.state.opponentSetup;
+          nextState.opponentSetup.opponent = responseJson.data;
+          // let messageParsed;
+          // try {
+          //   messageParsed = JSON.parse(nextState.raceSetup.challenge.message);
+          // } catch (error) {
+          //   //Do nothing.
+          // }
+
+          // if (typeof messageParsed === 'object') {
+          //   nextState.raceSetup.challenge.message = messageParsed;
+          // }
+           // console.error(JSON.stringify(nextState));
+          this.setState(nextState, () => {
+            // console.warn('Updated State!');
+          });
+        });
+      }
+    });
+  }
+
+  waitAndSpeak(message, voice) {
+    if (voice) {
+      Tts.setDefaultLanguage(voice);
+    }
+    speechQueue.queue(message);
+    // console.warn('speechQueue: ', speechQueue.storage);
+    if (speechQueue.size() > 0) {
+      Tts.speak(speechQueue.dequeue());
+    }
   }
 
   render() {
@@ -223,31 +384,57 @@ export default class Replay extends Component {
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         flexDirection: 'row'
+      },
+      dropdown: {
+        flex: 1,
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        flexDirection: 'row'
       }
     });
 
     return (
       <View style={styles.container}>
         <Text style={{marginBottom: 0, marginTop: 50}}>Select Racers:</Text>
-        <ModalDropdown
-          options={['Usain Bolt', 'James Market St', 'Nick Market St']}
-          onSelect={this.onPickPlayer.bind(this)}
-          textStyle={{fontSize: 24}}
-          defaultValue='James Market St'
-          style={{marginTop: 25}}
-        />
+        <View style={styles.dropdown}>
+          <ModalDropdown
+            options={['Presets', 'My Runs', 'Challenges']}
+            onSelect={this.onPickPlayerType.bind(this)}
+            textStyle={{fontSize: 18}}
+            defaultValue='Presets'
+            // style={{marginTop: 25}}
+          />
+          <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
+          <ModalDropdown
+            options={this.state.playerSetup.options}
+            onSelect={this.onPickPlayer.bind(this)}
+            textStyle={{fontSize: 24}}
+            defaultValue='worldRecordRaceWalk100m'
+            // style={{marginTop: 25}}
+          />
+        </View>
         <Text style={{
           fontSize: 20,
-          marginTop: 10,
-          marginBottom: 10
+          // marginTop: 10,
+          // marginBottom: 10
         }}>VS</Text>
-        <ModalDropdown
-          options={['Usain Bolt', 'James Market St', 'Nick Market St']}
-          onSelect={this.onPickOpponent.bind(this)}
-          textStyle={{fontSize: 24}}
-          defaultValue='Nick Market St'
-          style={{marginBottom: 25}}
-        />
+        <View style={styles.dropdown}>
+          <ModalDropdown
+            options={['Presets', 'My Runs', 'Challenges']}
+            onSelect={this.onPickOpponentType.bind(this)}
+            textStyle={{fontSize: 18}}
+            defaultValue='Presets'
+            // style={{marginTop: 25}}
+          />
+          <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
+          <ModalDropdown
+            options={this.state.opponentSetup.options}
+            onSelect={this.onPickOpponent.bind(this)}
+            textStyle={{fontSize: 24}}
+            defaultValue='worldRecordRaceWalk100m'
+            // style={{marginTop: 25}}
+          />
+        </View>
         <RaceStatus
           status={this.state.raceStatus}
           playerName={'Player'}
