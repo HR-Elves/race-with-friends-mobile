@@ -109,7 +109,7 @@ export default class Race extends Component {
       responseJSON.forEach((challenge) => {
         newChallenges[challenge.name] = challenge;
       });
-      raceTypes['Challenges'] = newChallenges;
+      raceTypes['Challenges']  = newChallenges;
       // console.warn('Challenges loaded.');
     });
 
@@ -121,6 +121,7 @@ export default class Race extends Component {
     });
     Tts.addEventListener('tts-cancel', (event) => console.warn('tts-cancel: ', event));
 
+  }
   componentDidMount() {
     // Speech.supportedVoices()
     // .then(locales => {
