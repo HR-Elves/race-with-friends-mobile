@@ -24,6 +24,14 @@ export default class RaceStatus extends Component {
       statusVerb = 'finished';
     }
 
+    if (this.props.status && this.props.status.challengeDone) {
+      if (relativeToOpponent === 'behind') {
+        distanceToOpponent = distanceRemaining;
+      } else if (relativeToOpponent === 'ahead of') {
+        distanceRemaining = 0;
+      }
+    }
+
     return (
       <View>
         <Text>{`${this.props.playerName} ${statusVerb} ${distanceToOpponent} meters ${relativeToOpponent} ${this.props.opponentName}`}</Text>
