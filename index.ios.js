@@ -170,6 +170,13 @@ export default class RaceWithFriends extends Component {
   }
 
   render() {
+
+    const uiTheme = {
+      palette: {
+        primaryColor: '#00BCD4'
+      }
+    };
+
     const styles = StyleSheet.create({
       container: {
         flex: 1,
@@ -210,38 +217,40 @@ export default class RaceWithFriends extends Component {
     };
 
     return (
-      <Drawer
-        ref={(ref) => this._drawer = ref}
-        type="overlay"
-        content={<RaceDashboard
-          profile={this.state.profile}
-          logout={this.logOutUser}
-          navigate={((route) => {
-          this._navigator.push(this.navigate(route));
-          this._drawer.close();
-        }).bind(this)}/>}
-        tapToClose={true}
-        openDrawerOffset={0.2}
-        panCloseMask={0.2}
-        closedDrawerOffset={-3}
-        styles={{
-          drawer: {shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3},
-          main: {paddingLeft: 3}
-        }}
-        tweenHandler={(ratio) => ({main: { opacity: ( 2 - ratio) / 2 }})}>
-        <Navigator
-          ref={(ref) => this._navigator = ref}
-          configureScene={(route) => Navigator.SceneConfigs.FloatFromLeft}
-          style={{flex: 1}}
-          initialRoute={{
-            id: '',
-            title: ''
+      <ThemeProvider uiTheme={uiTheme}>
+        <Drawer
+          ref={(ref) => this._drawer = ref}
+          type="overlay"
+          content={<RaceDashboard
+            profile={this.state.profile}
+            logout={this.logOutUser}
+            navigate={((route) => {
+            this._navigator.push(this.navigate(route));
+            this._drawer.close();
+          }).bind(this)}/>}
+          tapToClose={true}
+          openDrawerOffset={0.2}
+          panCloseMask={0.2}
+          closedDrawerOffset={-3}
+          styles={{
+            drawer: {shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3},
+            main: {paddingLeft: 3}
           }}
-          renderScene={(route, navigator) => this._renderScene(route, navigator)}
-          navigationBar={<Navigator.NavigationBar
-            routeMapper={NavigationBarRouteMapper}/>
-          }/>
-      </Drawer>
+          tweenHandler={(ratio) => ({main: { opacity: ( 2 - ratio) / 2 }})}>
+          <Navigator
+            ref={(ref) => this._navigator = ref}
+            configureScene={(route) => Navigator.SceneConfigs.FloatFromLeft}
+            style={{flex: 1}}
+            initialRoute={{
+              id: '',
+              title: ''
+            }}
+            renderScene={(route, navigator) => this._renderScene(route, navigator)}
+            navigationBar={<Navigator.NavigationBar
+              routeMapper={NavigationBarRouteMapper}/>
+            }/>
+        </Drawer>
+      </ThemeProvider>
     );
   }
 }
@@ -258,19 +267,19 @@ class RaceDashboard extends Component {
 
   _renderMenuItem(item) {
 
-    const uiTheme = {
-      palette: {
-        primaryColor: COLOR.green500
-      }
-    };
+    // const uiTheme = {
+    //   palette: {
+    //     primaryColor: COLOR.green500
+    //   }
+    // };
     const styles = {
       icon: {
         width: 20,
         height: 20
       }
     }
-// ['Race', 'My Runs', 'Replay', 'Challenge', 'Friends']
-    var imgSource = {
+
+    const imgSource = {
       'Challenge': require('./assets/images/flags.jpg'),
       'Race': require('./assets/images/race-icon.png'),
       'My Runs': require('./assets/images/stop-watch.png'),
@@ -279,14 +288,14 @@ class RaceDashboard extends Component {
     };
 
     return (
-      <ThemeProvider uiTheme={uiTheme} >
+      // <ThemeProvider uiTheme={uiTheme} >
         <ListItem
           divider
           onPress={()=> this._onItemSelect(item)}
           centerElement={<Text >{item}</Text>}
           rightElement={<Image style={styles.icon}source={imgSource[item]}/>}
         />
-      </ThemeProvider>
+      // </ThemeProvider>
     );
 
   }
@@ -327,12 +336,6 @@ class RaceDashboard extends Component {
         marginTop: 80,
         padding: 10,
         width: 295
-      },
-      button: {
-        // marginBottom: 100,
-        // backgroundColor: 'blue',
-        // borderWidth: 2,
-        // backgroundColor: COLOR.green500
       }
     })
 
