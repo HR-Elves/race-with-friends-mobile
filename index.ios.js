@@ -108,7 +108,7 @@ export default class RaceWithFriends extends Component {
                 if (!err) {
                   that.getProfile();
                 }
-              })
+              });
             } else {
               that.getProfile();
             }
@@ -225,9 +225,9 @@ export default class RaceWithFriends extends Component {
             profile={this.state.profile}
             logout={this.logOutUser}
             navigate={((route) => {
-            this._navigator.push(this.navigate(route));
-            this._drawer.close();
-          }).bind(this)}/>}
+              this._navigator.push(this.navigate(route));
+              this._drawer.close();
+            }).bind(this)}/>}
           tapToClose={true}
           openDrawerOffset={0.2}
           panCloseMask={0.2}
@@ -267,17 +267,12 @@ class RaceDashboard extends Component {
 
   _renderMenuItem(item) {
 
-    // const uiTheme = {
-    //   palette: {
-    //     primaryColor: COLOR.green500
-    //   }
-    // };
     const styles = {
       icon: {
         width: 20,
         height: 20
       }
-    }
+    };
 
     const imgSource = {
       'Challenge': require('./assets/images/flags.jpg'),
@@ -288,14 +283,12 @@ class RaceDashboard extends Component {
     };
 
     return (
-      // <ThemeProvider uiTheme={uiTheme} >
-        <ListItem
-          divider
-          onPress={()=> this._onItemSelect(item)}
-          centerElement={<Text >{item}</Text>}
-          rightElement={<Image style={styles.icon}source={imgSource[item]}/>}
-        />
-      // </ThemeProvider>
+      <ListItem
+        divider
+        onPress={()=> this._onItemSelect(item)}
+        centerElement={<Text >{item}</Text>}
+        rightElement={<Image style={styles.icon}source={imgSource[item]}/>}
+      />
     );
 
   }
@@ -311,6 +304,7 @@ class RaceDashboard extends Component {
   }
 
   render() {
+
     const styles = StyleSheet.create({
       container: {
         marginTop: 20,
@@ -337,11 +331,10 @@ class RaceDashboard extends Component {
         padding: 10,
         width: 295
       }
-    })
+    });
 
 
     return (
-
       <View style={styles.container}>
         <View>
           {this.props.profile ? <Image style={styles.image} source={{uri: this.props.profile.extraInfo.picture_large}}/> : <Text></Text>}
@@ -357,7 +350,6 @@ class RaceDashboard extends Component {
           renderRow={((item) => this._renderMenuItem(item)).bind(this)}
         />
         <Button
-          style={styles.button}
           onPress={() => {
             this.props.logout();
           }}
