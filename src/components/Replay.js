@@ -176,9 +176,11 @@ export default class Replay extends Component {
           this.waitAndSpeak(this.state.opponentSetup.challenge.message.opponentWon);
         } else {
           if (this.state.playersSwapped) {
-            this.waitAndSpeak(`Wow: The player beat the opponent by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+            this.waitAndSpeak(`Wow: The player beat the opponent by
+              ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
           } else {
-            this.waitAndSpeak(`Wow: The opponent beat the player by ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
+            this.waitAndSpeak(`Wow: The opponent beat the player by
+              ${Math.round(newRaceStatus.distanceToOpponent * -1)} meters.`);
           }
         }
         if (this.state.playersSwapped) {
@@ -193,10 +195,12 @@ export default class Replay extends Component {
           this.waitAndSpeak(this.state.playerSetup.challenge.message.playerWon);
         } else {
           if (this.state.playersSwapped) {
-            this.waitAndSpeak(`Incredible, the opponent beat the player by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+            this.waitAndSpeak(`Incredible, the opponent beat the player by
+              ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
           } else {
             // console.warn('playersSwapped: ', this.state.playersSwapped);
-            this.waitAndSpeak(`Incredible, the player beat the opponent by ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
+            this.waitAndSpeak(`Incredible, the player beat the opponent by
+              ${Math.round(newRaceStatus.distanceToOpponent)} meters.`);
           }
         }
 
