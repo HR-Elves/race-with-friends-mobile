@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
+import React, {PropTypes, Component } from 'react';
 import {
+
   StyleSheet,
   Text,
   View,
   ScrollView,
-  Image,
-  Button
+  Image
 } from 'react-native';
 
-import {ListItem} from 'react-native-material-ui';
+import {ListItem, Button} from 'react-native-material-ui';
 
 export default class FriendsList extends Component {
   constructor(props) {
@@ -17,25 +17,34 @@ export default class FriendsList extends Component {
       view: '',
       text: '',
       searchable: true
-    }
+    };
   }
-
 
   render() {
     return (
       <View>
       {(this.props.searchable) ?
         <Button
-          title="Search"
-          style={{ text: { color: 'white' } }}
+          raised
+          primary
+          text="Find a friend!"
           onPress={this.props.onButtonPress}
+          style={{
+            text: {
+
+            },
+            container: {
+              // width: 100,
+              // marginTop: 5
+            }
+          }}
         />
         : <View></View>
       }
-        <ScrollView>
+        <ScrollView style={styles.container}>
         {
           this.props.friends.map((friend) => {
-           return (
+            return (
               <ListItem
                 key={friend.fb_id}
                 divider
@@ -51,7 +60,7 @@ export default class FriendsList extends Component {
                     style={{width: 20, height: 20}}
                   />
                   : <Text style={styles.empty}></Text>}
-                onPress={() => {this.props.onFriendSelect(friend);}}
+                onPress={() => { this.props.onFriendSelect(friend); }}
               />
             );
           })
@@ -71,5 +80,8 @@ const styles = StyleSheet.create({
   },
   empty: {
     marginRight: 50
+  },
+  container: {
+    marginTop: 20
   }
 });

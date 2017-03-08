@@ -22,7 +22,7 @@ import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.j
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
 import PostRace from './PostRace';
-import LiveRaceLobbyView from './LiveRaceLobbyView.js'
+// import LiveRaceLobbyView from './LiveRaceLobbyView.js'
 
 import usain from '../../assets/presetChallenges/UsainBolt100m';
 import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
@@ -131,6 +131,8 @@ export default class Race extends Component {
 
 =======
 >>>>>>> undo race changes
+
+  }
 
   componentDidMount() {
     // Speech.supportedVoices()

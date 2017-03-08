@@ -5,8 +5,7 @@ import {
   View,
   ScrollView,
   Image,
-  TextInput,
-  Button
+  TextInput
 } from 'react-native';
 
 import {ListItem} from 'react-native-material-ui';
@@ -19,7 +18,8 @@ export default class FindFriend extends Component {
       text: '',
       users: [],
       allUsers: []
-    }
+    };
+
     this.searchForFriend = this.searchForFriend.bind(this); //need this line?
   }
 
@@ -33,23 +33,40 @@ export default class FindFriend extends Component {
     })
     .catch(err => {
       console.warn(err);
-    })
+    });
   }
 
   searchForFriend() {
     if (!this.state.text) {
-      this.setState({users: this.state.allUsers})
+      this.setState({users: this.state.allUsers});
     } else {
       var results = this.state.users.filter(user => {
-        return user.fullname.includes(this.state.text)
-      })
+        return user.fullname.includes(this.state.text);
+      });
       this.setState({
         users: results
-      })
+      });
     }
   }
 
   render() {
+
+    const styles = StyleSheet.create({
+      search: {
+        flexDirection: 'column',
+        // justifyContent: 'left',
+        // alignItems: 'left'
+        // flex:1    //Step 1
+      },
+      name: {
+        // marginLeft: 75
+        textAlign: 'center'
+      },
+      empty: {
+        marginRight: 50
+      }
+    });
+
     return (
       <View>
         <TextInput
@@ -60,15 +77,11 @@ export default class FindFriend extends Component {
           value={this.state.text}
           placeholder='search for a friend'
         />
-          <Button
-            onPress={this.searchForFriend}
-            title="Search"
-            color="#841584"
-          />
+
         <ScrollView>
         {
           this.state.users.map((user) => {
-           return (
+            return (
               <ListItem
                 key={user.fb_id}
                 divider
@@ -78,7 +91,7 @@ export default class FindFriend extends Component {
                     source={{uri: user.pic}}
                   />}
                 centerElement={<Text style={styles.name}>{user.fullname}</Text>}
-                onPress={() => {this.props.onAddFriend(user.fb_id);}}
+                onPress={() => { this.props.onAddFriend(user.fb_id); }}
               />
             );
           })
@@ -88,19 +101,3 @@ export default class FindFriend extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  search: {
-    flexDirection: 'column',
-    // justifyContent: 'left',
-    // alignItems: 'left'
-    // flex:1    //Step 1
-  },
-  name: {
-    // marginLeft: 75
-    textAlign: 'center'
-  },
-  empty: {
-    marginRight: 50
-  }
-});
