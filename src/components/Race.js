@@ -30,6 +30,12 @@ import james from '../../assets/presetChallenges/MarketSt3';
 import nick from '../../assets/presetChallenges/MarketSt4';
 import hare from '../../assets/presetChallenges/hareFromFable';
 
+import { ThemeProvider, COLOR } from 'react-native-material-ui';
+import { Avatar, Card, ListItem, Subheader, Toolbar, Checkbox} from 'react-native-material-ui';
+import CommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
+import uiTheme from './uiTheme.js';
 
 const presets = {
   'Usain Bolt': usain,
@@ -120,6 +126,7 @@ export default class Race extends Component {
       }
     });
     Tts.addEventListener('tts-cancel', (event) => console.warn('tts-cancel: ', event));
+  }
 
   }
   componentDidMount() {
@@ -390,148 +397,169 @@ export default class Race extends Component {
     const styles = StyleSheet.create({
       container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
-      },
-      welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-      },
-      instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
       },
       buttons: {
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         flexDirection: 'row'
-      }
+      },
+      fullwidthView: {
+        width: Dimensions.get('window').width,
+      },
+      centerText: {
+        textAlign: 'center'
+      },
+      center: {
+        alignItems: 'center'       
+      },
+      bigText: {
+        fontSize: 20
+      },
+      dropDownLabel: {
+        fontSize: 15,
+        color: 'blue'
+      }    
     });
 
     return (
-      <View style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-        marginTop: 50
-      }}>
-        {!this.state.showSetupRace &&
-          <View style={styles.container}>
-            <RaceProgress progress={this.state.progress} />
-            <RaceStatus
-              status={this.state.raceStatus}
-              playerName={'Player'}
-              opponentName={'Opponent'}
-            />
-            <View style={styles.buttons}>
-              <Button
-                onPress={this.onRecord.bind(this)}
-                title='Record'
-                color='#dc143c' // Crimson
-              />
-              <Button
-                onPress={this.onStopRecord.bind(this)}
-                title="Stop"
-                color='#00008b' // Blue
-              />
-              <Button
-                onPress={this.clearHistory.bind(this)}
-                title="Clear"
-                color='#008000' // Green
-              />
-            </View>
-            {this.state.raceStatus && this.state.raceStatus.challengeDone && 
-              <PostRace data={this.state.chartData}/>
-              // <Image
-              // source={require('../../assets/images/StickmanRunning.gif')}
-              // resizeMode='contain'
-              // style={{
-              //   height: Dimensions.get('window').height * 0.4,
-              //   width: Dimensions.get('window').width * 0.4
-              // }}
-              // />
-            }
-          </View>}
-        {this.state.showSetupRace && this.state.raceSetup.raceType !== 'Live' &&
-          <View style={styles.container}>
+      <ThemeProvider uiTheme={uiTheme}>
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#F5FCFF',
+          marginTop: 50
+        }}>
+          {!this.state.showSetupRace &&
             <View style={styles.container}>
-              <Text style={{fontSize: 26}}>Setup Race</Text>
-              <Text>Race type:</Text>
-              <ModalDropdown
-                options={['Presets', 'My Runs', 'Challenges', 'Live']}
-                onSelect={this.onPickRaceType.bind(this)}
-                textStyle={{fontSize: 24}}
-                defaultValue='Presets'
-                // style={{marginBottom: 25}}
+              <RaceProgress progress={this.state.progress} />
+              <RaceStatus
+                status={this.state.raceStatus}
+                playerName={'Player'}
+                opponentName={'Opponent'}
               />
-              <Text>Opponent:</Text>
-              <ModalDropdown
-                options={this.state.raceSetup.oppOptions}
-                onSelect={this.onPickOpponent.bind(this)}
-                textStyle={{fontSize: 24}}
-                defaultValue='worldRecordRaceWalk100m'
-                // style={{marginBottom: 25}}
-              />
-              <View style={{
-                flex: 1,
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                backgroundColor: '#F5FCFF',
-              }}>
-                <Text>{`Name: ${this.state.raceSetup.challenge.name ? this.state.raceSetup.challenge.name : 'Preset'}`}</Text>
-                <Text>{`Description: ${this.state.raceSetup.challenge.description ? this.state.raceSetup.challenge.description : 'Preset'}`}</Text>
-                <Text>{`Total Distance: ${Math.round(this.state.raceSetup.challenge.distanceTotal ? this.state.raceSetup.challenge.distanceTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].distanceTotal)} meters`}</Text>
-                <Text>{`Total Time: ${Math.round((this.state.raceSetup.challenge.timeTotal ? this.state.raceSetup.challenge.timeTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].timeTotal) / 1000)} seconds`}</Text>
-                <Text>{`Message: ${this.state.raceSetup.challenge.message ? typeof this.state.raceSetup.challenge.message === 'object' ? 'Customized messages successfully loaded!' : '--' : '--'}`}</Text>
-                <TouchableHighlight onPress={() => {
-                  this.showSetupRace(!this.state.showSetupRace);
-                }}>
-                  <Text>Done!</Text>
-                </TouchableHighlight>
+              <View style={styles.buttons}>
+                <Button
+                  onPress={this.onRecord.bind(this)}
+                  title='Record'
+                  color='#dc143c' // Crimson
+                />
+                <Button
+                  onPress={this.onStopRecord.bind(this)}
+                  title="Stop"
+                  color='#00008b' // Blue
+                />
+                <Button
+                  onPress={this.clearHistory.bind(this)}
+                  title="Clear"
+                  color='#008000' // Green
+                />
               </View>
-            </View>
-          </View>}
-        {/* Conditional rendering of the "Live Race" lobby when users select Live Race as the option */}
-          {this.state.raceSetup.raceType  === 'Live' &&
-            <LiveRaceLobbyView userID={this.props.userId}/>
-          }
-        {<Prompt
-          title="Please name your race."
-          placeholder="Race Name"
-          visible={ this.state.promptVisible }
-          onCancel={ () => this.setState({
-            promptVisible: false,
-          }) }
-          onSubmit={ (value) => {
-            // console.error(typeof value);
-            this.setState({
+              {this.state.raceStatus && this.state.raceStatus.challengeDone && 
+                <PostRace data={this.state.chartData}/>
+                // <Image
+                // source={require('../../assets/images/StickmanRunning.gif')}
+                // resizeMode='contain'
+                // style={{
+                //   height: Dimensions.get('window').height * 0.4,
+                //   width: Dimensions.get('window').width * 0.4
+                // }}
+                // />
+              }
+            </View>}
+          {this.state.showSetupRace && this.state.raceSetup.raceType !== 'Live' &&
+            <View style={styles.container}>
+              <View style={styles.fullwidthView}>      
+                <Toolbar centerElement="Setup Race" />        
+                <Card style={{marginLeft: 20, marginRight: 20}} >
+                  <View style={styles.center}>
+                    <Icon size={40} color="black" name="directions-run" />
+                    <Text style={styles.bigText}>Race Selection</Text>
+                  </View>
+                  <ListItem
+                      centerElement={<Text style={styles.centerText}>Select a race type:</Text>}
+                  /> 
+                  <ModalDropdown
+                    options={['Presets', 'My Runs', 'Challenges', 'Live']}
+                    onSelect={this.onPickRaceType.bind(this)}
+                    style={styles.center}
+                    textStyle={styles.dropDownLabel}
+                    defaultValue='Presets'
+                  />
+                  <ListItem
+                      centerElement={<Text style={styles.centerText}>Select an opponent:</Text>}
+                  />  
+                  <ModalDropdown
+                    options={this.state.raceSetup.oppOptions}
+                    onSelect={this.onPickOpponent.bind(this)}
+                    style={styles.center}
+                    textStyle={styles.dropDownLabel}
+                    defaultValue='worldRecordRaceWalk100m'
+                  />                           
+                </Card>
+                <Card style={{marginLeft: 20, marginRight: 20}}>
+                  <View style={styles.center}>
+                    <CommunityIcon size={40} color="black" name="road-variant" />
+                    <Text style={styles.bigText}>Race Details</Text>
+                    <Text>{`Name: ${this.state.raceSetup.challenge.name ? this.state.raceSetup.challenge.name : 'Preset'}`}</Text>
+                    <Text>{`Description: ${this.state.raceSetup.challenge.description ? this.state.raceSetup.challenge.description : 'Preset'}`}</Text>
+                    <Text>{`Total Distance: ${Math.round(this.state.raceSetup.challenge.distanceTotal ? this.state.raceSetup.challenge.distanceTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].distanceTotal)} meters`}</Text>
+                    <Text>{`Total Time: ${Math.round((this.state.raceSetup.challenge.timeTotal ? this.state.raceSetup.challenge.timeTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].timeTotal) / 1000)} seconds`}</Text>
+                    <Text>{`Message: ${this.state.raceSetup.challenge.message ? typeof this.state.raceSetup.challenge.message === 'object' ? 'Customized messages successfully loaded!' : '--' : '--'}`}</Text>                    
+                  </View>
+                </Card>
+                <Icon.Button
+                  name="flash-on"
+                  size={35}
+                  backgroundColor="blue"
+                  borderRadius={15}
+                  onPress={() => {
+                    this.showSetupRace(!this.state.showSetupRace);
+                  }}>
+                  Race!  
+                </Icon.Button>                
+              </View> 
+            </View>}
+          {/* Conditional rendering of the "Live Race" lobby when users select Live Race as the option */}
+            {this.state.raceSetup.raceType  === 'Live' &&
+              <LiveRaceLobbyView userID={this.props.userId}/>
+            }
+          {<Prompt
+            title="Please name your race."
+            placeholder="Race Name"
+            visible={ this.state.promptVisible }
+            onCancel={ () => this.setState({
               promptVisible: false,
-              raceName: value
-            }, () => this.postRun());
-          }}
-          submitText='Publish Run'
-          cancelText={'Don\'t Publish'}
-        />}
-      </View>
+            }) }
+            onSubmit={ (value) => {
+              // console.error(typeof value);
+              this.setState({
+                promptVisible: false,
+                raceName: value
+              }, () => this.postRun());
+            }}
+            submitText='Publish Run'
+            cancelText={'Don\'t Publish'}
+          />}
+        </View>
+      </ThemeProvider>
     );
   }
 }
 
-// &&
-//           <Prompt
-//             title="Please give your race a description."
-//             placeholder="Race Description"
-//             defaultValue=""
-//             visible={ this.state.promptVisible }
-//             onCancel={ () => this.setState({
-//               promptVisible: false,
-//             }) }
-//             onSubmit={ (value) => this.setState({
-//               promptVisible: false,
-//               raceDescription: value
-//             }) }/>
+              // <View style={{
+              //   flex: 1,
+              //   justifyContent: 'flex-start',
+              //   alignItems: 'center',
+              //   backgroundColor: '#F5FCFF',
+              // }}>
+              //   <TouchableHighlight onPress={() => {
+              //     this.showSetupRace(!this.state.showSetupRace);
+              //   }}>
+              //     <Text>Done!</Text>
+              //   </TouchableHighlight>
+              // </View>
