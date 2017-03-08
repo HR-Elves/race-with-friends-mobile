@@ -266,7 +266,7 @@ export default class LiveRaceLobby extends React.Component {
                           disabled={!participant.inLobby} 
                           primary={participant.inLobby && participant.isReady}
                           accent={participant.inLobby && !participant.isReady} 
-                          text={participant.id + participant.name} 
+                          text={participant.name} 
                           />
                     )
                   })}

@@ -57,7 +57,7 @@ export default class LiveRaceNewLobby extends React.Component {
         name: this.raceName,
         description: this.raceDescription,
         length: this.raceDistance,
-        opponentIDs: this.state.participants.map((participant) => participant.fullname)
+        opponentIDs: this.state.participants.map((participant) => participant.fb_id)
       })      
     })
     .then((response) => response.json())
