@@ -9,7 +9,7 @@ import {
   Dimensions
 } from 'react-native';
 
-import { COLOR, ThemeProvider, ListItem, Subheader } from 'react-native-material-ui';
+import { COLOR, ThemeProvider, ListItem, Subheader, Toolbar, Button , Card} from 'react-native-material-ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Prompt from 'react-native-prompt';
 
@@ -24,7 +24,6 @@ export default class Challenge extends Component {
       friends: [],
       displayState: 'selectRun',  // options are selectRun, selectFriends, and challengeSubmitted
       selectedRun: null,
-      modalVisible: false,
       messages: {
         raceStart: '',
         playerWon: '',
@@ -101,7 +100,7 @@ export default class Challenge extends Component {
 
   onChallengeButtonPressed() {
     this.setState({
-      modalVisible: true
+      displayState: 'newChallengeOptions'
     });
   }
 
@@ -135,11 +134,16 @@ export default class Challenge extends Component {
       return response.json();
     }).then((responseJSON) => {
       this.setState({
-        modalVisible: false,
         displayState: 'challengeSubmitted'
       });
     }).catch((error) => {
       console.error(error);
+    });
+  }
+
+  onChallengeIssuedGoBack() {
+    this.setState({
+      displayState: 'selectRun'
     });
   }
 
@@ -161,7 +165,9 @@ export default class Challenge extends Component {
         alignItems: 'center'
       },
       text: {
-        height: 70,       
+        paddingLeft: 20,
+        paddingBottom: 13,
+        height: 30,       
       }
     });
 
@@ -181,6 +187,7 @@ export default class Challenge extends Component {
         <View style={styles.container}>
           {this.state.displayState === 'selectRun' &&
             <View style={styles.list}>
+              <Toolbar centerElement="Challenges" />
               <Subheader text='Choose a run as a challenge for your friends!' />
               <RunsList runs={this.state.runs} onRunSelect={this.onRunSelect.bind(this)}/>
             </View>
@@ -188,89 +195,82 @@ export default class Challenge extends Component {
           {this.state.displayState === 'selectFriends' &&
             <View style={styles.container}>
               <View style={styles.list}>
+                <Toolbar centerElement="Challenges" />              
                 <Subheader text={`Choose friends to challenge with ${this.state.selectedRun.name}!`} />
                 <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this) }/>
               </View>
-              <View>
-                <Icon.Button
-                  name="flash-on"
-                  size={45}
-                  backgroundColor="red"
-                  borderRadius={15}
-                  onPress={this.onChallengeButtonPressed.bind(this)}
-                >
-                  Issue Challenge!
-                </Icon.Button>
+              <Button raised accent text="Challenge" onPress={this.onChallengeButtonPressed.bind(this)} /> 
+            </View>
+          }
+          {this.state.displayState === 'newChallengeOptions' &&
+            <View style={styles.container}>
+              <View style={styles.list}>            
+                <Toolbar centerElement="New Challenge" />
+                <Subheader text='Choose your message!' />
+
+                <Text style={styles.text}>When the race starts: </Text>
+                <TextInput
+                  style={styles.text}
+                  onChangeText={(text) => { 
+                    let messages = this.state.messages;
+                    messages.raceStart = text;
+                    this.setState({messages: messages});
+                    }
+                  }
+                  value={this.state.messages.raceStart}
+                  maxLength={80}
+                  placeholder={'You\'re in for a challenge!'}
+                />
+                <Text style={styles.text}>When your opponent loses: </Text>
+                <TextInput
+                  style={styles.text}
+                  onChangeText={(text) => { 
+                    let messages = this.state.messages;
+                    messages.opponentWon = text;
+                    this.setState({messages: messages});
+                    }
+                  }
+                  value={this.state.messages.opponentWon}
+                  maxLength={80}
+                  placeholder={'Better luck next time!'}
+                />
+                <Text style={styles.text}>When your opponent wins: </Text>
+                <TextInput
+                  style={styles.text}
+                  onChangeText={(text) => { 
+                    let messages = this.state.messages;
+                    messages.playerWon = text;
+                    this.setState({messages: messages});
+                    }
+                  }
+                  value={this.state.messages.playerWon}
+                  maxLength={80}
+                  placeholder={'I can\'t believe you beat me!'}
+                />
+                
               </View>
+              <Button raised accent text="Issue Challenge" onPress={this.onSubmit.bind(this)} />
             </View>
           }
           {this.state.displayState === 'challengeSubmitted' &&
-            <View style={styles.center}>
-              <Text>Your challenge has been issued to your friends!</Text>
+            <View style={styles.container}>
+              <View style={styles.list}>            
+                <Toolbar centerElement="Challenge Issued" />
+                <Subheader text='Your challenge has been issued to your friends' />
+              </View>
+              <Button raised primary text="Back" onPress={this.onChallengeIssuedGoBack.bind(this)} />
             </View>
-          }
-        <Modal
-          animationType={"slide"}
-          transparent={false}
-          visible={this.state.modalVisible}
-          >
-            <View style={styles.list}>
-              <Text>Enter a message for your opponent when the race starts: </Text>
-              <TextInput
-                style={styles.text}
-                onChangeText={(text) => { 
-                  let messages = this.state.messages;
-                  messages.raceStart = text;
-                  this.setState({messages: messages});
-                  }
-                }
-                value={this.state.messages.raceStart}
-                maxLength={80}
-                placeholder={'You\'re in for a challenge!'}
-              />
-              <Text>Enter a message for your opponent if they lose: </Text>
-              <TextInput
-                style={styles.text}
-                onChangeText={(text) => { 
-                  let messages = this.state.messages;
-                  messages.opponentWon = text;
-                  this.setState({messages: messages});
-                  }
-                }
-                value={this.state.messages.opponentWon}
-                maxLength={80}
-                placeholder={'Better luck next time!'}
-              />
-              <Text>Enter a message for your opponent if they win: </Text>
-              <TextInput
-                style={styles.text}
-                onChangeText={(text) => { 
-                  let messages = this.state.messages;
-                  messages.playerWon = text;
-                  this.setState({messages: messages});
-                  }
-                }
-                value={this.state.messages.playerWon}
-                maxLength={80}
-                placeholder={'I can\'t believe you beat me!'}
-              />
-              <Icon.Button
-                name="flash-on"
-                size={45}
-                backgroundColor="red"
-                borderRadius={15}
-                onPress={this.onSubmit.bind(this)}
-              >
-                Go!
-              </Icon.Button>
-            </View>
-        </Modal>
+          }          
         </View>
       </ThemeProvider>
     );
   }
 }
 
+            // <View style={styles.center}>
+            //   <Toolbar centerElement="Challenges" />            
+            //   <Text>Your challenge has been issued to your friends!</Text>
+            // </View>
 
 
           // <Prompt
