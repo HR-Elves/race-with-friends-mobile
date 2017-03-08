@@ -62,7 +62,7 @@ export function processLocation(location, history) {
   return newLocation;
 }
 
-export function getRaceStatus(currentLoc, raceObj, prevRaceStatus) {
+export function getRaceStatus(currentLoc, raceObj, prevRaceStatus, racerObj) {
   if (!prevRaceStatus) {
     return {
       distanceToOpponent: 0,    // if positive, user is ahead of opponent; if negative, user is behind opponent
@@ -87,8 +87,11 @@ export function getRaceStatus(currentLoc, raceObj, prevRaceStatus) {
     }
 
     let distanceRemaining = raceObj[raceObj.length - 1].distanceTotal - currentLoc.distanceTotal;
+    if (racerObj && racerObj[racerObj.length - 1].distanceTotal < raceObj[raceObj.length - 1].distanceTotal) {
+      distanceRemaining = racerObj[racerObj.length - 1].distanceTotal - currentLoc.distanceTotal;
+    }
     let challengeDone = (distanceRemaining <= 0) || currentRaceIndex >= raceObj.length - 1;
-    
+
     // bandaid fix to solve discrepancy in voice reporting and text display
     if(challengeDone && distanceRemaining > 0) {
       newDistanceToOpponent = -distanceRemaining;
