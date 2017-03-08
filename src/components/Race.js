@@ -132,8 +132,6 @@ export default class Race extends Component {
 =======
 >>>>>>> undo race changes
 
-  }
-
   componentDidMount() {
     // Speech.supportedVoices()
     // .then(locales => {
