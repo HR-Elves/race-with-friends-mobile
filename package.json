@@ -21,8 +21,10 @@
     "react-native-modal-dropdown": "^0.4.1",
     "react-native-progress": "^3.2.0",
     "react-native-prompt": "^1.0.0",
+    "react-native-svg": "^5.1.5",
     "react-native-tts": "^1.2.0",
-    "react-native-vector-icons": "^4.0.0"
+    "react-native-vector-icons": "^4.0.0",
+    "victory-native": "^0.6.0"
   },
   "devDependencies": {
     "babel-jest": "18.0.0",

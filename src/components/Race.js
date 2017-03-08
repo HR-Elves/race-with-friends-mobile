@@ -21,6 +21,7 @@ import _ from 'lodash';
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
 import RaceProgress from './RaceProgress';
 import RaceStatus from './RaceStatus';
+import PostRace from './PostRace';
 
 import usain from '../../assets/presetChallenges/UsainBolt100m';
 import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
@@ -72,6 +73,7 @@ export default class Race extends Component {
     super(props);
     this.state = {
       history: [],
+      chartData: [],
       raceStatus: null,
       promptVisible: false,
       raceName: null,
@@ -176,6 +178,7 @@ export default class Race extends Component {
     newState.raceStatus = newRaceStatus;
     newState.progress.playerDist = currentLoc.distanceTotal;
     newState.progress.opponentDist = currentLoc.distanceTotal - newRaceStatus.distanceToOpponent;
+    newState.chartData.push({time: location.timeTotal, distanceToOpponent: newRaceStatus.distanceToOpponent});
     this.setState(newState);
 
     if (!newRaceStatus.challengeDone) {
@@ -432,14 +435,17 @@ export default class Race extends Component {
                 color='#008000' // Green
               />
             </View>
-            {this.state.raceStatus && this.state.raceStatus.challengeDone && <Image
-              source={require('../../assets/images/StickmanRunning.gif')}
-              resizeMode='contain'
-              style={{
-                height: Dimensions.get('window').height * 0.4,
-                width: Dimensions.get('window').width * 0.4
-              }}
-              />}
+            {this.state.raceStatus && this.state.raceStatus.challengeDone && 
+              <PostRace data={this.state.chartData}/>
+              // <Image
+              // source={require('../../assets/images/StickmanRunning.gif')}
+              // resizeMode='contain'
+              // style={{
+              //   height: Dimensions.get('window').height * 0.4,
+              //   width: Dimensions.get('window').width * 0.4
+              // }}
+              // />
+            }
           </View>}
         {this.state.showSetupRace &&
           <View style={styles.container}>
