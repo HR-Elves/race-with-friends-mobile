@@ -405,7 +405,8 @@ export default class Race extends Component {
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        marginTop: 20
       },
       fullwidthView: {
         width: Dimensions.get('window').width,
@@ -414,7 +415,8 @@ export default class Race extends Component {
         textAlign: 'center'
       },
       center: {
-        alignItems: 'center'       
+        alignItems: 'center',
+        justifyContent: 'center'
       },
       bigText: {
         fontSize: 20
@@ -436,28 +438,40 @@ export default class Race extends Component {
         }}>
           {!this.state.showSetupRace &&
             <View style={styles.container}>
-              <RaceProgress progress={this.state.progress} />
-              <RaceStatus
-                status={this.state.raceStatus}
-                playerName={'Player'}
-                opponentName={'Opponent'}
-              />
-              <View style={styles.buttons}>
-                <Button
-                  onPress={this.onRecord.bind(this)}
-                  title='Record'
-                  color='#dc143c' // Crimson
+                <RaceProgress progress={this.state.progress} />
+                <RaceStatus
+                  status={this.state.raceStatus}
+                  playerName={'Player'}
+                  opponentName={'Opponent'}
                 />
-                <Button
-                  onPress={this.onStopRecord.bind(this)}
-                  title="Stop"
-                  color='#00008b' // Blue
-                />
-                <Button
-                  onPress={this.clearHistory.bind(this)}
-                  title="Clear"
-                  color='#008000' // Green
-                />
+                <View style={styles.buttons}>
+                  <Icon.Button
+                    name="play-circle-outline"
+                    size={25}
+                    backgroundColor='#dc143c' // Crimson
+                    borderRadius={5}
+                    onPress={this.onRecord.bind(this)}
+                  >
+                    Start  
+                  </Icon.Button> 
+                  <Icon.Button
+                    name="pause-circle-outline"
+                    size={25}
+                    backgroundColor='#00008b' // Blue
+                    borderRadius={5}
+                    onPress={this.onStopRecord.bind(this)}
+                  >
+                    Stop  
+                  </Icon.Button> 
+                  <Icon.Button
+                    name="clear"
+                    size={25}
+                    backgroundColor='#008000' // Green
+                    borderRadius={5}
+                    onPress={this.clearHistory.bind(this)}
+                  >
+                    Reset 
+                  </Icon.Button> 
               </View>
               {this.state.raceStatus && this.state.raceStatus.challengeDone && 
                 <PostRace data={this.state.chartData}/>
@@ -499,7 +513,9 @@ export default class Race extends Component {
                     style={styles.center}
                     textStyle={styles.dropDownLabel}
                     defaultValue='worldRecordRaceWalk100m'
-                  />                           
+                  /> 
+                  <Text></Text>   
+                  <Text></Text>                        
                 </Card>
                 <Card style={{marginLeft: 20, marginRight: 20}}>
                   <View style={styles.center}>
@@ -510,6 +526,8 @@ export default class Race extends Component {
                     <Text>{`Total Distance: ${Math.round(this.state.raceSetup.challenge.distanceTotal ? this.state.raceSetup.challenge.distanceTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].distanceTotal)} meters`}</Text>
                     <Text>{`Total Time: ${Math.round((this.state.raceSetup.challenge.timeTotal ? this.state.raceSetup.challenge.timeTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].timeTotal) / 1000)} seconds`}</Text>
                     <Text>{`Message: ${this.state.raceSetup.challenge.message ? typeof this.state.raceSetup.challenge.message === 'object' ? 'Customized messages successfully loaded!' : '--' : '--'}`}</Text>                    
+                    <Text></Text>
+                    <Text></Text> 
                   </View>
                 </Card>
                 <Icon.Button
