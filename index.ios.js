@@ -173,7 +173,7 @@ export default class RaceWithFriends extends Component {
 
     const uiTheme = {
       palette: {
-        primaryColor: '#00BCD4'
+        primaryColor: COLOR.green500
       }
     };
 

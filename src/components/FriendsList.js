@@ -22,51 +22,31 @@ export default class FriendsList extends Component {
 
   render() {
     return (
-      <View>
-      {(this.props.searchable) ?
-        <Button
-          raised
-          primary
-          text="Find a friend!"
-          onPress={this.props.onButtonPress}
-          style={{
-            text: {
-
-            },
-            container: {
-              // width: 100,
-              // marginTop: 5
-            }
-          }}
-        />
-        : <View></View>
+      <ScrollView>
+      {
+        this.props.friends.map((friend) => {
+          return (
+            <ListItem
+              key={friend.fb_id}
+              divider
+              leftElement={
+                <Image
+                  style={{width: 50, height: 50}}
+                  source={{uri: friend.pic}}
+                />}
+              centerElement={<Text style={styles.name}>{friend.fullname}</Text>}
+              rightElement={friend.selected ?
+                <Image
+                  source={require('../../assets/images/green-check-mark.png')}
+                  style={{width: 20, height: 20}}
+                />
+                : <Text style={styles.empty}></Text>}
+              onPress={() => { this.props.onFriendSelect(friend); }}
+            />
+          );
+        })
       }
-        <ScrollView style={styles.container}>
-        {
-          this.props.friends.map((friend) => {
-            return (
-              <ListItem
-                key={friend.fb_id}
-                divider
-                leftElement={
-                  <Image
-                    style={{width: 50, height: 50}}
-                    source={{uri: friend.pic}}
-                  />}
-                centerElement={<Text style={styles.name}>{friend.fullname}</Text>}
-                rightElement={friend.selected ?
-                  <Image
-                    source={require('../../assets/images/green-check-mark.png')}
-                    style={{width: 20, height: 20}}
-                  />
-                  : <Text style={styles.empty}></Text>}
-                onPress={() => { this.props.onFriendSelect(friend); }}
-              />
-            );
-          })
-        }
-        </ScrollView>
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -80,8 +60,5 @@ const styles = StyleSheet.create({
   },
   empty: {
     marginRight: 50
-  },
-  container: {
-    marginTop: 20
   }
 });

@@ -20,7 +20,6 @@ export default class FindFriend extends Component {
       allUsers: []
     };
 
-    this.searchForFriend = this.searchForFriend.bind(this); //need this line?
   }
 
   componentDidMount() {
