@@ -4,7 +4,7 @@ import {
   StyleSheet,
   Text,
   View,
-  // Button,
+  Button,
   ProgressViewIOS,
   Modal,
   TouchableHighlight,
@@ -17,8 +17,6 @@ import Prompt from 'react-native-prompt';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Tts from 'react-native-tts';
 import _ from 'lodash';
-import {COLOR, Button, Subheader, Toolbar, RadioButton } from 'react-native-material-ui';
-
 
 import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
 import RaceProgress from './RaceProgress';
@@ -100,8 +98,7 @@ export default class Race extends Component {
         oppOptions: Object.keys(presets),
         opponent: walk,
         challenge: walk
-      },
-      checked: false
+      }
       // raceTabOn: false,
     };
     this.setTimeoutID = null;
@@ -130,7 +127,10 @@ export default class Race extends Component {
     });
     Tts.addEventListener('tts-cancel', (event) => console.warn('tts-cancel: ', event));
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> undo race changes
 
   componentDidMount() {
     // Speech.supportedVoices()
@@ -397,19 +397,12 @@ export default class Race extends Component {
   }
 
   render() {
-    const uiTheme = {
-      palette: {
-        primaryColor: COLOR.green500
-      }
-    };
     const styles = StyleSheet.create({
       container: {
         flex: 1,
         justifyContent: 'flex-start',
+
         alignItems: 'center',
-        paddingLeft: 8,
-        paddingRight: 8,
-        marginTop: 50,
         backgroundColor: '#F5FCFF',
       },
       buttons: {
@@ -592,4 +585,5 @@ export default class Race extends Component {
               //     <Text>Done!</Text>
               //   </TouchableHighlight>
               // </View>
+
 
