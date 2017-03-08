@@ -156,7 +156,7 @@ export default class Replay extends Component {
     this.setState(newState);
 
     if (newRaceStatus.challengeDone) {
-      console.warn('current: ', newRaceStatus);
+      // console.warn('current: ', newRaceStatus);
       if (newRaceStatus.distanceToOpponent < 0) { // Opponent Won
 
         if (typeof this.state.opponentSetup.challenge.message === 'object') {
@@ -257,7 +257,7 @@ export default class Replay extends Component {
       racer = opponent;
       race = player;
       this.setState({ playersSwapped: true }, () => {
-        console.warn(this.state.playersSwapped);
+        // console.warn(this.state.playersSwapped);
         this.setTimeoutID = setTimeout((() => {
           this.onLocationUpdate(racerLoc, race,
             racer[racer.length - 1].distanceTotal > race[race.length - 1].distanceTotal ? race : racer
@@ -271,7 +271,7 @@ export default class Replay extends Component {
       racer = player;
       race = opponent;
       this.setState({ playersSwapped: false }, () => {
-        console.warn(this.state.playersSwapped);
+        // console.warn(this.state.playersSwapped);
         this.setTimeoutID = setTimeout((() => {
           this.onLocationUpdate(racerLoc, race,
             racer[racer.length - 1].distanceTotal > race[race.length - 1].distanceTotal ? race : racer
