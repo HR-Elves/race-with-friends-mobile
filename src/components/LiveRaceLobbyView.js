@@ -171,22 +171,22 @@ export default class LiveRaceLobby extends React.Component {
     BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
     BackgroundGeolocation.changePace(true);
 
-    // ws.addEventListener('message', (event) => {
-    //     let eventData = JSON.parse(event.data);
+    ws.addEventListener('message', (event) => {
+        let eventData = JSON.parse(event.data);
 
-    //     if (eventData[0] === 'position-update') {
-    //       let opponent = this.state.opponent
-    //       opponent.push(eventData[1]);
+        if (eventData[0] === 'position-update') {
+          let opponent = this.state.opponent
+          opponent.push(eventData[1]);
 
-    //       this.setState({
-    //         opponent: opponent
-    //       });
-    //     }
-    // });
+          this.setState({
+            opponent: opponent
+          });
+        }
+    });
 
     this.setState({
       raceStarted: true,
-      opponent: usain
+      // opponent: usain
     })
   }
 
