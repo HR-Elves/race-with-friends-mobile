@@ -94,7 +94,8 @@ export default class Replay extends Component {
         options: Object.keys(presets),
         opponent: walk,
         challenge: walk
-      }
+      },
+      replayState: "paused"
     };
     this.racerIndex = 0;
     this.setTimeoutID = null;
@@ -248,6 +249,9 @@ export default class Replay extends Component {
 
   onPlay() {
     // console.error(this.playerSetup.player);
+    this.setState({
+      replayState: 'playing'
+    });
 
     let player = this.state.playerSetup.player;
     let opponent = this.state.opponentSetup.opponent;
@@ -292,6 +296,9 @@ export default class Replay extends Component {
   }
 
   onPause() {
+    this.setState({
+      replayState: 'paused'
+    });    
     console.log('~~~ clearing ~~~ ', this.setTimeoutID);
     clearTimeout(this.setTimeoutID);
   }
@@ -447,76 +454,65 @@ export default class Replay extends Component {
       <ThemeProvider uiTheme={uiTheme}>      
         <View style={styles.container}>
           <View style={styles.list}>
-            <Toolbar centerElement="Race Replay" />      
-            <Text style={{marginBottom: 0, marginTop: 50}}>Select Racers:</Text>
-            <View style={styles.dropdown}>
-              <ModalDropdown
-                options={['Presets', 'My Runs', 'Challenges']}
-                onSelect={this.onPickPlayerType.bind(this)}
-                textStyle={{fontSize: 18}}
-                defaultValue='Presets'
-                // style={{marginTop: 25}}
+            <Toolbar centerElement="Race Replay" />
+            <View>
+              <Text style={{marginBottom: 0, marginTop: 50}}>Select Racers:</Text>
+              <View style={styles.dropdown}>
+                <ModalDropdown
+                  options={['Presets', 'My Runs', 'Challenges']}
+                  onSelect={this.onPickPlayerType.bind(this)}
+                  textStyle={{fontSize: 18}}
+                  defaultValue='Presets'
+                  // style={{marginTop: 25}}
+                />
+                <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
+                <ModalDropdown
+                  options={this.state.playerSetup.options}
+                  onSelect={this.onPickPlayer.bind(this)}
+                  textStyle={{fontSize: 24}}
+                  defaultValue='worldRecordRaceWalk100m'
+                  // style={{marginTop: 25}}
+                />
+              </View>
+              <Text style={{
+                fontSize: 20,
+                // marginTop: 10,
+                // marginBottom: 10
+              }}>VS</Text>
+              <View style={styles.dropdown}>
+                <ModalDropdown
+                  options={['Presets', 'My Runs', 'Challenges']}
+                  onSelect={this.onPickOpponentType.bind(this)}
+                  textStyle={{fontSize: 18}}
+                  defaultValue='Presets'
+                  // style={{marginTop: 25}}
+                />
+                <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
+                <ModalDropdown
+                  options={this.state.opponentSetup.options}
+                  onSelect={this.onPickOpponent.bind(this)}
+                  textStyle={{fontSize: 24}}
+                  defaultValue='worldRecordRaceWalk100m'
+                  // style={{marginTop: 25}}
+                />
+              </View>
+              <RaceStatus
+                status={this.state.raceStatus}
+                playerName={'Player'}
+                opponentName={'Opponent'}
+                playersSwapped={this.state.playersSwapped}
               />
-              <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
-              <ModalDropdown
-                options={this.state.playerSetup.options}
-                onSelect={this.onPickPlayer.bind(this)}
-                textStyle={{fontSize: 24}}
-                defaultValue='worldRecordRaceWalk100m'
-                // style={{marginTop: 25}}
-              />
-            </View>
-            <Text style={{
-              fontSize: 20,
-              // marginTop: 10,
-              // marginBottom: 10
-            }}>VS</Text>
-            <View style={styles.dropdown}>
-              <ModalDropdown
-                options={['Presets', 'My Runs', 'Challenges']}
-                onSelect={this.onPickOpponentType.bind(this)}
-                textStyle={{fontSize: 18}}
-                defaultValue='Presets'
-                // style={{marginTop: 25}}
-              />
-              <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
-              <ModalDropdown
-                options={this.state.opponentSetup.options}
-                onSelect={this.onPickOpponent.bind(this)}
-                textStyle={{fontSize: 24}}
-                defaultValue='worldRecordRaceWalk100m'
-                // style={{marginTop: 25}}
-              />
-            </View>
-            <RaceStatus
-              status={this.state.raceStatus}
-              playerName={'Player'}
-              opponentName={'Opponent'}
-              playersSwapped={this.state.playersSwapped}
-            />
-            <RaceProgress progress={this.state.progress} />
+              <RaceProgress progress={this.state.progress} />
 
-            <View style={styles.buttons}>
-            {/*
-              <Button
-                onPress={this.onPlay.bind(this)}
-                title='Play'
-                color='red'
-              />
-              <Button
-                onPress={this.onPause.bind(this)}
-                title='Pause'
-                color='blue'
-              />
-              <Button
-                onPress={this.onReset.bind(this)}
-                title='Reset'
-                color='green'
-              />
-            */}
             </View>
           </View>
-          <Button style={{container:{width: Dimensions.get('window').width}}} raised primary text="Play" onPress={this.onPlay.bind(this)} />
+          <Button style={{container:{width: Dimensions.get('window').width}}} raised primary text="Reset" onPress={this.onReset.bind(this)} />
+          {this.state.replayState === "playing" &&
+            <Button style={{container:{width: Dimensions.get('window').width}}} raised primary text="Pause" onPress={this.onPause.bind(this)} />
+          }
+          {this.state.replayState === "paused" &&
+            <Button style={{container:{width: Dimensions.get('window').width}}} raised accent text="Play" onPress={this.onPlay.bind(this)} />
+          }
         </View>
       </ThemeProvider>
     );
