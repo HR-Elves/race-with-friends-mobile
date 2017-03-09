@@ -149,6 +149,24 @@ export default class LiveRaceLobby extends React.Component {
         // Send readiness update to server
         if (this.state.isReady) {
           this.state.lobbyConnection.send(JSON.stringify(['ready']));
+          ws.addEventListener('message', (event) => {
+            let eventData = JSON.parse(event.data);
+
+            if (eventData[0] === 'position-update') {
+              let opponent = this.state.opponent
+              opponent.push(eventData[1]);
+
+              this.setState({
+                opponent: opponent
+              });
+            } else if (eventData[0] === 'announcement' && eventData[1] === 'start-race') {
+              this.setState({
+                raceStarted: true
+              }, () => {
+                this.handleRacePress();
+              })
+            }
+          });
         } else {
           this.state.lobbyConnection.send(JSON.stringify(['not-ready']));
         }
@@ -171,18 +189,22 @@ export default class LiveRaceLobby extends React.Component {
     BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
     BackgroundGeolocation.changePace(true);
 
-    ws.addEventListener('message', (event) => {
-        let eventData = JSON.parse(event.data);
+    if (!this.state.raceStarted) {
+      ws.send(JSON.stringify(['announcement', 'start-race']));
+    }
 
-        if (eventData[0] === 'position-update') {
-          let opponent = this.state.opponent
-          opponent.push(eventData[1]);
+    // ws.addEventListener('message', (event) => {
+    //     let eventData = JSON.parse(event.data);
 
-          this.setState({
-            opponent: opponent
-          });
-        }
-    });
+    //     if (eventData[0] === 'position-update') {
+    //       let opponent = this.state.opponent
+    //       opponent.push(eventData[1]);
+
+    //       this.setState({
+    //         opponent: opponent
+    //       });
+    //     }
+    // });
 
     this.setState({
       raceStarted: true,
@@ -262,6 +284,12 @@ export default class LiveRaceLobby extends React.Component {
 
   onLocationUpdate(location) {
     clearInterval(this.setTimeoutID);
+
+    // Bandaid Fix for error at start of live races when no data points are available from the opponent.
+    if (this.state.opponent.length === 0) {
+      setTimeout(this.onLocationUpdate.bind(this, location), 1000);
+      return
+    }
 
     let currentLoc = processLocation(location, this.state.history);
     ws.send(JSON.stringify(['position-update', currentLoc]));
