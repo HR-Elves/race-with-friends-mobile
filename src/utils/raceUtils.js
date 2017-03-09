@@ -118,7 +118,7 @@ export function findCurrentRaceIndex(currentLoc, raceObj, lastRaceIndexChecked) 
   }
 
   if (index === raceObj.length) {
-    console.warn('out of bounds!');
+    // console.warn('out of bounds!');
     // out of bounds condition due to opponent finishing race
     index = raceObj.length - 1;
   }
