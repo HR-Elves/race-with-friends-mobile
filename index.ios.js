@@ -161,7 +161,7 @@ export default class RaceWithFriends extends Component {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#F5FCFF'
+          backgroundColor: '#EAEAEA'
         }}>
           <Image source={require('./assets/images/StickmanRunning.gif')} />
         </View>
@@ -182,7 +182,7 @@ export default class RaceWithFriends extends Component {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#EAEAEA',
       }
     });
 
@@ -190,9 +190,10 @@ export default class RaceWithFriends extends Component {
       LeftButton(route, navigator, index, navState) {
         return (
           <TouchableOpacity
+            style={{paddingLeft: 10, paddingTop: 7}}
             // style={styles.navBarLeftButton}
             onPress={() => { _emitter.emit('openMenu'); }}>
-            <Icon name='menu' size={25} color={/*Black*/'#000000'} />
+            <Icon name='menu' size={25} color={'#ffffff'} />
           </TouchableOpacity>
         );
       },
@@ -201,15 +202,16 @@ export default class RaceWithFriends extends Component {
         return (
           <TouchableOpacity /*style={styles.navBarRightButton}*/
             // onPress={() => { _emitter.emit('openMenu'); }}
+            style={{paddingRight: 10, paddingTop: 7}}
             >
-            <Icon name='more-vert' size={25} color={/*Black*/'#000000'} />
+            <Icon name='more-vert' size={25} color={'#ffffff'} />
           </TouchableOpacity>
         );
       },
 
       Title(route, navigator, index, navState) {
         return (
-          <Text /*style={[styles.navBarText, styles.navBarTitleText]}*/>
+          <Text style={{fontSize: 21, fontWeight: '500', color: '#ffffff', paddingTop: 8}}/*style={[styles.navBarText, styles.navBarTitleText]}*/>
             {route.title}
           </Text>
         );
@@ -225,9 +227,9 @@ export default class RaceWithFriends extends Component {
             profile={this.state.profile}
             logout={this.logOutUser}
             navigate={((route) => {
-              this._navigator.push(this.navigate(route));
-              this._drawer.close();
-            }).bind(this)}/>}
+            this._navigator.push(this.navigate(route));
+            this._drawer.close();
+          }).bind(this)}/>}
           tapToClose={true}
           openDrawerOffset={0.2}
           panCloseMask={0.2}
@@ -237,20 +239,22 @@ export default class RaceWithFriends extends Component {
             main: {paddingLeft: 3}
           }}
           tweenHandler={(ratio) => ({main: { opacity: ( 2 - ratio) / 2 }})}>
+
           <Navigator
             ref={(ref) => this._navigator = ref}
             configureScene={(route) => Navigator.SceneConfigs.FloatFromLeft}
-            style={{flex: 1}}
+            style={{ paddingTop: 0}}
             initialRoute={{
               id: '',
               title: ''
             }}
             renderScene={(route, navigator) => this._renderScene(route, navigator)}
             navigationBar={<Navigator.NavigationBar
+              style={{backgroundColor: COLOR.teal500, borderColor: COLOR.teal200, borderTopWidth: 0, paddingTop: 0  }}
               routeMapper={NavigationBarRouteMapper}/>
             }/>
         </Drawer>
-      </ThemeProvider>
+      </ThemeProvider>      
     );
   }
 }
@@ -309,7 +313,7 @@ class RaceDashboard extends Component {
       container: {
         marginTop: 20,
         flex: 1,
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#EAEAEA',
         width: 300,
         justifyContent: 'center',
         alignItems: 'center',
@@ -326,7 +330,7 @@ class RaceDashboard extends Component {
       },
       //this is where to affect list of pages
       listContent: {
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#EAEAEA',
         marginTop: 80,
         padding: 10,
         width: 295
