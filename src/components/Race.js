@@ -127,10 +127,6 @@ export default class Race extends Component {
     });
     Tts.addEventListener('tts-cancel', (event) => console.warn('tts-cancel: ', event));
   }
-<<<<<<< HEAD
-
-=======
->>>>>>> undo race changes
 
   componentDidMount() {
     // Speech.supportedVoices()
