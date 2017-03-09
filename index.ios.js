@@ -341,7 +341,6 @@ class RaceDashboard extends Component {
     return (
       <View style={[styles.container, {backgroundColor: '#ffffff'}]}>
         <View style={{width: Dimensions.get('window').width * 0.8,
-                      maginTop: 10, 
                       paddingLeft: 20,
                       paddingBottom: 20,
                       backgroundColor: COLOR.teal500}}>
