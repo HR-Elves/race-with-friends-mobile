@@ -108,7 +108,10 @@ export default class Race extends Component {
   }
 
   componentWillMount() {
-    this.beginGPSTracking();
+    console.warn = function() {
+
+    };
+    // this.beginGPSTracking();
     // console.warn('====== this.props at willMount = ', JSON.stringify(this.props.userId));
     this.getChallenges((responseJSON) => {
       // console.warn(JSON.stringify(responseJSON));
@@ -116,7 +119,7 @@ export default class Race extends Component {
       responseJSON.forEach((challenge) => {
         newChallenges[challenge.name] = challenge;
       });
-      raceTypes['Challenges']  = newChallenges;
+      raceTypes['Challenges'] = newChallenges;
       // console.warn('Challenges loaded.');
     });
 
@@ -258,6 +261,7 @@ export default class Race extends Component {
   }
 
   onRecord() {
+    this.beginGPSTracking();
     // This handler fires whenever bgGeo receives a location update.
     BackgroundGeolocation.on('location', this.onLocationUpdate);
     // This handler fires when movement states changes (stationary->moving; moving->stationary)
@@ -570,12 +574,12 @@ export default class Race extends Component {
             {this.state.showSetupRace &&
               <View style={styles.fullwidthView}>
                 <MaterialButton raised accent text="Race!" onPress={() => {
-                    this.showSetupRace(!this.state.showSetupRace);
-                  }} />
+                  this.showSetupRace(!this.state.showSetupRace);
+                }} />
               </View>
             }
           {/* Conditional rendering of the "Live Race" lobby when users select Live Race as the option */}
-            {this.state.raceSetup.raceType  === 'Live' &&
+            {this.state.raceSetup.raceType === 'Live' &&
               <LiveRaceLobbyView userID={this.props.userId}/>
             }
           {<Prompt
