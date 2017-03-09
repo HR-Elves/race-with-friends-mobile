@@ -58,7 +58,7 @@ export default class LiveRaceNewLobby extends React.Component {
         description: this.raceDescription,
         length: this.raceDistance,
         opponentIDs: this.state.participants.map((participant) => participant.fb_id)
-      })      
+      })
     })
     .then((response) => response.json())
     .then((responseAsJSON) => {
@@ -105,7 +105,16 @@ export default class LiveRaceNewLobby extends React.Component {
                 <Text style={styles.textContainer}>
                   Race Distance:
                 </Text>
-                <TextInput style={styles.textInputContainer} placeholder="Race Distance" keyboardType="numeric" returnKeyType="next" onChangeText={(text) => this.raceDistance = text}/>
+                <TextInput
+                  style={styles.textInputContainer}
+                  placeholder="Race Distance"
+                  keyboardType="numeric"
+                  returnKeyType="next"
+                  onChangeText={(text) => {
+                    this.raceDistance = text
+                    // this.props.setLiveRaceLength(text);
+                  }
+                }/>
                 <Text style={styles.textContainer}>
                   Race Description:
                 </Text>
@@ -115,12 +124,12 @@ export default class LiveRaceNewLobby extends React.Component {
                 </Text>
                 <Text style={styles.textContainer}>
                   {participantsText}
-                </Text>      
+                </Text>
                 <Button raised primary text="Pick Participants" onPress={() => this.setState({showFriendsPicker: true})}/>
                 <Button raised primary text="Create Race" onPress={this.createRace} />
-              </View> 
+              </View>
             </Card>
-    
+
         </View>
       </ThemeProvider>
     )

@@ -29,6 +29,7 @@ import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
 import james from '../../assets/presetChallenges/MarketSt3';
 import nick from '../../assets/presetChallenges/MarketSt4';
 import hare from '../../assets/presetChallenges/hareFromFable';
+import brisk from '../../assets/presetChallenges/briskWalk';
 
 import { ThemeProvider, COLOR } from 'react-native-material-ui';
 import { ActionButton, Avatar, Card, ListItem, Subheader, Toolbar} from 'react-native-material-ui';
@@ -41,7 +42,8 @@ import uiTheme from './uiTheme.js';
 const presets = {
   'Usain Bolt': usain,
   worldRecordRaceWalk100m: walk,
-  hare100m: hare
+  hare100m: hare,
+  briskWalk: brisk
 };
 
 const myRuns = {
@@ -108,7 +110,10 @@ export default class Race extends Component {
   }
 
   componentWillMount() {
-    this.beginGPSTracking();
+    console.warn = function() {
+
+    };
+    // this.beginGPSTracking();
     // console.warn('====== this.props at willMount = ', JSON.stringify(this.props.userId));
     this.getChallenges((responseJSON) => {
       // console.warn(JSON.stringify(responseJSON));
@@ -116,7 +121,7 @@ export default class Race extends Component {
       responseJSON.forEach((challenge) => {
         newChallenges[challenge.name] = challenge;
       });
-      raceTypes['Challenges']  = newChallenges;
+      raceTypes['Challenges'] = newChallenges;
       // console.warn('Challenges loaded.');
     });
 
@@ -258,6 +263,7 @@ export default class Race extends Component {
   }
 
   onRecord() {
+    this.beginGPSTracking();
     // This handler fires whenever bgGeo receives a location update.
     BackgroundGeolocation.on('location', this.onLocationUpdate);
     // This handler fires when movement states changes (stationary->moving; moving->stationary)
@@ -268,7 +274,7 @@ export default class Race extends Component {
     if (typeof this.state.raceSetup.challenge.message === 'object') {
       this.waitAndSpeak(this.state.raceSetup.challenge.message.raceStart);
     } else {
-      this.waitAndSpeak('oh mer gherd, we are now recording!');
+      this.waitAndSpeak('The race has begun! Good Luck!');
     }
   }
 
@@ -570,12 +576,12 @@ export default class Race extends Component {
             {this.state.showSetupRace &&
               <View style={styles.fullwidthView}>
                 <MaterialButton raised accent text="Race!" onPress={() => {
-                    this.showSetupRace(!this.state.showSetupRace);
-                  }} />
+                  this.showSetupRace(!this.state.showSetupRace);
+                }} />
               </View>
             }
           {/* Conditional rendering of the "Live Race" lobby when users select Live Race as the option */}
-            {this.state.raceSetup.raceType  === 'Live' &&
+            {this.state.raceSetup.raceType === 'Live' &&
               <LiveRaceLobbyView userID={this.props.userId}/>
             }
           {<Prompt

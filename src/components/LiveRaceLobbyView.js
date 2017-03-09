@@ -6,9 +6,16 @@ import ModalDropdown from 'react-native-modal-dropdown';
 
 import { ThemeProvider, COLOR } from 'react-native-material-ui';
 import { Avatar, Card, ListItem, Subheader, Toolbar, Checkbox, Button} from 'react-native-material-ui';
+import BackgroundGeolocation from 'react-native-background-geolocation';
 
 import uiTheme from './uiTheme.js';
 import LiveRaceSetupNewLobby from './LiveRaceSetupNewLobby.js';
+import RaceProgress from './RaceProgress';
+import RaceStatus from './RaceStatus';
+import {findDistance, processLocation, getRaceStatus} from '../utils/raceUtils.js';
+import {getLiveRaceStatus} from '../utils/liveRaceUtils.js';
+
+import usain from '../../assets/presetChallenges/UsainBolt100m';
 
 // Development Server
 // const SERVER = 'http://127.0.0.1:5002';
@@ -16,6 +23,7 @@ import LiveRaceSetupNewLobby from './LiveRaceSetupNewLobby.js';
 
 const SERVER = 'https://racewithfriends.tk:8000'
 const SOCKETSERVER = 'wss://racewithfriends.tk:8000';
+let ws;
 
 
 // Temporary Styles Sheet Manual Definition
@@ -40,9 +48,9 @@ const styles = StyleSheet.create({
 
   statusContainer: {
       flex: 1,
-      justifyContent: 'flex-start',      
+      justifyContent: 'flex-start',
       flexDirection: 'column',
-      alignItems: 'flex-start',      
+      alignItems: 'flex-start',
       alignSelf: "stretch",
       width: Dimensions.get('window').width,
   },
@@ -61,17 +69,32 @@ export default class LiveRaceLobby extends React.Component {
       availableLobbies: [],
       lobbyConnection: undefined,
       defaultLobbyOption: '<Select Lobby>',
-      showSetupNewLobby: false
+      showSetupNewLobby: false,
+      liveRaceDistance: null,
+      raceStatus: null,
+      history: [], // The user's race history
+      opponent: [], // The opponent's race history
+      progress: { // Current race progress
+        playerDist: 0,
+        opponentDist: 0,
+        totalDist: null,
+        playerWon: false,
+        opponentWon: false
+      },
+      raceStarted: false
     };
+    this.setTimeoutID;
+    this.onLocationUpdate = this.onLocationUpdate.bind(this);
 
     // this.props.userID = 'joe';
   }
 
   componentWillMount() {
-    console.warn = function() {
+    // console.warn = function() {
 
-    };
+    // };
     this.getLiveRaces();
+    // this.beginGPSTracking();
   }
 
   componentWillUnmount() {
@@ -79,6 +102,11 @@ export default class LiveRaceLobby extends React.Component {
     if (this.state.lobbyConnection) {
       this.state.lobbyConnection.close();
     }
+
+    // Turn off Background Geolocation listeners. //
+    BackgroundGeolocation.un('location', this.onLocationUpdate);
+    BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
+    BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
   }
 
   getLiveRaces = () => {
@@ -97,7 +125,7 @@ export default class LiveRaceLobby extends React.Component {
             createdOn: undefined,
             participants: [],
             isReady: false,
-            length: undefined,
+            liveRaceDistance: undefined,
             defaultLobbyOption: lobbies[0].toString()
           })
           this.handlePickLobby(lobbies[0]);
@@ -121,6 +149,24 @@ export default class LiveRaceLobby extends React.Component {
         // Send readiness update to server
         if (this.state.isReady) {
           this.state.lobbyConnection.send(JSON.stringify(['ready']));
+          ws.addEventListener('message', (event) => {
+            let eventData = JSON.parse(event.data);
+
+            if (eventData[0] === 'position-update') {
+              let opponent = this.state.opponent
+              opponent.push(eventData[1]);
+
+              this.setState({
+                opponent: opponent
+              });
+            } else if (eventData[0] === 'announcement' && eventData[1] === 'start-race') {
+              this.setState({
+                raceStarted: true
+              }, () => {
+                this.handleRacePress();
+              })
+            }
+          });
         } else {
           this.state.lobbyConnection.send(JSON.stringify(['not-ready']));
         }
@@ -135,6 +181,35 @@ export default class LiveRaceLobby extends React.Component {
   // Handler for when the organiser press the "RACE" button
   handleRacePress = () => {
 
+    this.beginGPSTracking();
+    // This handler fires whenever bgGeo receives a location update.
+    BackgroundGeolocation.on('location', this.onLocationUpdate);
+    // This handler fires when movement states changes (stationary->moving; moving->stationary)
+    BackgroundGeolocation.on('motionchange', this.onLocationUpdate);
+    BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
+    BackgroundGeolocation.changePace(true);
+
+    if (!this.state.raceStarted) {
+      ws.send(JSON.stringify(['announcement', 'start-race']));
+    }
+
+    // ws.addEventListener('message', (event) => {
+    //     let eventData = JSON.parse(event.data);
+
+    //     if (eventData[0] === 'position-update') {
+    //       let opponent = this.state.opponent
+    //       opponent.push(eventData[1]);
+
+    //       this.setState({
+    //         opponent: opponent
+    //       });
+    //     }
+    // });
+
+    this.setState({
+      raceStarted: true,
+      // opponent: usain
+    })
   }
 
   handleNewRaceCreated = () => {
@@ -161,7 +236,7 @@ export default class LiveRaceLobby extends React.Component {
 
     // Connect to lobby
 
-    let ws = new WebSocket(SOCKETSERVER + '/liveraces/' + pickedLiveRaceID + '?userid=' + this.props.userID);
+    ws = new WebSocket(SOCKETSERVER + '/liveraces/' + pickedLiveRaceID + '?userid=' + this.props.userID);
 
     // Connection opened
     ws.addEventListener('open', (event) => {
@@ -176,14 +251,17 @@ export default class LiveRaceLobby extends React.Component {
         if (eventData[0] === 'lobbystatus') {
           lobbyData = eventData[1];
           console.log(lobbyData);
+          let progress = this.state.progress;
+          progress.totalDist = lobbyData.length;
           this.setState({
             name: lobbyData.name,
             description: lobbyData.description,
-            length: lobbyData.length,
+            liveRaceDistance: lobbyData.length,
             organiser: lobbyData.organiserID,
             participants: lobbyData.participants,
             createdOn: lobbyData.createdOn,
-            lobbyConnection: ws
+            lobbyConnection: ws,
+            progress: progress
           });
         }
     });
@@ -194,7 +272,7 @@ export default class LiveRaceLobby extends React.Component {
     if (!this.state.participants) {
       return false;
     }
-    
+
     let areAllParticipantsReady = true;
     this.state.participants.forEach(participant => {
       if (participant.isReady === false) {
@@ -204,6 +282,103 @@ export default class LiveRaceLobby extends React.Component {
     return areAllParticipantsReady;
   }
 
+  onLocationUpdate(location) {
+    clearInterval(this.setTimeoutID);
+
+    // Bandaid Fix for error at start of live races when no data points are available from the opponent.
+    if (this.state.opponent.length === 0) {
+      setTimeout(this.onLocationUpdate.bind(this, location), 1000);
+      return
+    }
+
+    let currentLoc = processLocation(location, this.state.history);
+    ws.send(JSON.stringify(['position-update', currentLoc]));
+
+    let newRaceStatus = getLiveRaceStatus(currentLoc, this.state.opponent, this.state.raceStatus, this.state.liveRaceDistance);
+
+    // console.error('newRaceStatus: ', JSON.stringify(newRaceStatus));
+    // console.error(JSON.stringify(newRaceStatus))
+    // if (this.state.opponent.length >= 2) {
+    //   newRaceStatus = getRaceStatus(currentLoc, this.state.opponent, this.state.raceStatus, this.state.liveRaceDistance);
+    // }
+
+    const newState = this.state;
+    newState.history.push(currentLoc);
+    newState.raceStatus = newRaceStatus;
+    newState.progress.playerDist = currentLoc.distanceTotal;
+    newState.progress.opponentDist = currentLoc.distanceTotal - newRaceStatus.distanceToOpponent;
+    // newState.progress.totalDist = newRaceStatus.totalDist;
+    // newState.chartData.push({time: location.timeTotal, distanceToOpponent: newRaceStatus.distanceToOpponent});
+    this.setState(newState);
+
+    if (!newRaceStatus.challengeDone) {
+      this.setTimeoutID = setTimeout((() => {
+        BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
+          this.onLocationUpdate(location);
+        });
+      }).bind(this), 10000);
+    } else { // Race complete.
+
+    // console.error(JSON.stringify(newRaceStatus))
+
+      if (newRaceStatus.distanceToOpponent > 0) { // Opponent Won
+
+      } else if (newRaceStatus.distanceToOpponent < 0) { // Player Won
+
+      } else { // Tie!
+        // this.waitAndSpeak('Wow, you and your opponent tied!');
+      }
+
+      BackgroundGeolocation.un('location', this.onLocationUpdate);
+      BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
+      BackgroundGeolocation.un('heartbeat', this.onLocationUpdate);
+    }
+  }
+
+  beginGPSTracking() {
+    // Now configure the plugin.
+    BackgroundGeolocation.configure({
+      // Geolocation Options
+      desiredAccuracy: 0,
+      locationUpdateInterval: 1000,
+      fastestLocationUpdateInterval: 500,
+      stationaryRadius: 1,
+      disableElasticity: true,
+      desiredOdometerAccuracy: 0,
+      // Activity Recognition Options
+      stopTimeout: 60, // Minutes
+      disableMotionActivityUpdates: true,
+      stopDetectionDelay: 60, // Minutes
+      // HTTP / SQLite Persistence Options
+      url: 'https://salty-stream-73177.herokuapp.com/',
+      method: 'POST',
+      autoSync: false, // POST each location immediately to server
+      // Application config
+      debug: false, // debug sounds & notifications
+      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
+      stopOnTerminate: true, // Allow the background-service to continue tracking when user closes the app.
+      startOnBoot: false, // Auto start tracking when device is powered-up.
+      heartbeatInterval: 1,
+      preventSuspend: true,
+      // pausesLocationUpdatesAutomatically: false,
+    }, function(state) {
+      console.log('- BackgroundGeolocation is configured and ready: ', state.enabled);
+
+      if (!state.enabled) {
+        BackgroundGeolocation.start(function() {
+          console.log('- Start success');
+        });
+      }
+    });
+
+  }
+
+  // setLiveRaceLength(distance) {
+  //   this.setState({
+  //     liveRaceDistance: distance
+  //   }, () => {})
+  // }
+
   render() {
     let lobbyOptions = this.state.availableLobbies.slice();
     lobbyOptions.push('<New Lobby>');
@@ -212,12 +387,16 @@ export default class LiveRaceLobby extends React.Component {
       <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
 
-          <View style={styles.fullwidthView}>      
-            <Toolbar centerElement="Realtime Live Race" />        
-          </View> 
+          <View style={styles.fullwidthView}>
+            <Toolbar centerElement="Realtime Live Race" />
+          </View>
 
           {this.state.showSetupNewLobby &&
-            <LiveRaceSetupNewLobby userID={this.props.userID} onNewRaceCreated={this.handleNewRaceCreated} /> 
+            <LiveRaceSetupNewLobby
+              userID={this.props.userID}
+              onNewRaceCreated={this.handleNewRaceCreated}
+              // setLiveRaceLength={this.setLiveRaceLength.bind(this)}
+            />
           }
 
 
@@ -243,30 +422,37 @@ export default class LiveRaceLobby extends React.Component {
                 />
                 <View style={{width: Dimensions.get('window').width - 20}}>
                     <Text style={styles.textContainer}>
-                        Length: {this.state.length + '\n'}
+                        Distance: {this.state.liveRaceDistance + '\n'}
                         Description: {this.state.description + '\n'}
 
                     </Text>
                 </View>
-            </Card> 
+            </Card>
 
-
+            {this.state.raceStarted && <RaceProgress progress={this.state.progress} /> }
+            {this.state.raceStarted &&
+              <RaceStatus
+                status={this.state.raceStatus}
+                playerName={'Player'}
+                opponentName={'Opponent'}
+              />
+            }
 
               {/* Participant Ready Status */}
               <View style={styles.statusContainer}>
                 <View style={styles.fullwidthView}>
-                  {this.state.participants && 
+                  {this.state.participants &&
                     <Subheader text="Runners" />
                   }
                   {this.state.participants && this.state.participants.map(participant => {
                     return (
-                        <Button 
+                        <Button
                           key={participant.id}
                           raised
-                          disabled={!participant.inLobby} 
+                          disabled={!participant.inLobby}
                           primary={participant.inLobby && participant.isReady}
-                          accent={participant.inLobby && !participant.isReady} 
-                          text={participant.name} 
+                          accent={participant.inLobby && !participant.isReady}
+                          text={participant.name}
                           />
                     )
                   })}
@@ -276,8 +462,8 @@ export default class LiveRaceLobby extends React.Component {
 
               {/* Bottom Race & Ready Button */}
               <View style={styles.fullwidthView}>
-                {this.areAllParticipantsReady() && 
-                  <Button style={{container:{backgroundColor: "#0000ff"}}} raised primary text="Race!" onPress={this.handleRacePress} /> 
+                {this.areAllParticipantsReady() &&
+                  <Button style={{container:{backgroundColor: "#0000ff"}}} raised primary text="Race!" onPress={this.handleRacePress} />
                 }
 
                 {this.state.isReady ?
