@@ -434,7 +434,7 @@ export default class Race extends Component {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#F5FCFF',
+          backgroundColor: '#EAEAEA',
           marginTop: 50
         }}>
           {!this.state.showSetupRace &&
@@ -449,7 +449,7 @@ export default class Race extends Component {
                   <Icon.Button
                     name="play-circle-outline"
                     size={25}
-                    backgroundColor='#dc143c' // Crimson
+                    backgroundColor='#004D40'
                     borderRadius={5}
                     onPress={this.onRecord.bind(this)}
                   >
@@ -458,7 +458,7 @@ export default class Race extends Component {
                   <Icon.Button
                     name="pause-circle-outline"
                     size={25}
-                    backgroundColor='#00008b' // Blue
+                    backgroundColor='#26A69A'
                     borderRadius={5}
                     onPress={this.onStopRecord.bind(this)}
                   >
@@ -467,7 +467,7 @@ export default class Race extends Component {
                   <Icon.Button
                     name="clear"
                     size={25}
-                    backgroundColor='#008000' // Green
+                    backgroundColor='#80CBC4'
                     borderRadius={5}
                     onPress={this.clearHistory.bind(this)}
                   >
