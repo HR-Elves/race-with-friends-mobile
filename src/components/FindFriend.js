@@ -19,15 +19,18 @@ export default class FindFriend extends Component {
       users: [],
       allUsers: []
     };
-
   }
 
   componentDidMount() {
     fetch('https://racewithfriends.tk:8000/users/all')
     .then(response => {
+      var users = JSON.parse(response._bodyInit).filter(user => {
+        return user.fb_id !== this.props.userId;
+      });
+
       this.setState({
-        users: JSON.parse(response._bodyInit),
-        allUsers: JSON.parse(response._bodyInit)
+        users: users,
+        allUsers: users
       });
     })
     .catch(err => {

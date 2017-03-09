@@ -142,6 +142,7 @@ export default class Friends extends Component {
           {this.state.currentTab === 1 &&
             <View style={styles.listContent} >
               <FindFriend
+                userId={this.props.userId}
                 onAddFriend={this.onAddFriend.bind(this)}
               />
             </View>
