@@ -22,21 +22,20 @@ export default class FriendView extends Component {
   componentDidMount() {
     // this.getRunsData();
     let userId = this.props.friend.fb_id;
-    return fetch('https://www.racewithfriends.tk:8000/users/' + userId + '/runs',
-      {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }
-      })
-      .then((response) => {
-        this.setState({
-          runs: JSON.parse(response._bodyInit)
-        })
-      })
-      .catch((error) => {
-        console.error(error);
+    return fetch('https://www.racewithfriends.tk:8000/users/' + userId + '/runs', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    })
+    .then((response) => {
+      this.setState({
+        runs: JSON.parse(response._bodyInit)
+      });
+    })
+    .catch((error) => {
+      console.error(error);
     });
   }
 
@@ -55,7 +54,7 @@ export default class FriendView extends Component {
         <ScrollView>
         {
           this.state.runs.map((run) => {
-           return (
+            return (
             <View>
               <ListItem
                 key={run.id}
@@ -79,7 +78,7 @@ export default class FriendView extends Component {
 }
 
 const styles = StyleSheet.create({
-  pic:{
+  pic: {
     // marginTop:50,
     // width:150,
     // height: 150,
@@ -87,9 +86,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    flex:1    //Step 1
+    flex: 1    //Step 1
   },
-  name:{
+  name: {
     // color:'#fff',
     flexDirection: 'column',
     textAlign: 'center',
@@ -102,12 +101,12 @@ const styles = StyleSheet.create({
     flex: 1,
     width: Dimensions.get('window').width
   },
-  runs:{
+  runs: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    fontWeight:'bold',
-    flex:1               //Step 3
+    fontWeight: 'bold',
+    flex: 1               //Step 3
   }
 });
 

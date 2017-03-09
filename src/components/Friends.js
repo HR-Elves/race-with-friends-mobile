@@ -8,6 +8,7 @@ import {
 
 import { COLOR, ThemeProvider, ListItem, Subheader } from 'react-native-material-ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 
 import FriendsList from './FriendsList';
 import FriendView from './FriendView';
@@ -19,7 +20,8 @@ export default class Friends extends Component {
     this.state = {
       friends: [],
       displayState: 'list',
-      selectedFriend: null
+      selectedFriend: null,
+      currentTab: 0,
     };
   }
 
@@ -89,6 +91,12 @@ export default class Friends extends Component {
     })
   }
 
+  onTabChange(newTabIndex) {
+    this.setState({
+      currentTab: newTabIndex
+    });
+  }
+
   render() {
     const styles = StyleSheet.create({
       container: {
@@ -102,20 +110,26 @@ export default class Friends extends Component {
       center: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF'
       }
     });
 
     const uiTheme = {
       palette: {
-        primaryColor: COLOR.green500
-      }
+        primaryColor: COLOR.green500,
+      },
+      toolbar: {
+        container: {
+          height: 50,
+        },
+      },
     };
 
     return (
       <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
-          {this.state.displayState === 'list' &&
+          {this.state.currentTab === 0 &&
             <View style={styles.listContent}>
               <FriendsList
                 searchable={true}
@@ -125,18 +139,36 @@ export default class Friends extends Component {
               />
             </View>
           }
+          {this.state.currentTab === 1 &&
+            <View style={styles.listContent} >
+              <FindFriend
+                userId={this.props.userId}
+                onAddFriend={this.onAddFriend.bind(this)}
+              />
+            </View>
+          }
           {this.state.displayState === 'selected' &&
             <View style={styles.center} >
               <FriendView friend={this.state.selectedFriend} />
             </View>
           }
-          {this.state.displayState === 'searchForFriends' &&
-            <View style={styles.listContent} >
-              <FindFriend
-                onAddFriend={this.onAddFriend.bind(this)}
-              />
-            </View>
-          }
+            <BottomNavigation
+              labelColor="white"
+              rippleColor="white"
+              style={{ height: 56, elevation: 8, position: 'absolute', left: 0, bottom: 0, right: 0 }}
+              onTabChange={this.onTabChange.bind(this)}
+            >
+            <Tab
+              barBackgroundColor="#00796B"
+              label="My Friends"
+              icon={<Icon size={24} color="white" name="directions-run" />}
+            />
+            <Tab
+              barBackgroundColor="#37474F"
+              label="Find Friends"
+              icon={<Icon size={24} color="white" name="show-chart" />}
+            />
+          </BottomNavigation>
         </View>
       </ThemeProvider>
     );

@@ -26,7 +26,7 @@ export default class StatsView extends Component {
       this.setState ({
         runs: result
       });
-    });    
+    });
   }
 
   getRunsData(callback) {
@@ -48,7 +48,7 @@ export default class StatsView extends Component {
       .catch((error) => {
         console.error(error);
       });
-  }  
+  }
 
   onTabChange(newTabIndex) {
     this.setState({
@@ -58,7 +58,7 @@ export default class StatsView extends Component {
 
   render() {
     const styles = StyleSheet.create({
-       container: {
+      container: {
         flex: 1
       },
       center: {
@@ -70,22 +70,22 @@ export default class StatsView extends Component {
     });
 
     const uiTheme = {
-        palette: {
-            primaryColor: COLOR.green500,
+      palette: {
+        primaryColor: COLOR.green500,
+      },
+      toolbar: {
+        container: {
+          height: 50,
         },
-        toolbar: {
-            container: {
-                height: 50,
-            },
-        },
+      },
     };
 
     return (
-      <ThemeProvider uiTheme={uiTheme}>    
+      <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
           <View style={styles.center}>
             {this.state.currentTab === 0 && <MyRuns userId={this.props.userId} runs={this.state.runs} /> }
-            {this.state.currentTab === 1 && <MyStats userId={this.props.userId} runs={this.state.runs} />  }
+            {this.state.currentTab === 1 && <MyStats userId={this.props.userId} runs={this.state.runs} /> }
           </View>
           <BottomNavigation
             labelColor="white"
