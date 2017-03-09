@@ -37,18 +37,18 @@ const presets = {
   test3: test3
 };
 
-const myRuns = {
-  'James Market St': james,
-  'Nick Market St': nick,
-};
+// const myRuns = {
+//   'James Market St': james,
+//   'Nick Market St': nick,
+// };
 
+let myRuns;
 let challenges;
 
 const raceTypes = {
   Presets: presets,
   'My Runs': myRuns,
-  Challenges: challenges,
-  Live: 'Under Construction',
+  Challenges: challenges
 };
 
 class SpeechQueue {
@@ -112,6 +112,14 @@ export default class Replay extends Component {
       raceTypes['Challenges'] = newChallenges;
       // console.warn('Challenges loaded.');
     });
+
+    this.getRuns((responseJSON) => {
+      let newRuns = {};
+      responseJSON.forEach((run) => {
+        newRuns[run.name] = run.data;
+      });
+      raceTypes['My Runs'] = newRuns;
+    });    
 
     Tts.addEventListener('tts-finish', (event) => {
       // console.warn('tts-finish: ', event);
@@ -229,6 +237,26 @@ export default class Replay extends Component {
     }).catch((error) => {
       console.error('getChallenges error: ', error);
     });
+  }
+
+  getRuns(callback) {
+    fetch('https://www.racewithfriends.tk:8000/users/' + this.props.userId + '/runs',
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        callback(responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   getRunByRunId(runId, callback) {
