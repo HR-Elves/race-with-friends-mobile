@@ -536,7 +536,7 @@ export default class Race extends Component {
                     options={['Presets', 'My Runs', 'Challenges', 'Live']}
                     onSelect={this.onPickRaceType.bind(this)}
                     style={styles.center}
-                    dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 0}} 
+                    dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 0, height: 210}} 
                     renderRow={customRenderRow}
                     renderSeparator={()=>''}                    
                     textStyle={{color: '#000000', fontSize: 25}}
@@ -573,7 +573,7 @@ export default class Race extends Component {
               </View>
             </View>}
 
-            {this.state.showSetupRace &&
+            {this.state.showSetupRace && !this.state.raceSetup.raceType === 'Live' &&
               <View style={styles.fullwidthView}>
                 <MaterialButton raised accent text="Race!" onPress={() => {
                   this.showSetupRace(!this.state.showSetupRace);
