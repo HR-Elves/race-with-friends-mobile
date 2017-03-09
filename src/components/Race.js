@@ -31,7 +31,8 @@ import nick from '../../assets/presetChallenges/MarketSt4';
 import hare from '../../assets/presetChallenges/hareFromFable';
 
 import { ThemeProvider, COLOR } from 'react-native-material-ui';
-import { Avatar, Card, ListItem, Subheader, Toolbar, Checkbox} from 'react-native-material-ui';
+import { ActionButton, Avatar, Card, ListItem, Subheader, Toolbar} from 'react-native-material-ui';
+import { Button as MaterialButton } from 'react-native-material-ui';
 import CommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -397,9 +398,8 @@ export default class Race extends Component {
       container: {
         flex: 1,
         justifyContent: 'flex-start',
-
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#EAEAEA',
       },
       buttons: {
         // flex: 1,
@@ -412,7 +412,8 @@ export default class Race extends Component {
         width: Dimensions.get('window').width,
       },
       centerText: {
-        textAlign: 'center'
+        textAlign: 'center',
+        fontSize: 17
       },
       center: {
         alignItems: 'center',
@@ -421,9 +422,9 @@ export default class Race extends Component {
       bigText: {
         fontSize: 20
       },
-      dropDownLabel: {
-        fontSize: 15,
-        color: 'blue'
+      dropdownLabel: {
+        fontSize: 17,
+        color: '#00695C'
       }
     });
 
@@ -433,7 +434,7 @@ export default class Race extends Component {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#F5FCFF',
+          backgroundColor: '#EAEAEA',
           marginTop: 50
         }}>
           {!this.state.showSetupRace &&
@@ -448,7 +449,7 @@ export default class Race extends Component {
                   <Icon.Button
                     name="play-circle-outline"
                     size={25}
-                    backgroundColor='#dc143c' // Crimson
+                    backgroundColor='#004D40'
                     borderRadius={5}
                     onPress={this.onRecord.bind(this)}
                   >
@@ -457,7 +458,7 @@ export default class Race extends Component {
                   <Icon.Button
                     name="pause-circle-outline"
                     size={25}
-                    backgroundColor='#00008b' // Blue
+                    backgroundColor='#26A69A'
                     borderRadius={5}
                     onPress={this.onStopRecord.bind(this)}
                   >
@@ -466,32 +467,22 @@ export default class Race extends Component {
                   <Icon.Button
                     name="clear"
                     size={25}
-                    backgroundColor='#008000' // Green
+                    backgroundColor='#80CBC4'
                     borderRadius={5}
                     onPress={this.clearHistory.bind(this)}
                   >
                     Reset
                   </Icon.Button>
               </View>
-              {this.state.raceStatus && this.state.raceStatus.challengeDone &&
-                <PostRace data={this.state.chartData}/>
-                // <Image
-                // source={require('../../assets/images/StickmanRunning.gif')}
-                // resizeMode='contain'
-                // style={{
-                //   height: Dimensions.get('window').height * 0.4,
-                //   width: Dimensions.get('window').width * 0.4
-                // }}
-                // />
-              }
             </View>}
           {this.state.showSetupRace && this.state.raceSetup.raceType !== 'Live' &&
             <View style={styles.container}>
               <View style={styles.fullwidthView}>
-                <Toolbar centerElement="Setup Race" />
+                <Subheader text='Setup Race' />
                 <Card style={{marginLeft: 20, marginRight: 20}} >
                   <View style={styles.center}>
-                    <Icon size={40} color="black" name="directions-run" />
+                    <Text></Text>
+                    <Avatar icon='directions-run' />
                     <Text style={styles.bigText}>Race Selection</Text>
                   </View>
                   <ListItem
@@ -501,7 +492,7 @@ export default class Race extends Component {
                     options={['Presets', 'My Runs', 'Challenges', 'Live']}
                     onSelect={this.onPickRaceType.bind(this)}
                     style={styles.center}
-                    textStyle={styles.dropDownLabel}
+                    textStyle={styles.dropdownLabel}
                     defaultValue='Presets'
                   />
                   <ListItem
@@ -511,7 +502,7 @@ export default class Race extends Component {
                     options={this.state.raceSetup.oppOptions}
                     onSelect={this.onPickOpponent.bind(this)}
                     style={styles.center}
-                    textStyle={styles.dropDownLabel}
+                    textStyle={styles.dropdownLabel}
                     defaultValue='worldRecordRaceWalk100m'
                   />
                   <Text></Text>
@@ -519,27 +510,20 @@ export default class Race extends Component {
                 </Card>
                 <Card style={{marginLeft: 20, marginRight: 20}}>
                   <View style={styles.center}>
-                    <CommunityIcon size={40} color="black" name="road-variant" />
+                    <Text></Text>
+                    <Avatar icon='show-chart' />
                     <Text style={styles.bigText}>Race Details</Text>
-                    <Text>{`Name: ${this.state.raceSetup.challenge.name ? this.state.raceSetup.challenge.name : 'Preset'}`}</Text>
-                    <Text>{`Description: ${this.state.raceSetup.challenge.description ? this.state.raceSetup.challenge.description : 'Preset'}`}</Text>
-                    <Text>{`Total Distance: ${Math.round(this.state.raceSetup.challenge.distanceTotal ? this.state.raceSetup.challenge.distanceTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].distanceTotal)} meters`}</Text>
-                    <Text>{`Total Time: ${Math.round((this.state.raceSetup.challenge.timeTotal ? this.state.raceSetup.challenge.timeTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].timeTotal) / 1000)} seconds`}</Text>
-                    <Text>{`Message: ${this.state.raceSetup.challenge.message ? typeof this.state.raceSetup.challenge.message === 'object' ? 'Customized messages successfully loaded!' : '--' : '--'}`}</Text>
+                    <Text style={{fontSize: 17}}>{`Name: ${this.state.raceSetup.challenge.name ? this.state.raceSetup.challenge.name : 'Preset'}`}</Text>
+                    <Text style={{fontSize: 17}}>{`Description: ${this.state.raceSetup.challenge.description ? this.state.raceSetup.challenge.description : 'Preset'}`}</Text>
+                    <Text style={{fontSize: 17}}>{`Total Distance: ${Math.round(this.state.raceSetup.challenge.distanceTotal ? this.state.raceSetup.challenge.distanceTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].distanceTotal)} meters`}</Text>
+                    <Text style={{fontSize: 17}}>{`Total Time: ${Math.round((this.state.raceSetup.challenge.timeTotal ? this.state.raceSetup.challenge.timeTotal : this.state.raceSetup.challenge[this.state.raceSetup.challenge.length - 1].timeTotal) / 1000)} seconds`}</Text>
                     <Text></Text>
                     <Text></Text>
                   </View>
                 </Card>
-                <Icon.Button
-                  name="flash-on"
-                  size={35}
-                  backgroundColor="blue"
-                  borderRadius={15}
-                  onPress={() => {
+                <MaterialButton raised accent text="Race!" onPress={() => {
                     this.showSetupRace(!this.state.showSetupRace);
-                  }}>
-                  Race!
-                </Icon.Button>
+                  }} />
               </View>
             </View>}
           {/* Conditional rendering of the "Live Race" lobby when users select Live Race as the option */}
@@ -569,17 +553,6 @@ export default class Race extends Component {
   }
 }
 
-              // <View style={{
-              //   flex: 1,
-              //   justifyContent: 'flex-start',
-              //   alignItems: 'center',
-              //   backgroundColor: '#F5FCFF',
-              // }}>
-              //   <TouchableHighlight onPress={() => {
-              //     this.showSetupRace(!this.state.showSetupRace);
-              //   }}>
-              //     <Text>Done!</Text>
-              //   </TouchableHighlight>
-              // </View>
-
-
+              // {this.state.raceStatus && this.state.raceStatus.challengeDone &&
+              //   <PostRace data={this.state.chartData}/>
+              // }
