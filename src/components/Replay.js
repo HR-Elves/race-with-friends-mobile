@@ -480,7 +480,7 @@ export default class Replay extends Component {
                   options={this.state.playerSetup.options}
                   onSelect={this.onPickPlayer.bind(this)}
                   textStyle={{color: '#000000', fontSize: 20}}
-                  dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}}                  
+                  dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}} 
                   renderRow={customRenderRow}
                   renderSeparator={()=>''}
                   defaultValue='worldRecordRaceWalk100m'
