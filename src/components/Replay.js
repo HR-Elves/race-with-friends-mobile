@@ -9,7 +9,7 @@ import {
 
 import { Vibration, Dimensions } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
-import { ThemeProvider, Toolbar, Button } from 'react-native-material-ui'
+import { ThemeProvider, Toolbar, Button, Subheader, Card } from 'react-native-material-ui'
 import uiTheme from './uiTheme.js'
 
 import Tts from 'react-native-tts';
@@ -418,7 +418,7 @@ export default class Replay extends Component {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#EAEAEA',
       },
       list: {
         marginTop: 60,
@@ -450,61 +450,79 @@ export default class Replay extends Component {
       }
     });
 
+    function customRenderRow(rowData, rowID, hightlighted) {
+      return (
+          <View>
+            <Text style={{color: '#000000', fontSize: 16, paddingLeft: 15, paddingRight: 50, paddingTop: 10, paddingBottom: 20}}>
+              {`${rowData}`}
+            </Text>
+          </View>
+      )
+    }
+
     return (
       <ThemeProvider uiTheme={uiTheme}>      
         <View style={styles.container}>
-          <View style={styles.list}>
-            <Toolbar centerElement="Race Replay" />
-            <View>
-              <Text style={{marginBottom: 0, marginTop: 50}}>Select Racers:</Text>
-              <View style={styles.dropdown}>
+          <View style={[styles.list, {paddingTop: 10}]}>
+            <Card>
+              <Subheader text="Select Racers" />
+              <View style={{paddingLeft: 20, paddingBottom: 20}}>
                 <ModalDropdown
                   options={['Presets', 'My Runs', 'Challenges']}
                   onSelect={this.onPickPlayerType.bind(this)}
-                  textStyle={{fontSize: 18}}
-                  defaultValue='Presets'
-                  // style={{marginTop: 25}}
+                  defaultValue='Presets'        
+                  textStyle={{color: '#000000', fontSize: 25}}
+                  dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}}
+                  renderRow={customRenderRow}
+                  renderSeparator={()=>''}
                 />
-                <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
                 <ModalDropdown
                   options={this.state.playerSetup.options}
                   onSelect={this.onPickPlayer.bind(this)}
-                  textStyle={{fontSize: 24}}
+                  textStyle={{color: '#000000', fontSize: 20}}
+                  dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}}                  
+                  renderRow={customRenderRow}
+                  renderSeparator={()=>''}
                   defaultValue='worldRecordRaceWalk100m'
-                  // style={{marginTop: 25}}
                 />
-              </View>
-              <Text style={{
-                fontSize: 20,
-                // marginTop: 10,
-                // marginBottom: 10
-              }}>VS</Text>
-              <View style={styles.dropdown}>
+                <Text style={{
+                  fontSize: 20,
+                  paddingTop: 5
+                }}>  - VS -  </Text>
                 <ModalDropdown
                   options={['Presets', 'My Runs', 'Challenges']}
                   onSelect={this.onPickOpponentType.bind(this)}
-                  textStyle={{fontSize: 18}}
+                  textStyle={{color: '#000000', fontSize: 25}}
+                  dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}}
+                  renderRow={customRenderRow}
+                  renderSeparator={()=>''}
                   defaultValue='Presets'
-                  // style={{marginTop: 25}}
                 />
-                <Text style={{fontSize: 18, marginRight: 10}}>:</Text>
                 <ModalDropdown
                   options={this.state.opponentSetup.options}
                   onSelect={this.onPickOpponent.bind(this)}
-                  textStyle={{fontSize: 24}}
+                  textStyle={{color: '#000000', fontSize: 20}}
+                  dropdownStyle={{paddingTop: 10, paddingBottom: 20, marginLeft: 10}}
+                  renderRow={customRenderRow}
+                  renderSeparator={()=>''}                  
                   defaultValue='worldRecordRaceWalk100m'
-                  // style={{marginTop: 25}}
                 />
               </View>
-              <RaceStatus
-                status={this.state.raceStatus}
-                playerName={'Player'}
-                opponentName={'Opponent'}
-                playersSwapped={this.state.playersSwapped}
-              />
-              <RaceProgress progress={this.state.progress} />
-
-            </View>
+            </Card>
+            <Card>
+              <View> 
+                <Subheader text="Progress Replay" />
+                <View style={{paddingLeft: 20, paddingBottom: 20}}>                           
+                  <RaceStatus
+                    status={this.state.raceStatus}
+                    playerName={'Player'}
+                    opponentName={'Opponent'}
+                    playersSwapped={this.state.playersSwapped}
+                  />
+                  <RaceProgress progress={this.state.progress} />
+                </View>
+              </View>
+            </Card>
           </View>
           <Button style={{container:{width: Dimensions.get('window').width}}} raised primary text="Reset" onPress={this.onReset.bind(this)} />
           {this.state.replayState === "playing" &&
