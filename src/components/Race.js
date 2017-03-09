@@ -428,6 +428,16 @@ export default class Race extends Component {
       }
     });
 
+    function customRenderRow(rowData, rowID, hightlighted) {
+      return (
+          <View>
+            <Text style={{color: '#000000', fontSize: 16, paddingLeft: 15, paddingRight: 50, paddingTop: 10, paddingBottom: 20}}>
+              {`${rowData}`}
+            </Text>
+          </View>
+      )
+    }
+
     return (
       <ThemeProvider uiTheme={uiTheme}>
         <View style={{
@@ -483,7 +493,7 @@ export default class Race extends Component {
                   <View style={styles.center}>
                     <Text></Text>
                     <Avatar icon='directions-run' />
-                    <Text style={styles.bigText}>Race Selection</Text>
+                    <Text style={styles.bigText}>Race Selction</Text>
                   </View>
                   <ListItem
                       centerElement={<Text style={styles.centerText}>Select a race type:</Text>}
@@ -492,6 +502,9 @@ export default class Race extends Component {
                     options={['Presets', 'My Runs', 'Challenges', 'Live']}
                     onSelect={this.onPickRaceType.bind(this)}
                     style={styles.center}
+                    dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 0}} 
+                    renderRow={customRenderRow}
+                    renderSeparator={()=>''}                    
                     textStyle={styles.dropdownLabel}
                     defaultValue='Presets'
                   />
@@ -502,6 +515,9 @@ export default class Race extends Component {
                     options={this.state.raceSetup.oppOptions}
                     onSelect={this.onPickOpponent.bind(this)}
                     style={styles.center}
+                    dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 0}} 
+                    renderRow={customRenderRow}
+                    renderSeparator={()=>''}                    
                     textStyle={styles.dropdownLabel}
                     defaultValue='worldRecordRaceWalk100m'
                   />
@@ -521,6 +537,7 @@ export default class Race extends Component {
                     <Text></Text>
                   </View>
                 </Card>
+
                 <MaterialButton raised accent text="Race!" onPress={() => {
                     this.showSetupRace(!this.state.showSetupRace);
                   }} />
