@@ -28,25 +28,25 @@ export default class RaceProgress extends Component {
     return (
       <View>
         <View style={styles.progressView}>
-          <Text>{'Player'}</Text>
+          <Text style={{fontWeight: 'bold'}}>{'Player Progress'}</Text>
           <ProgressBar
             animated={true}
-            color='#00008b' // Blue
-            borderColor='#00008b' // Blue
+            color='#00796B' // dark green
+            borderColor='#00796B' // dark green
             width={Dimensions.get('window').width * 0.65}
-            height={Dimensions.get('window').height * 0.02}
+            height={Dimensions.get('window').height * 0.05}
             progress={playerProgress}
           />
           {progress.playerWon && <Text>Player Won!</Text>}
         </View>
         <View style={styles.progressView}>
-          <Text>{'Opponent'}</Text>
+          <Text style={{fontWeight: 'bold'}}>{'Opponent Progress'}</Text>
           <ProgressBar
             animated={true}
-            color='#dc143c' // Crimson
-            borderColor='#dc143c' // Crimson
+            color='#37474F' // gray
+            borderColor='#37474F' // gray
             width={Dimensions.get('window').width * 0.65}
-            height={Dimensions.get('window').height * 0.02}
+            height={Dimensions.get('window').height * 0.05}
             progress={opponentProgress}
           />
           {progress.opponentWon && <Text>Opponent Won!</Text>}
