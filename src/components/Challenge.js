@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 
 import { COLOR, ThemeProvider, ListItem, Subheader, Toolbar, Button , Card} from 'react-native-material-ui';
+import {uiTheme} from './uiTheme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Prompt from 'react-native-prompt';
 
@@ -167,27 +168,26 @@ export default class Challenge extends Component {
       text: {
         paddingLeft: 20,
         paddingBottom: 13,
-        height: 30,       
+        height: 30,
       }
     });
 
-    const uiTheme = {
-        palette: {
-            primaryColor: COLOR.green500,
-        },
-        toolbar: {
-            container: {
-                height: 50,
-            }
-        }
-    };
+    // const uiTheme = {
+    //     palette: {
+    //         primaryColor: COLOR.green500,
+    //     },
+    //     toolbar: {
+    //         container: {
+    //             height: 50,
+    //         }
+    //     }
+    // };
 
     return (
       <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
           {this.state.displayState === 'selectRun' &&
             <View style={styles.list}>
-              <Toolbar centerElement="Challenges" />
               <Subheader text='Choose a run as a challenge for your friends!' />
               <RunsList runs={this.state.runs} onRunSelect={this.onRunSelect.bind(this)}/>
             </View>
@@ -195,23 +195,21 @@ export default class Challenge extends Component {
           {this.state.displayState === 'selectFriends' &&
             <View style={styles.container}>
               <View style={styles.list}>
-                <Toolbar centerElement="Challenges" />              
                 <Subheader text={`Choose friends to challenge with ${this.state.selectedRun.name}!`} />
                 <FriendsList friends={this.state.friends} onFriendSelect={this.onFriendSelect.bind(this) }/>
               </View>
-              <Button raised accent text="Challenge" onPress={this.onChallengeButtonPressed.bind(this)} /> 
+              <Button raised accent text="Challenge" onPress={this.onChallengeButtonPressed.bind(this)} />
             </View>
           }
           {this.state.displayState === 'newChallengeOptions' &&
             <View style={styles.container}>
-              <View style={styles.list}>            
-                <Toolbar centerElement="New Challenge" />
-                <Subheader text='Choose your message!' />
+              <View style={styles.list}>
+                <Subheader text={'New Challenge: Choose your messages!'}/>
 
                 <Text style={styles.text}>When the race starts: </Text>
                 <TextInput
                   style={styles.text}
-                  onChangeText={(text) => { 
+                  onChangeText={(text) => {
                     let messages = this.state.messages;
                     messages.raceStart = text;
                     this.setState({messages: messages});
@@ -224,7 +222,7 @@ export default class Challenge extends Component {
                 <Text style={styles.text}>When your opponent loses: </Text>
                 <TextInput
                   style={styles.text}
-                  onChangeText={(text) => { 
+                  onChangeText={(text) => {
                     let messages = this.state.messages;
                     messages.opponentWon = text;
                     this.setState({messages: messages});
@@ -237,7 +235,7 @@ export default class Challenge extends Component {
                 <Text style={styles.text}>When your opponent wins: </Text>
                 <TextInput
                   style={styles.text}
-                  onChangeText={(text) => { 
+                  onChangeText={(text) => {
                     let messages = this.state.messages;
                     messages.playerWon = text;
                     this.setState({messages: messages});
@@ -247,20 +245,20 @@ export default class Challenge extends Component {
                   maxLength={80}
                   placeholder={'I can\'t believe you beat me!'}
                 />
-                
+
               </View>
               <Button raised accent text="Issue Challenge" onPress={this.onSubmit.bind(this)} />
             </View>
           }
           {this.state.displayState === 'challengeSubmitted' &&
             <View style={styles.container}>
-              <View style={styles.list}>            
+              <View style={styles.list}>
                 <Toolbar centerElement="Challenge Issued" />
                 <Subheader text='Your challenge has been issued to your friends' />
               </View>
               <Button raised primary text="Back" onPress={this.onChallengeIssuedGoBack.bind(this)} />
             </View>
-          }          
+          }
         </View>
       </ThemeProvider>
     );
@@ -268,7 +266,7 @@ export default class Challenge extends Component {
 }
 
             // <View style={styles.center}>
-            //   <Toolbar centerElement="Challenges" />            
+            //   <Toolbar centerElement="Challenges" />
             //   <Text>Your challenge has been issued to your friends!</Text>
             // </View>
 
