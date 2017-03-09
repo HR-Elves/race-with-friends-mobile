@@ -412,13 +412,13 @@ export default class LiveRaceLobby extends React.Component {
 
             {/* Current Live Race Info */}
             <Card>
-                <ListItem
-                    leftElement={<Avatar text="MW" />}
-                    centerElement={{
-                        primaryText: this.state.name,
-                        secondaryText: this.state.createdOn
-                    }}
-                />
+                  <ListItem
+                      leftElement={<Avatar text="MW" />}
+                      centerElement={{
+                          primaryText: this.state.name || 'N/A',
+                          secondaryText: this.state.createdOn || 'N/A'
+                      }}       
+                  />
                 <View style={{width: Dimensions.get('window').width - 20}}>
                     <Text style={styles.textContainer}>
                         Distance: {this.state.liveRaceDistance + '\n'}
