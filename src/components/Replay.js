@@ -9,8 +9,8 @@ import {
 
 import { Vibration, Dimensions } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
-import { ThemeProvider, Toolbar, Button, Subheader, Card } from 'react-native-material-ui'
-import uiTheme from './uiTheme.js'
+import { ThemeProvider, Toolbar, Button, Subheader, Card } from 'react-native-material-ui';
+import uiTheme from './uiTheme.js';
 
 import Tts from 'react-native-tts';
 import _ from 'lodash';
@@ -119,7 +119,7 @@ export default class Replay extends Component {
         newRuns[run.name] = run.data;
       });
       raceTypes['My Runs'] = newRuns;
-    });    
+    });
 
     Tts.addEventListener('tts-finish', (event) => {
       // console.warn('tts-finish: ', event);
@@ -211,7 +211,7 @@ export default class Replay extends Component {
         }
         this.setState(newState);
       } else {
-        this.waitAndSpeak('Hmmm, the player and the opponent tied!');
+        this.waitAndSpeak('The player and the opponent tied!');
       }
     } else {
       let nextRacerLoc;
@@ -323,14 +323,14 @@ export default class Replay extends Component {
     if (typeof this.state.playerSetup.challenge.message === 'object') {
       this.waitAndSpeak(this.state.playerSetup.challenge.message.raceStart);
     } else {
-      this.waitAndSpeak('On-your-marks, get-set, Oh, they already started!');
+      this.waitAndSpeak('The race has begun!');
     }
   }
 
   onPause() {
     this.setState({
       replayState: 'paused'
-    });    
+    });
     console.log('~~~ clearing ~~~ ', this.setTimeoutID);
     clearTimeout(this.setTimeoutID);
   }
@@ -457,7 +457,7 @@ export default class Replay extends Component {
         marginBottom: 56,
         flex: 1,
         width: Dimensions.get('window').width
-      },      
+      },
       welcome: {
         fontSize: 20,
         textAlign: 'center',
@@ -493,7 +493,7 @@ export default class Replay extends Component {
     }
 
     return (
-      <ThemeProvider uiTheme={uiTheme}>      
+      <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
           <View style={[styles.list, {paddingTop: 10}]}>
             <Card>
@@ -502,7 +502,7 @@ export default class Replay extends Component {
                 <ModalDropdown
                   options={['Presets', 'My Runs', 'Challenges']}
                   onSelect={this.onPickPlayerType.bind(this)}
-                  defaultValue='Presets'        
+                  defaultValue='Presets'
                   textStyle={{color: '#000000', fontSize: 25}}
                   dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}}
                   renderRow={customRenderRow}
@@ -512,7 +512,7 @@ export default class Replay extends Component {
                   options={this.state.playerSetup.options}
                   onSelect={this.onPickPlayer.bind(this)}
                   textStyle={{color: '#000000', fontSize: 20}}
-                  dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}} 
+                  dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}}
                   renderRow={customRenderRow}
                   renderSeparator={()=>''}
                   defaultValue='worldRecordRaceWalk100m'
@@ -536,15 +536,15 @@ export default class Replay extends Component {
                   textStyle={{color: '#000000', fontSize: 20}}
                   dropdownStyle={{paddingTop: 10, paddingBottom: 20, marginLeft: 10}}
                   renderRow={customRenderRow}
-                  renderSeparator={()=>''}                  
+                  renderSeparator={()=>''}
                   defaultValue='worldRecordRaceWalk100m'
                 />
               </View>
             </Card>
             <Card>
-              <View> 
+              <View>
                 <Subheader text="Progress Replay" />
-                <View style={{paddingLeft: 20, paddingBottom: 20}}>                           
+                <View style={{paddingLeft: 20, paddingBottom: 20}}>
                   <RaceStatus
                     status={this.state.raceStatus}
                     playerName={'Player'}

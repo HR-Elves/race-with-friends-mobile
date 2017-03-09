@@ -29,6 +29,7 @@ import walk from '../../assets/presetChallenges/worldRecordRaceWalk100m';
 import james from '../../assets/presetChallenges/MarketSt3';
 import nick from '../../assets/presetChallenges/MarketSt4';
 import hare from '../../assets/presetChallenges/hareFromFable';
+import brisk from '../../assets/presetChallenges/briskWalk';
 
 import { ThemeProvider, COLOR } from 'react-native-material-ui';
 import { ActionButton, Avatar, Card, ListItem, Subheader, Toolbar} from 'react-native-material-ui';
@@ -41,7 +42,8 @@ import uiTheme from './uiTheme.js';
 const presets = {
   'Usain Bolt': usain,
   worldRecordRaceWalk100m: walk,
-  hare100m: hare
+  hare100m: hare,
+  briskWalk: brisk
 };
 
 const myRuns = {
@@ -272,7 +274,7 @@ export default class Race extends Component {
     if (typeof this.state.raceSetup.challenge.message === 'object') {
       this.waitAndSpeak(this.state.raceSetup.challenge.message.raceStart);
     } else {
-      this.waitAndSpeak('oh mer gherd, we are now recording!');
+      this.waitAndSpeak('The race has begun! Good Luck!');
     }
   }
 
