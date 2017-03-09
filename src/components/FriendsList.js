@@ -1,6 +1,5 @@
 import React, {PropTypes, Component } from 'react';
 import {
-
   StyleSheet,
   Text,
   View,
@@ -21,6 +20,19 @@ export default class FriendsList extends Component {
   }
 
   render() {
+    const styles = StyleSheet.create({
+      search: {
+        flexDirection: 'row'
+      },
+      name: {
+        // padding: 72
+        textAlign: 'left'
+      },
+      empty: {
+        marginRight: 50
+      }
+    });
+
     return (
       <ScrollView>
       {
@@ -31,7 +43,7 @@ export default class FriendsList extends Component {
               divider
               leftElement={
                 <Image
-                  style={{width: 50, height: 50}}
+                  style={{width: 46, height: 46, borderRadius: 23}}
                   source={{uri: friend.pic}}
                 />}
               centerElement={<Text style={styles.name}>{friend.fullname}</Text>}
@@ -50,15 +62,3 @@ export default class FriendsList extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  search: {
-    flexDirection: 'row'
-  },
-  name: {
-    textAlign: 'center'
-  },
-  empty: {
-    marginRight: 50
-  }
-});

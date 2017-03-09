@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { EventEmitter } from 'fbemitter';
 import _ from 'lodash';
 import { COLOR, ThemeProvider, ListItem } from 'react-native-material-ui';
+import {uiTheme} from './src/components/uiTheme';
 
 import Race from './src/components/Race';
 import Replay from './src/components/Replay';
@@ -171,12 +172,6 @@ export default class RaceWithFriends extends Component {
 
   render() {
 
-    const uiTheme = {
-      palette: {
-        primaryColor: COLOR.green500
-      }
-    };
-
     const styles = StyleSheet.create({
       container: {
         flex: 1,
@@ -254,7 +249,7 @@ export default class RaceWithFriends extends Component {
               routeMapper={NavigationBarRouteMapper}/>
             }/>
         </Drawer>
-      </ThemeProvider>      
+      </ThemeProvider>
     );
   }
 }

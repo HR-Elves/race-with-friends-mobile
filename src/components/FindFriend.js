@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet,
   Text,
   View,
   ScrollView,
@@ -54,22 +53,6 @@ export default class FindFriend extends Component {
 
   render() {
 
-    const styles = StyleSheet.create({
-      search: {
-        flexDirection: 'column',
-        // justifyContent: 'left',
-        // alignItems: 'left'
-        // flex:1    //Step 1
-      },
-      name: {
-        // marginLeft: 75
-        textAlign: 'center'
-      },
-      empty: {
-        marginRight: 50
-      }
-    });
-
     return (
       <View>
         <TextInput
@@ -90,10 +73,10 @@ export default class FindFriend extends Component {
                 divider
                 leftElement={
                   <Image
-                    style={{width: 50, height: 50}}
+                    style={{width: 46, height: 46, borderRadius: 23}}
                     source={{uri: user.pic}}
                   />}
-                centerElement={<Text style={styles.name}>{user.fullname}</Text>}
+                centerElement={<Text>{user.fullname}</Text>}
                 onPress={() => { this.props.onAddFriend(user.fb_id); }}
 
 
