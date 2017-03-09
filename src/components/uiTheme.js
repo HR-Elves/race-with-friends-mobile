@@ -6,8 +6,8 @@ export default uiTheme = {
       accentColor: '#00BFA5'
   },
   toolbar: {
-      container: {
-          height: 50,
-      }
+    container: {
+      height: 50,
+    }
   }
 };

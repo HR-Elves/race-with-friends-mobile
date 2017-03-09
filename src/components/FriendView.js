@@ -79,24 +79,17 @@ export default class FriendView extends Component {
 
 const styles = StyleSheet.create({
   pic: {
-    // marginTop:50,
-    // width:150,
-    // height: 150,
-    // paddingBottom:10,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1    //Step 1
+    flex: 1
   },
   name: {
-    // color:'#fff',
     flexDirection: 'column',
     textAlign: 'center',
     alignItems: 'center'
-    // flex:1
   },
   container: {
-    marginTop: 60,
     marginBottom: 56,
     flex: 1,
     width: Dimensions.get('window').width
@@ -106,7 +99,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     fontWeight: 'bold',
-    flex: 1               //Step 3
   }
 });
 

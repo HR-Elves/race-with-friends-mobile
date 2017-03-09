@@ -7,6 +7,8 @@ import {
 } from 'react-native';
 
 import { COLOR, ThemeProvider, ListItem, Subheader } from 'react-native-material-ui';
+import {uiTheme} from './uiTheme';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 
@@ -19,7 +21,7 @@ export default class Friends extends Component {
     super(props);
     this.state = {
       friends: [],
-      displayState: 'list',
+      showProfile: false,
       selectedFriend: null,
       currentTab: 0,
     };
@@ -55,15 +57,9 @@ export default class Friends extends Component {
 
   onFriendSelect(friend) {
     this.setState({
-      displayState: 'selected',
+      showProfile: true,
       selectedFriend: friend
     });
-  }
-
-  onButtonPress() {
-    this.setState({
-      displayState: 'searchForFriends'
-    })
   }
 
   onAddFriend(fb_id) {
@@ -81,19 +77,20 @@ export default class Friends extends Component {
     .then((response) => {
       this.getFriends((results) => {
         this.setState({
-          displayState: 'list',
+          displayState: false,
           friends: results
-        })
+        });
       });
     })
     .catch((error) => {
       console.error(error);
-    })
+    });
   }
 
   onTabChange(newTabIndex) {
     this.setState({
-      currentTab: newTabIndex
+      currentTab: newTabIndex,
+      showProfile: false
     });
   }
 
@@ -101,53 +98,38 @@ export default class Friends extends Component {
     const styles = StyleSheet.create({
       container: {
         flex: 1,
-        backgroundColor: '#F5FCFF',
+        marginTop: 60,
+        backgroundColor: '#EAEAEA',
         width: Dimensions.get('window').width
-      },
-      listContent: {
-        marginTop: 60
       },
       center: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF'
       }
     });
-
-    const uiTheme = {
-      palette: {
-        primaryColor: COLOR.green500,
-      },
-      toolbar: {
-        container: {
-          height: 50,
-        },
-      },
-    };
 
     return (
       <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
-          {this.state.currentTab === 0 &&
-            <View style={styles.listContent}>
+          {this.state.currentTab === 0 && !this.state.showProfile &&
+            <View>
               <FriendsList
                 searchable={true}
                 friends={this.state.friends}
                 onFriendSelect={this.onFriendSelect.bind(this)}
-                onButtonPress={this.onButtonPress.bind(this)}
               />
             </View>
           }
-          {this.state.currentTab === 1 &&
-            <View style={styles.listContent} >
+          {this.state.currentTab === 1 && !this.state.showProfile &&
+            <View>
               <FindFriend
                 userId={this.props.userId}
                 onAddFriend={this.onAddFriend.bind(this)}
               />
             </View>
           }
-          {this.state.displayState === 'selected' &&
+          {this.state.showProfile &&
             <View style={styles.center} >
               <FriendView friend={this.state.selectedFriend} />
             </View>
