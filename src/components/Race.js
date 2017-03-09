@@ -31,7 +31,7 @@ import nick from '../../assets/presetChallenges/MarketSt4';
 import hare from '../../assets/presetChallenges/hareFromFable';
 
 import { ThemeProvider, COLOR } from 'react-native-material-ui';
-import { Avatar, Card, ListItem, Subheader, Toolbar} from 'react-native-material-ui';
+import { ActionButton, Avatar, Card, ListItem, Subheader, Toolbar} from 'react-native-material-ui';
 import { Button as MaterialButton } from 'react-native-material-ui';
 import CommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -424,7 +424,7 @@ export default class Race extends Component {
       },
       dropdownLabel: {
         fontSize: 17,
-        color: 'blue'
+        color: '#00695C'
       }
     });
 
@@ -474,22 +474,11 @@ export default class Race extends Component {
                     Reset
                   </Icon.Button>
               </View>
-              {this.state.raceStatus && this.state.raceStatus.challengeDone &&
-                <PostRace data={this.state.chartData}/>
-                // <Image
-                // source={require('../../assets/images/StickmanRunning.gif')}
-                // resizeMode='contain'
-                // style={{
-                //   height: Dimensions.get('window').height * 0.4,
-                //   width: Dimensions.get('window').width * 0.4
-                // }}
-                // />
-              }
             </View>}
           {this.state.showSetupRace && this.state.raceSetup.raceType !== 'Live' &&
             <View style={styles.container}>
               <View style={styles.fullwidthView}>
-                <Toolbar centerElement="Setup Race" />
+                <Subheader text='Setup Race' />
                 <Card style={{marginLeft: 20, marginRight: 20}} >
                   <View style={styles.center}>
                     <Text></Text>
@@ -564,17 +553,6 @@ export default class Race extends Component {
   }
 }
 
-              // <View style={{
-              //   flex: 1,
-              //   justifyContent: 'flex-start',
-              //   alignItems: 'center',
-              //   backgroundColor: '#F5FCFF',
-              // }}>
-              //   <TouchableHighlight onPress={() => {
-              //     this.showSetupRace(!this.state.showSetupRace);
-              //   }}>
-              //     <Text>Done!</Text>
-              //   </TouchableHighlight>
-              // </View>
-
-
+              // {this.state.raceStatus && this.state.raceStatus.challengeDone &&
+              //   <PostRace data={this.state.chartData}/>
+              // }
