@@ -146,7 +146,7 @@ export default class Friends extends Component {
               icon={<Icon size={24} color="white" name="directions-run" />}
             />
             <Tab
-              barBackgroundColor="#37474F"
+              barBackgroundColor="#00BFA5"
               label="Find Friends"
               icon={<Icon size={24} color="white" name="show-chart" />}
             />
