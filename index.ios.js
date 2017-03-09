@@ -3,21 +3,21 @@ import React, { Component, PropTypes } from 'react';
 import {
   AppRegistry,
   AsyncStorage,
-  Button,
   Image,
   ListView,
   Navigator,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from 'react-native';
 import BackgroundGeolocation from 'react-native-background-geolocation';
 import Drawer from 'react-native-drawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { EventEmitter } from 'fbemitter';
 import _ from 'lodash';
-import { COLOR, ThemeProvider, ListItem } from 'react-native-material-ui';
+import { COLOR, ThemeProvider, ListItem, Button } from 'react-native-material-ui';
 import {uiTheme} from './src/components/uiTheme';
 
 import Race from './src/components/Race';
@@ -230,7 +230,7 @@ export default class RaceWithFriends extends Component {
           panCloseMask={0.2}
           closedDrawerOffset={-3}
           styles={{
-            drawer: {shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3},
+            drawer: {backgroundColor: COLOR.tealA700, shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3},
             main: {paddingLeft: 3}
           }}
           tweenHandler={(ratio) => ({main: { opacity: ( 2 - ratio) / 2 }})}>
@@ -283,10 +283,10 @@ class RaceDashboard extends Component {
 
     return (
       <ListItem
-        divider
+        style={{height: 48}}
         onPress={()=> this._onItemSelect(item)}
-        centerElement={<Text >{item}</Text>}
-        rightElement={<Image style={styles.icon}source={imgSource[item]}/>}
+        centerElement={<Text style={{fontSize: 14}} >{item}</Text>}
+        leftElement={<Image style={styles.icon} source={imgSource[item]}/>}
       />
     );
 
@@ -310,50 +310,59 @@ class RaceDashboard extends Component {
         flex: 1,
         backgroundColor: '#EAEAEA',
         width: 300,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
         flexDirection: 'column'
       },
       text: {
         marginTop: 20
       },
       image: {
-        marginTop: 45,
-        height: 150,
-        borderRadius: 75,
-        width: 150
+        marginTop: 30,
+        height: 75,
+        borderRadius: 37.5,
+        borderWidth: 4,
+        borderColor: COLOR.teal50,
+        width: 75
       },
       //this is where to affect list of pages
       listContent: {
         backgroundColor: '#EAEAEA',
-        marginTop: 80,
+        marginTop: 25,
         padding: 10,
         width: 295
       }
     });
 
+    if(this.props.profile) {
+      console.log(this.props.profile);
+    }
 
     return (
-      <View style={styles.container}>
-        <View>
-          {this.props.profile ? <Image style={styles.image} source={{uri: this.props.profile.extraInfo.picture_large}}/> : <Text></Text>}
-        </View>
-
-        <View>
-          {this.props.profile ? <Text style={styles.text}>{'Welcome ' + this.props.profile.name.split(' ')[0] + '!'}</Text> : <Text></Text>}
+      <View style={[styles.container, {backgroundColor: '#ffffff'}]}>
+        <View style={{width: Dimensions.get('window').width * 0.8,
+                      paddingLeft: 20,
+                      paddingBottom: 20,
+                      backgroundColor: COLOR.teal500}}>
+          <View>
+            {this.props.profile ? <Image style={[styles.image, {}]} source={{uri: this.props.profile.extraInfo.picture_large}}/> : <Text></Text>}
+            {this.props.profile ? <Text style={[styles.text, {color: '#ffffff', fontSize: 18, marginTop: 15, paddingLeft: 12}]}>{this.props.profile.name}</Text> : <Text></Text>}
+          </View>
         </View>
 
         <ListView
-          style={styles.listContent}
+          style={[styles.listContent, {backgroundColor: '#ffffff'}]}
           dataSource={this.state.dataSource}
           renderRow={((item) => this._renderMenuItem(item)).bind(this)}
         />
-        <Button
+
+        <Button 
+          style={{container:{width: Dimensions.get('window').width * 0.8}}} 
+          raised accent 
+          text="Sign Out" 
           onPress={() => {
             this.props.logout();
-          }}
-          title="Sign Out"
-          color={COLOR.green500}
+          }} 
         />
       </View>
     );
