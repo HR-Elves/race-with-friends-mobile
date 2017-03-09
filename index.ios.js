@@ -322,7 +322,7 @@ class RaceDashboard extends Component {
         height: 75,
         borderRadius: 37.5,
         borderWidth: 4,
-        borderColor: '#ffffff',
+        borderColor: COLOR.teal50,
         width: 75
       },
       //this is where to affect list of pages
