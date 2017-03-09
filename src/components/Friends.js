@@ -21,7 +21,7 @@ export default class Friends extends Component {
     super(props);
     this.state = {
       friends: [],
-      displayState: false,
+      showProfile: false,
       selectedFriend: null,
       currentTab: 0,
     };
@@ -57,14 +57,8 @@ export default class Friends extends Component {
 
   onFriendSelect(friend) {
     this.setState({
-      displayState: true,
+      showProfile: true,
       selectedFriend: friend
-    });
-  }
-
-  onButtonPress() {
-    this.setState({
-      displayState: 'searchForFriends'
     });
   }
 
@@ -95,7 +89,8 @@ export default class Friends extends Component {
 
   onTabChange(newTabIndex) {
     this.setState({
-      currentTab: newTabIndex
+      currentTab: newTabIndex,
+      showProfile: false
     });
   }
 
@@ -117,17 +112,16 @@ export default class Friends extends Component {
     return (
       <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
-          {this.state.currentTab === 0 && !this.state.displayState &&
+          {this.state.currentTab === 0 && !this.state.showProfile &&
             <View>
               <FriendsList
                 searchable={true}
                 friends={this.state.friends}
                 onFriendSelect={this.onFriendSelect.bind(this)}
-                onButtonPress={this.onButtonPress.bind(this)}
               />
             </View>
           }
-          {this.state.currentTab === 1 && !this.state.displayState &&
+          {this.state.currentTab === 1 && !this.state.showProfile &&
             <View>
               <FindFriend
                 userId={this.props.userId}
@@ -135,7 +129,7 @@ export default class Friends extends Component {
               />
             </View>
           }
-          {this.state.displayState &&
+          {this.state.showProfile &&
             <View style={styles.center} >
               <FriendView friend={this.state.selectedFriend} />
             </View>
