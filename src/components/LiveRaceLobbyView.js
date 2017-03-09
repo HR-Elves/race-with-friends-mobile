@@ -90,9 +90,9 @@ export default class LiveRaceLobby extends React.Component {
   }
 
   componentWillMount() {
-    console.warn = function() {
+    // console.warn = function() {
 
-    };
+    // };
     this.getLiveRaces();
     // this.beginGPSTracking();
   }
@@ -266,8 +266,9 @@ export default class LiveRaceLobby extends React.Component {
     let currentLoc = processLocation(location, this.state.history);
     ws.send(JSON.stringify(['position-update', currentLoc]));
 
-    let newRaceStatus = getRaceStatus(currentLoc, this.state.opponent, this.state.raceStatus, this.state.liveRaceDistance);
+    let newRaceStatus = getLiveRaceStatus(currentLoc, this.state.opponent, this.state.raceStatus, this.state.liveRaceDistance);
 
+    // console.error('newRaceStatus: ', JSON.stringify(newRaceStatus));
     // console.error(JSON.stringify(newRaceStatus))
     // if (this.state.opponent.length >= 2) {
     //   newRaceStatus = getRaceStatus(currentLoc, this.state.opponent, this.state.raceStatus, this.state.liveRaceDistance);
@@ -290,7 +291,7 @@ export default class LiveRaceLobby extends React.Component {
       }).bind(this), 10000);
     } else { // Race complete.
 
-    console.error(JSON.stringify(newRaceStatus))
+    // console.error(JSON.stringify(newRaceStatus))
 
       if (newRaceStatus.distanceToOpponent > 0) { // Opponent Won
 
