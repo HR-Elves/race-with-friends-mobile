@@ -154,7 +154,9 @@ export default class LiveRaceLobby extends React.Component {
 
             if (eventData[0] === 'position-update') {
               let opponent = this.state.opponent
-              opponent.push(eventData[1]);
+              if (eventData[1].timeTotal > this.state.opponent[this.state.opponent.length - 1]) {
+                opponent.push(eventData[1]);
+              }
 
               this.setState({
                 opponent: opponent
@@ -164,7 +166,14 @@ export default class LiveRaceLobby extends React.Component {
                 raceStarted: true
               }, () => {
                 this.handleRacePress();
+                BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
+                  this.onLocationUpdate(location);
+                });
               })
+            } else if (eventData[0] === 'announcement' && eventData[1] === 'get-location') {
+              BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
+                this.onLocationUpdate(location);
+              });
             }
           });
         } else {
@@ -191,6 +200,9 @@ export default class LiveRaceLobby extends React.Component {
 
     if (!this.state.raceStarted) {
       ws.send(JSON.stringify(['announcement', 'start-race']));
+      this.setTimeoutID = setInterval(() => {
+        ws.send(JSON.stringify(['announcement', 'get-location']));
+      }, 2000);
     }
 
     // ws.addEventListener('message', (event) => {
@@ -283,17 +295,17 @@ export default class LiveRaceLobby extends React.Component {
   }
 
   onLocationUpdate(location) {
-    clearInterval(this.setTimeoutID);
+    // clearInterval(this.setTimeoutID);
 
     // Bandaid Fix for error at start of live races when no data points are available from the opponent.
-    if (this.state.opponent.length === 0) {
-      setTimeout(this.onLocationUpdate.bind(this, location), 1000);
-      return
-    }
 
     let currentLoc = processLocation(location, this.state.history);
     ws.send(JSON.stringify(['position-update', currentLoc]));
 
+    // if (this.state.opponent.length === 0) {
+    //   setTimeout(this.onLocationUpdate.bind(this, location), 1000);
+    //   return
+    // }
     let newRaceStatus = getLiveRaceStatus(currentLoc, this.state.opponent, this.state.raceStatus, this.state.liveRaceDistance);
 
     // console.error('newRaceStatus: ', JSON.stringify(newRaceStatus));
@@ -318,7 +330,7 @@ export default class LiveRaceLobby extends React.Component {
         });
       }).bind(this), 10000);
     } else { // Race complete.
-
+    clearInterval(this.setTimeoutID);
     // console.error(JSON.stringify(newRaceStatus))
 
       if (newRaceStatus.distanceToOpponent > 0) { // Opponent Won
