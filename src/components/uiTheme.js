@@ -2,11 +2,11 @@ import { COLOR } from 'react-native-material-ui';
 
 export default uiTheme = {
   palette: {
-      primaryColor: COLOR.green500,
+    primaryColor: COLOR.teal500,
   },
   toolbar: {
-      container: {
-          height: 50,
-      }
+    container: {
+      height: 50,
+    }
   }
 };
