@@ -8,7 +8,8 @@ import {
   TextInput
 } from 'react-native';
 
-import {ListItem} from 'react-native-material-ui';
+import {Dialog, DialogDefaultActions, ListItem} from 'react-native-material-ui';
+import Popup from './Popup';
 
 export default class FindFriend extends Component {
   constructor(props) {
@@ -94,6 +95,15 @@ export default class FindFriend extends Component {
                   />}
                 centerElement={<Text style={styles.name}>{user.fullname}</Text>}
                 onPress={() => { this.props.onAddFriend(user.fb_id); }}
+
+
+
+                // onPress={() => {
+                //   return (
+                //   <Popup
+                //   user={user.fb_id}
+                //   addFriend={this.props.onAddFriend}/> )
+                // }}
               />
             );
           })
