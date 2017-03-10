@@ -30,8 +30,8 @@ import test3 from '../../assets/presetChallenges/test3';
 
 const presets = {
   'Usain Bolt': usain,
-  worldRecordRaceWalk100m: walk,
-  hare100m: hare,
+  'Olympic Speed Walk': walk,
+  'Hare 100 Meters': hare,
   test1: test1,
   test2: test2,
   test3: test3
@@ -149,8 +149,20 @@ export default class Replay extends Component {
     }
 
     if (newRaceStatus.passedOpponent) {
-      this.waitAndSpeak('The player just passed the opponent!');
+      if (this.state.playersSwapped) {
+        this.waitAndSpeak('The opponent just passed the player!');
+      } else {
+        this.waitAndSpeak('The player just passed the opponent!');
+      }
     }
+    if (newRaceStatus.passedByOpponent) {
+      if (this.state.playersSwapped) {
+        this.waitAndSpeak('The player just passed the opponent!');
+      } else {
+        this.waitAndSpeak('The opponent just passed the player!');
+      }
+    }
+
     if (newRaceStatus.distanceToOpponent > 0) {
       let pattern = [0];
       Vibration.vibrate(pattern);
@@ -515,7 +527,7 @@ export default class Replay extends Component {
                   dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 10}}
                   renderRow={customRenderRow}
                   renderSeparator={()=>''}
-                  defaultValue='worldRecordRaceWalk100m'
+                  defaultValue='Olympic Speed Walk'
                 />
                 <Text style={{
                   fontSize: 20,
@@ -537,7 +549,7 @@ export default class Replay extends Component {
                   dropdownStyle={{paddingTop: 10, paddingBottom: 20, marginLeft: 10}}
                   renderRow={customRenderRow}
                   renderSeparator={()=>''}
-                  defaultValue='worldRecordRaceWalk100m'
+                  defaultValue='Olympic Speed Walk'
                 />
               </View>
             </Card>
