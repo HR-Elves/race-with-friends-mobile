@@ -103,6 +103,8 @@ export default class LiveRaceLobby extends React.Component {
       this.state.lobbyConnection.close();
     }
 
+    clearInterval(this.setTimeoutID);
+
     // Turn off Background Geolocation listeners. //
     BackgroundGeolocation.un('location', this.onLocationUpdate);
     BackgroundGeolocation.un('motionchange', this.onLocationUpdate);
@@ -154,7 +156,9 @@ export default class LiveRaceLobby extends React.Component {
 
             if (eventData[0] === 'position-update') {
               let opponent = this.state.opponent
-              if (eventData[1].timeTotal > this.state.opponent[this.state.opponent.length - 1]) {
+              if (this.state.opponent[this.state.opponent.length - 1] && eventData[1].timeTotal > this.state.opponent[this.state.opponent.length - 1].timeTotal) {
+                opponent.push(eventData[1]);
+              } else if (this.state.opponent.length === 0) {
                 opponent.push(eventData[1]);
               }
 
@@ -192,11 +196,11 @@ export default class LiveRaceLobby extends React.Component {
 
     this.beginGPSTracking();
     // This handler fires whenever bgGeo receives a location update.
-    BackgroundGeolocation.on('location', this.onLocationUpdate);
+    // BackgroundGeolocation.on('location', this.onLocationUpdate);
     // This handler fires when movement states changes (stationary->moving; moving->stationary)
-    BackgroundGeolocation.on('motionchange', this.onLocationUpdate);
-    BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
-    BackgroundGeolocation.changePace(true);
+    // BackgroundGeolocation.on('motionchange', this.onLocationUpdate);
+    // BackgroundGeolocation.on('heartbeat', this.onLocationUpdate);
+    // BackgroundGeolocation.changePace(true);
 
     if (!this.state.raceStarted) {
       ws.send(JSON.stringify(['announcement', 'start-race']));
@@ -295,17 +299,20 @@ export default class LiveRaceLobby extends React.Component {
   }
 
   onLocationUpdate(location) {
+    console.warn(JSON.stringify(this.state.raceStatus));
     // clearInterval(this.setTimeoutID);
 
     // Bandaid Fix for error at start of live races when no data points are available from the opponent.
 
     let currentLoc = processLocation(location, this.state.history);
+    currentLoc.TESTNAME = 'Derrick';
     ws.send(JSON.stringify(['position-update', currentLoc]));
 
     // if (this.state.opponent.length === 0) {
     //   setTimeout(this.onLocationUpdate.bind(this, location), 1000);
     //   return
     // }
+
     let newRaceStatus = getLiveRaceStatus(currentLoc, this.state.opponent, this.state.raceStatus, this.state.liveRaceDistance);
 
     // console.error('newRaceStatus: ', JSON.stringify(newRaceStatus));
@@ -313,7 +320,7 @@ export default class LiveRaceLobby extends React.Component {
     // if (this.state.opponent.length >= 2) {
     //   newRaceStatus = getRaceStatus(currentLoc, this.state.opponent, this.state.raceStatus, this.state.liveRaceDistance);
     // }
-
+    // console.error(JSON.stringify(newRaceStatus));
     const newState = this.state;
     newState.history.push(currentLoc);
     newState.raceStatus = newRaceStatus;
@@ -324,11 +331,11 @@ export default class LiveRaceLobby extends React.Component {
     this.setState(newState);
 
     if (!newRaceStatus.challengeDone) {
-      this.setTimeoutID = setTimeout((() => {
-        BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
-          this.onLocationUpdate(location);
-        });
-      }).bind(this), 10000);
+      // this.setTimeoutID = setTimeout((() => {
+      //   BackgroundGeolocation.getCurrentPosition.call(this, (location, taskId) => {
+      //     this.onLocationUpdate(location);
+      //   });
+      // }).bind(this), 10000);
     } else { // Race complete.
     clearInterval(this.setTimeoutID);
     // console.error(JSON.stringify(newRaceStatus))
