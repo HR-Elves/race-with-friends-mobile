@@ -188,6 +188,8 @@ export default class Race extends Component {
 
     if (newRaceStatus.passedOpponent) {
       this.waitAndSpeak('You just passed your opponent!');
+    } else if (newRaceStatus.passedByOpponent) {
+      this.waitAndSpeak('Your opponent just passed you!');
     }
     if (newRaceStatus.distanceToOpponent > 0) {
       let pattern = [0];
