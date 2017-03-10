@@ -149,8 +149,20 @@ export default class Replay extends Component {
     }
 
     if (newRaceStatus.passedOpponent) {
-      this.waitAndSpeak('The player just passed the opponent!');
+      if (this.state.playersSwapped) {
+        this.waitAndSpeak('The opponent just passed the player!');
+      } else {
+        this.waitAndSpeak('The player just passed the opponent!');
+      }
     }
+    if (newRaceStatus.passedByOpponent) {
+      if (this.state.playersSwapped) {
+        this.waitAndSpeak('The player just passed the opponent!');
+      } else {
+        this.waitAndSpeak('The opponent just passed the player!');
+      }
+    }
+
     if (newRaceStatus.distanceToOpponent > 0) {
       let pattern = [0];
       Vibration.vibrate(pattern);
