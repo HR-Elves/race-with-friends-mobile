@@ -575,13 +575,15 @@ export default class Race extends Component {
               </View>
             </View>}
 
-            {this.state.showSetupRace && !this.state.raceSetup.raceType === 'Live' &&
+
+            {this.state.raceSetup.raceType !== 'Live' &&
               <View style={styles.fullwidthView}>
                 <MaterialButton raised accent text="Race!" onPress={() => {
                   this.showSetupRace(!this.state.showSetupRace);
                 }} />
               </View>
             }
+            
           {/* Conditional rendering of the "Live Race" lobby when users select Live Race as the option */}
             {this.state.raceSetup.raceType === 'Live' &&
               <LiveRaceLobbyView userID={this.props.userId}/>
