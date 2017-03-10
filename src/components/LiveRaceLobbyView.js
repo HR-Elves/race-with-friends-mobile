@@ -386,9 +386,8 @@ export default class LiveRaceLobby extends React.Component {
     return (
       <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
-
           <View style={styles.fullwidthView}>
-            <Toolbar centerElement="Realtime Live Race" />
+            <Subheader text="Realtime Live Race" />
           </View>
 
           {this.state.showSetupNewLobby &&
@@ -416,9 +415,9 @@ export default class LiveRaceLobby extends React.Component {
                 <ListItem
                     leftElement={<Avatar text="MW" />}
                     centerElement={{
-                        primaryText: this.state.name,
-                        secondaryText: this.state.createdOn,
-                    }}
+                        primaryText: this.state.name || 'N/A',
+                        secondaryText: this.state.createdOn || 'N/A'
+                    }}       
                 />
                 <View style={{width: Dimensions.get('window').width - 20}}>
                     <Text style={styles.textContainer}>

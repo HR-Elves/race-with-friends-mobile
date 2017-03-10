@@ -90,8 +90,9 @@ export default class LiveRaceNewLobby extends React.Component {
       <ThemeProvider uiTheme={uiTheme}>
         <View style={styles.container}>
           {(this.state && this.state.showFriendsPicker) ? <FriendsPicker onSubmit={this.handlePickNewRaceParticipants}/> : <Text></Text>}
+          {this.state && !this.state.showFriendsPicker && 
             <Card>
-              <Text style={styles.textContainer}>
+              <Text style={[styles.textContainer, {paddingTop: 20}]}>
                 <Text style={{paddingTop: 16, fontWeight: 'bold', fontSize: 24}}>
                   Setup New Live Race
                 </Text>
@@ -129,7 +130,7 @@ export default class LiveRaceNewLobby extends React.Component {
                 <Button raised primary text="Create Race" onPress={this.createRace} />
               </View>
             </Card>
-
+          }
         </View>
       </ThemeProvider>
     )

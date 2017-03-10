@@ -80,19 +80,21 @@ export default class FriendsPicker extends Component {
     }
 
     return (
-      <View style={{marginTop: 22, width: Dimensions.get('window').width - 20, height: Dimensions.get('window').height - 20}} >
-        <Text style={{paddingTop: 16, fontWeight: 'bold', fontSize: 12}}> Selected Participants: </Text>
-        <Text style={{paddingBottom: 16}}> {selectedFriendsText} </Text>
-        <View style={{width: Dimensions.get('window').width - 20, height: Dimensions.get('window').height - 200}}>
-          {this.state.friends &&
-            <FriendsList
-              friends={this.state.friends}
-              onFriendSelect={this.handleFriendsSelect}
-            />
-          }
-          <Button raised primary text="Submit" onPress={() => this.props.onSubmit(this.state.selectedFriendsList)} />
+      <Card>
+        <View style={{marginTop: 0, paddingLeft: 10, paddingBottom: 10, width: Dimensions.get('window').width - 20}} >
+          <Text style={{paddingTop: 16, fontWeight: 'bold', fontSize: 12}}> Selected Participants: </Text>
+          <Text style={{paddingBottom: 16}}> {selectedFriendsText} </Text>
+          <View style={{width: Dimensions.get('window').width - 40, height: Dimensions.get('window').height - 200}}>
+            {this.state.friends &&
+              <FriendsList
+                friends={this.state.friends}
+                onFriendSelect={this.handleFriendsSelect}
+              />
+            }
+            <Button raised primary text="Submit" onPress={() => this.props.onSubmit(this.state.selectedFriendsList)} />
+          </View>
         </View>
-      </View>
+      </Card>
     )
   }
 }
