@@ -41,9 +41,9 @@ import uiTheme from './uiTheme.js';
 
 const presets = {
   'Usain Bolt': usain,
-  worldRecordRaceWalk100m: walk,
-  hare100m: hare,
-  briskWalk: brisk
+  'Olympic Speed Walk': walk,
+  'Hare 100 Meters': hare,
+  'Brisk Walk': brisk
 };
 
 const myRuns = {
@@ -474,7 +474,7 @@ export default class Race extends Component {
                 <View>
                   <Subheader text='Race Progress' />
                 </View>
-                <View style={{paddingLeft: 25, paddingRight: 10, paddingBottom: 25}}>         
+                <View style={{paddingLeft: 25, paddingRight: 10, paddingBottom: 25}}>
                   <RaceProgress progress={this.state.progress} />
                   <RaceStatus
                     status={this.state.raceStatus}
@@ -487,7 +487,7 @@ export default class Race extends Component {
                   </View>
                 </View>
               </Card>
-              <View style={styles.fullwidthView}>                  
+              <View style={styles.fullwidthView}>
                 <Icon.Button
                   name="play-circle-outline"
                   size={25}
@@ -514,8 +514,8 @@ export default class Race extends Component {
                   onPress={this.clearHistory.bind(this)}
                 >
                   Reset
-                </Icon.Button>                
-              </View>                  
+                </Icon.Button>
+              </View>
             </View>
           }
           {this.state.showSetupRace && this.state.raceSetup.raceType !== 'Live' &&
@@ -536,9 +536,9 @@ export default class Race extends Component {
                     options={['Presets', 'My Runs', 'Challenges', 'Live']}
                     onSelect={this.onPickRaceType.bind(this)}
                     style={styles.center}
-                    dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 0, height: 210}} 
+                    dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 0, height: 210}}
                     renderRow={customRenderRow}
-                    renderSeparator={()=>''}                    
+                    renderSeparator={()=>''}
                     textStyle={{color: '#000000', fontSize: 25}}
                     defaultValue='Presets'
                   />
@@ -549,11 +549,11 @@ export default class Race extends Component {
                     options={this.state.raceSetup.oppOptions}
                     onSelect={this.onPickOpponent.bind(this)}
                     style={styles.center}
-                    dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 0}} 
+                    dropdownStyle={{paddingTop: 10, paddingBottom: 10, marginLeft: 0}}
                     renderRow={customRenderRow}
-                    renderSeparator={()=>''}                    
+                    renderSeparator={()=>''}
                     textStyle={{color: '#000000', fontSize: 25}}
-                    defaultValue='worldRecordRaceWalk100m'
+                    defaultValue='Olympic Speed Walk'
                   />
                   <Text></Text>
                   <Text></Text>
